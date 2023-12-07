@@ -1,0 +1,4 @@
+settings set target.x86-disassembly-flavor intel
+settings set use-color 1
+settings set stop-line-count-after 20
+settings set stop-line-count-before 20
