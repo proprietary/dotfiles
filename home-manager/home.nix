@@ -53,6 +53,13 @@
       vim-fugitive
       vim-yaml
     ];
+    settings = {
+      expandtab = true;
+      background = "dark";
+      tabstop = 4;
+      shiftwidth = 4;
+      copyindent = true;
+    };
   };
 
   programs.fzf = {
@@ -91,6 +98,8 @@
       select-word-style bash
 
       setopt autocd # so I may omit "cd" to change dirs
+
+      export EDITOR=emacs
     '';
   };
 }
