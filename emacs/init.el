@@ -35,7 +35,7 @@
 ;; Git
 ;; ---
 ;;
-(use-package magit)
+(use-package magit :ensure t)
 
 ;;
 ;; Navigation
@@ -87,11 +87,11 @@
 ;; ---
 ;;
 
-(use-package eglot)
+(use-package eglot :ensure t)
 
-(use-package nix-mode :mode "\\.nix\\'")
+(use-package nix-mode :ensure t :mode "\\.nix\\'")
 
-(use-package yaml-mode)
+(use-package yaml-mode :ensure t)
 
 ;;
 ;; Appearance
@@ -100,3 +100,7 @@
 
 ;; theme
 (load-theme 'tsdh-dark)
+
+(use-package indent-bars
+  :hook ((yaml-mode . indent-bars-mode)
+         (python-mode . indent-bars-mode)))

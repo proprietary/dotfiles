@@ -17,10 +17,6 @@
 
   home.file.".lldbinit".source = include/.lldbinit;
   home.file.".gdbinit".source = include/.gdbinit;
-  home.file.".emacs.d/init.el".source = include/emacs/init.el;
-  home.file.".emacs.d/third_party" = {
-    source = include/emacs/third_party;
-  };
 
   services.gpg-agent = {
     enable = true;
