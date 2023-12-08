@@ -115,6 +115,8 @@
     ninja
     autoconf
     boost
+    python311Packages.boost
+    python311Packages.numpy
     folly
     ffmpeg
     opencv
@@ -129,6 +131,7 @@
     sshfs
     nfs-utils
     ripgrep
+    nix-index
     coreutils-full
     openssl
     patchelf
