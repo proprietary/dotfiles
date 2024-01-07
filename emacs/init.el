@@ -14,6 +14,13 @@
     (normal-top-level-add-subdirs-to-load-path))
   (require 'use-package))
 
+(let ((default-directory (expand-file-name
+                          (concat user-emacs-directory
+                                  "site-lisp"))))
+  (normal-top-level-add-to-load-path '("."))
+  (normal-top-level-add-subdirs-to-load-path))
+
+
 ;;
 ;; MacOS
 ;; -----
@@ -82,6 +89,19 @@
 ;; useful when an external program modified a file; e.g., `clang-format`
 (global-auto-revert-mode)
 
+;; evil-mode
+
+(use-package goto-chg :ensure t) ;; evil-mode dependency
+(require 'evil)
+(evil-mode 1)
+
+(use-package paredit :ensure t)
+
+(use-package projectile
+  :ensure t
+  :bind (:map projectile-mode-map
+              ("C-c p" . projectile-command-map)))
+
 ;;
 ;; LSP
 ;; ---
@@ -92,6 +112,8 @@
 (use-package nix-mode :ensure t :mode "\\.nix\\'")
 
 (use-package yaml-mode :ensure t)
+
+(require 'skynet)
 
 ;;
 ;; Appearance
@@ -105,13 +127,19 @@
   :hook ((yaml-mode . indent-bars-mode)
          (python-mode . indent-bars-mode)))
 
+(setq inhibit-start-screen t
+      inhibit-startup-screen t)
+
+(setq ring-bell-function nil)
+
 (setq package-install-upgrade-built-in t)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(seq yaml-mode nix-mode magit eglot)))
+ '(package-selected-packages '(projectile seq yaml-mode nix-mode magit eglot)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
