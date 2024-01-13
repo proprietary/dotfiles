@@ -17,6 +17,7 @@
 
   home.file.".lldbinit".source = include/.lldbinit;
   home.file.".gdbinit".source = include/.gdbinit;
+  home.file.".tmux.conf".source = include/.tmux.conf;
 
   services.gpg-agent = {
     enable = true;
@@ -25,26 +26,7 @@
     defaultCacheTtlSsh = 86400;
   };
 
-  programs.tmux = {
-    enable = true;
-    historyLimit = 100000;
-    extraConfig = ''
-      unbind C-b
-      bind-key C-o set-option -g prefix C-o
-      set -g prefix C-o
-      
-      # https://github.com/neovim/neovim/wiki/FAQ#esc-in-tmux-or-gnu-screen-is-delayed
-      set -sg escape-time 10
-      set -sg repeat-time 600 # increase repeat timeout
-      
-      # If keys are entered faster than one in milliseconds, they
-      # are assumed to have been pasted rather than typed and tmux
-      # key bindings are not processed.  The default is one
-      # millisecond and zero disables.
-      
-      set assume-paste-time 1
-    '';
-  };
+  programs.tmux.enable = true;
 
   programs.vim = {
     enable = true;
@@ -100,6 +82,19 @@
       setopt autocd # so I may omit "cd" to change dirs
 
       export EDITOR=emacs
+
+      export GPG_TTY=$(tty)
+
+      zstyle ':completion:*' completer _expand _complete _ignored _correct _approximate
+      autoload -Uz compinit bashcompinit
+      compinit
+      bashcompinit
+
+      autoload -Uz vcs_info
+      zstyle ':vcs_info:*' enable git
+      precmd() { vcs_info }
+      setopt prompt_subst
+      zstyle ':vcs_info:git*' formats "%{$fg[grey]%}%s %{$reset_color%}%r/%S%{$fg[grey]%} %{$fg[blue]%}%b%{$reset_color%}%m%u%c%{$reset_color%} "
     '';
   };
 }

@@ -8,7 +8,6 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      <home-manager/nixos>
     ];
 
   # Bootloader.
@@ -49,27 +48,15 @@
     xkbVariant = "";
   };
 
+  programs.zsh.enable = true;
+
   security.sudo.wheelNeedsPassword = false;
 
-  programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.zds = {
-    isNormalUser = true;
-    description = "zds";
-    extraGroups = [ "networkmanager" "wheel" ];
-    shell = pkgs.zsh;
-    packages = with pkgs; [];
-  };
-
-  home-manager.users.zds =  { pkgs, ... }: {
-    home.packages = [
-      pkgs.httpie
-      pkgs.atool
-    ];
-    home.stateVersion = "23.11";
-  };
+  users.users.zds.isNormalUser = true;
+  users.users.zds.extraGroups = [ "networkmanager" "wheel" ];
 
   # get zsh completions for system packages (e.g., systemd)
   environment.pathsToLink = [ "/share/zsh" ];
@@ -137,6 +124,7 @@
     patchelf
     aspell
     aspellDicts.en
+    mosh
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
