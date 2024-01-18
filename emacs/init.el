@@ -38,6 +38,11 @@
   (setq interprogram-cut-function 'paste-to-osx)
   (setq interprogram-paste-function 'copy-from-osx))
 
+;; Make the shell PATH work in windowed GUI mode
+(when (memq window-system '(mac ns x))
+  (require 'exec-path-from-shell)
+  (exec-path-from-shell-initialize))
+
 ;;
 ;; Git
 ;; ---
@@ -115,6 +120,14 @@
 
 (require 'skynet)
 
+(use-package s :ensure t)
+(use-package dash :ensure t)
+(use-package editorconfig :ensure t)
+(require 'copilot)
+(add-hook 'prog-mode-hook 'copilot-mode)
+(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+
 ;;
 ;; Appearance
 ;; ----------
@@ -139,7 +152,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(projectile seq yaml-mode nix-mode magit eglot)))
+ '(package-selected-packages
+   '(bind-key eldoc faceup flymake jsonrpc org project soap-client tramp use-package use-package-ensure-system-package verilog-mode editorconfig projectile seq yaml-mode nix-mode magit eglot)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
