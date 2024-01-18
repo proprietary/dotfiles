@@ -85,15 +85,15 @@
     gcc
     gdb
     docker
-    llvmPackages.clangUseLLVM
-    llvmPackages.openmp
-    llvmPackages.lldb-manpages
-    llvmPackages.libunwind
-    llvmPackages.compiler-rt
-    llvmPackages.compiler-rt-libc
-    llvmPackages.libclc
-    llvmPackages.bintools
-    llvmPackages.libcxxClang
+    llvmPackages_17.libcxxabi
+    llvmPackages_17.openmp
+    llvmPackages_17.lldb-manpages
+    llvmPackages_17.libunwind
+    llvmPackages_17.compiler-rt
+    llvmPackages_17.compiler-rt-libc
+    llvmPackages_17.libclc
+    llvmPackages_17.bintools
+    llvmPackages_17.libcxxClang
     clang-tools
     bazel
     cmake
@@ -125,7 +125,10 @@
     aspell
     aspellDicts.en
     mosh
+    zstd
   ];
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
