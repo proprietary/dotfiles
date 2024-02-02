@@ -1,3 +1,8 @@
+;;
+;; Initial Setup
+;; -------------
+;;
+
 ;;; MELPA
 
 (require 'package)
@@ -5,7 +10,12 @@
 ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
+             (cons "nongnu" (format "http%s://elpa.nongnu.org/nongnu/"
+                                    (if (gnutls-available-p) "s" ""))))
 (package-initialize)
+
+;; Load vendored packages
 
 (eval-when-compile
   (let ((default-directory (expand-file-name
@@ -20,6 +30,8 @@
   (normal-top-level-add-to-load-path '("."))
   (normal-top-level-add-subdirs-to-load-path))
 
+;; Common Lisp extensions to Emacs Lisp
+(require 'cl)
 
 ;;
 ;; MacOS
@@ -77,6 +89,22 @@
 ;; always highlight current line
 (global-hl-line-mode)
 
+;; Interactively Do Things -- fast buffer switch
+(require 'ido)
+(ido-mode 'buffers) ;; only use this line to turn off ido for file names!
+(setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
+               "*Messages*" "Async Shell Command"))
+
+;;
+;; Annoying Defaults
+;; -----------------
+;;
+
+(setq ring-bell-function nil)
+
+(setq inhibit-start-screen t
+      inhibit-startup-screen t)
+
 ;; Do not show the prompt: "Symbolic link to Git-controlled source file; follow link (y or n)"
 (setq vc-follow-symlinks t)
 
@@ -99,6 +127,23 @@
 (use-package goto-chg :ensure t) ;; evil-mode dependency
 (require 'evil)
 (evil-mode 1)
+(evil-set-initial-state 'messages-buffer-mode 'emacs)
+(evil-set-initial-state 'help-mode 'emacs)
+(evil-set-initial-state 'package-menu-mode 'emacs)
+(evil-set-initial-state 'magit-mode 'emacs)
+(evil-set-initial-state 'bs-mode 'emacs)
+(evil-set-initial-state 'ibuffer-mode 'emacs)
+(evil-set-initial-state 'dired-mode 'emacs)
+(evil-set-initial-state 'rg-mode 'emacs)
+(evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
+(add-hook 'xref-backend-functions #'(lambda (&rest _) (evil-emacs-state)))
+(evil-set-initial-state 'compilation-mode 'emacs)
+(evil-set-initial-state 'shell-mode 'emacs)
+(evil-set-initial-state 'term-mode 'emacs)
+(evil-set-initial-state 'vterm-mode 'emacs)
+(evil-set-initial-state 'debugger-mode 'emacs)
+(evil-set-initial-state 'special-mode 'emacs)
+(evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
 
 (use-package paredit :ensure t)
 
@@ -108,11 +153,54 @@
               ("C-c p" . projectile-command-map)))
 
 ;;
-;; LSP
-;; ---
+;; Language Support
+;; ----------------
 ;;
 
-(use-package eglot :ensure t)
+;; tree-sitter
+(setq treesit-language-source-alist
+      '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+        (c "https://github.com/tree-sitter/tree-sitter-c")
+        (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+        (java "https://github.com/tree-sitter/tree-sitter-java")
+        (python "https://github.com/tree-sitter/tree-sitter-python")
+        (go "https://github.com/tree-sitter/tree-sitter-go")
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+(defun zelcon/install-tree-sitter-langs ()
+  "Install all tree-sitter languages. Typically you only need to run
+this once."
+  (interactive)
+  (mapc #'treesit-install-language-grammar
+        (mapcar #'car treesit-language-source-alist)))
+
+(setq major-mode-remap-alist
+      '((yaml-mode . yaml-ts-mode)
+        (bash-mode . bash-ts-mode)
+        (json-mode . json-ts-mode)
+        (python-mode . python-ts-mode)
+        (java-mode . java-ts-mode)
+        (c-mode . c-ts-mode)
+        (c++-mode . cpp-ts-mode)))
+
+(use-package eglot
+  :ensure t
+  :hook '((python-ts-mode . eglot-ensure)
+          (python-mode . eglot-ensure)
+          (scala-mode . eglot-ensure)
+          (rust-mode . eglot-ensure)
+          (c-ts-mode . eglot-ensure)
+          (c++-ts-mode . eglot-ensure)
+          (java-mode . eglot-ensure)
+          (java-ts-mode . eglot-ensure)
+          (js-mode . eglot-ensure)
+          (typescript-mode . eglot-ensure)
+          (lua-mode . eglot-ensure)
+          (haskell-mode . eglot-ensure)
+          (lisp-mode . eglot-ensure)
+          (go-ts-mode . eglot-ensure))
+  :bind (:map eglot-mode-map
+              ("C-c C-a" . eglot-code-actions)))
 
 (use-package nix-mode :ensure t :mode "\\.nix\\'")
 
@@ -120,13 +208,38 @@
 
 (require 'skynet)
 
+;; Github Copilot
 (use-package s :ensure t)
 (use-package dash :ensure t)
 (use-package editorconfig :ensure t)
 (require 'copilot)
-(add-hook 'prog-mode-hook 'copilot-mode)
 (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
 (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+(add-hook 'prog-mode-hook 'copilot-mode)
+
+
+(use-package spinner :ensure t)
+
+(use-package ellama :ensure t
+  :init
+  (require 'llm-ollama)
+  (setopt ellama-provider
+          (make-llm-ollama
+           :chat-model
+           "deepseek-coder:6.7b-instruct"
+           )))
+
+;; completions
+(setq completions-format 'one-column)
+(setq completions-header-format nil)
+(setq completions-max-height 20)
+(setq completion-auto-select nil)
+(define-key minibuffer-local-completion-map (kbd "C-n") 'minibuffer-next-line-completion)
+(define-key minibuffer-local-completion-map (kbd "C-p") 'minibuffer-previous-line-completion)
+
+(fido-mode 1)
+(fido-vertical-mode 1)
+(setq fido-vertical-mode-show-count t)
 
 ;;
 ;; Appearance
@@ -134,16 +247,29 @@
 ;;
 
 ;; theme
-(load-theme 'tsdh-dark)
+(use-package solarized-theme
+  :disabled
+  :ensure t
+  :init
+  (load-theme 'solarized-dark t))
+
+(use-package doom-themes
+  :disabled
+  :ensure t
+  :config
+  (load-theme 'doom-challenger-deep t))
+
+(use-package challenger-deep-theme
+  :ensure t
+  :config
+  (load-theme 'challenger-deep t))
+
+;; font
+(set-face-attribute 'default nil :font "FiraCode Nerd Font Mono" :height 120)
 
 (use-package indent-bars
   :hook ((yaml-mode . indent-bars-mode)
          (python-mode . indent-bars-mode)))
-
-(setq inhibit-start-screen t
-      inhibit-startup-screen t)
-
-(setq ring-bell-function nil)
 
 (setq package-install-upgrade-built-in t)
 
@@ -153,7 +279,15 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(bind-key eldoc faceup flymake jsonrpc org project soap-client tramp use-package use-package-ensure-system-package verilog-mode editorconfig projectile seq yaml-mode nix-mode magit eglot)))
+   '(bind-key challenger-deep-theme company doom-themes editorconfig
+              eglot eldoc ellama faceup flymake jsonrpc magit nix-mode
+              org project projectile seq soap-client spinner tramp
+              use-package use-package-ensure-system-package
+              verilog-mode yaml-mode))
+ '(warning-suppress-log-types
+   '(((copilot copilot-no-mode-indent))
+     ((copilot copilot-no-mode-indent))
+     ((copilot copilot-no-mode-indent)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
