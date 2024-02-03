@@ -4,3 +4,6 @@
 [submodule "emacs/third_party/copilot.el"]
 	path = emacs/third_party/copilot.el
 	url = https://github.com/copilot-emacs/copilot.el.git
+[submodule ".tmux/plugins/tpm"]
+	path = home-manager/include/.tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm.git

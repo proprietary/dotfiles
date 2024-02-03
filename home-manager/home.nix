@@ -22,6 +22,7 @@
   home.file.".gdbinit".source = include/.gdbinit;
   home.file.".tmux.conf".source = include/.tmux.conf;
   home.file.".config/starship.toml".source = include/starship.toml;
+  home.file.".tmux".source = include/.tmux;
 
   services.gpg-agent = {
     enable = true;
