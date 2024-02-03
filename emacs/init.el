@@ -218,17 +218,19 @@ this once."
 (use-package dash :ensure t)
 (use-package editorconfig :ensure t)
 (require 'copilot)
-(add-hook 'prog-mode-hook 'copilot-mode)
-(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
-(define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
-(evil-define-key 'insert 'global (kbd "<tab>") #'(lambda ()
-                                                   (interactive)
-                                                   (if (and (bound-and-true-p copilot-mode)
-                                                            (copilot-completion-active-p))
-                                                       (copilot-accept-completion)
-                                                     (evil-insert 1))))
+(with-eval-after-load 'copilot
+  (setq warning-minimum-level :error)
+  (add-hook 'prog-mode-hook 'copilot-mode)
+  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+  (evil-define-key 'insert 'global (kbd "<tab>") #'(lambda ()
+                                                     (interactive)
+                                                     (if (and (bound-and-true-p copilot-mode)
+                                                              (copilot-completion-active-p))
+                                                         (copilot-accept-completion)
+                                                       (evil-insert 1)))))
 
 
 (use-package spinner :ensure t)
@@ -308,6 +310,7 @@ this once."
               use-package-ensure-system-package verilog-mode yaml-mode))
  '(warning-suppress-log-types
    '(((copilot copilot-no-mode-indent))
+     ((copilot copilot-no-mode-indent))
      ((copilot copilot-no-mode-indent))
      ((copilot copilot-no-mode-indent)))))
 (custom-set-faces
