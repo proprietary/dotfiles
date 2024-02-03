@@ -229,7 +229,7 @@ this once."
                                                      (if (and (bound-and-true-p copilot-mode)
                                                               (copilot-completion-active-p))
                                                          (copilot-accept-completion)
-                                                       (evil-insert 1)))))
+                                                       (indent-for-tab-command)))))
 
 
 (use-package spinner :ensure t)
