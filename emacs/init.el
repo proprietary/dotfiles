@@ -240,9 +240,18 @@ this once."
   (require 'llm-ollama)
   (setopt ellama-provider
           (make-llm-ollama
-           :chat-model
-           "deepseek-coder:6.7b-instruct"
-           )))
+           :chat-model "deepseek-coder:6.7b-instruct"
+           :embedding-model "deepseek-coder:6.7b-instruct"))
+  (setopt ellama-providers
+          '(("codellama" . (make-llm-ollama
+                            :chat-model "codellama:70b"
+                            :embedding-model "codellama:70b"))
+            ("deepseek" . (make-llm-ollama
+                           :chat-model "deepseek-coder:6.7b-instruct"
+                           :embedding-model "deepseek-coder:6.7b-instruct"))
+            ("mixtral" . (make-llm-ollama
+                          :chat-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k"
+                          :embedding-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k")))))
 
 ;; completions
 (setq completions-format 'one-column)
@@ -256,6 +265,8 @@ this once."
 (fido-mode 1)
 (fido-vertical-mode 1)
 (setq fido-vertical-mode-show-count t)
+
+  
 
 ;;
 ;; Appearance
