@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./zelcon.net-vpn.nix
     ];
 
   # Bootloader.
@@ -69,7 +70,8 @@
   environment.systemPackages = with pkgs; [
     vim
     wget
-    emacs
+    emacs29
+    tree-sitter
     tmux
     curl
     wireguard-tools
@@ -155,45 +157,8 @@
   # WireGuard
   systemd.network = {
     enable = true;
-    netdevs = {
-      "50-wg0" = {
-        netdevConfig = {
-          Kind = "wireguard";
-          Name = "wg0";
-        };
-        wireguardConfig = {
-          PrivateKeyFile = "/var/wireguard-keys/wg0_prv";
-        };
-        wireguardPeers = [
-          {
-            wireguardPeerConfig = {
-              PublicKey = "Lp8yZR1MeCTRn/OS6uOr7R1UagYu9G+grUTLR3i3QHA=";
-              PresharedKeyFile = "/var/wireguard-keys/wg0_psk";
-              AllowedIPs = [ "172.21.21.0/24" "fd88:3f9f:1aa1:babe::/64" ];
-              Endpoint = "146.59.3.24:63636";
-              PersistentKeepalive = 25;
-            };
-          }
-        ];
-      };
-    };
-    networks = {
-      "ethernet" = {
-        matchConfig.Name = "enp*s*";
-        networkConfig = {
-          DHCP = "yes";
-        };
-      };
-      "wg0" = {
-        matchConfig.Name = "wg0";
-        DHCP = "no";
-        address = [ "172.21.21.6/32" "fd88:3f9f:1aa1:babe::6/64" ];
-        routes = [
-          { routeConfig = { Gateway = "172.21.21.6"; Destination = "172.21.21.0/24"; }; }
-        ];
-      };
-    };
   };
+
   systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
 
 
