@@ -62,6 +62,32 @@
 (use-package magit :ensure t)
 
 ;;
+;; evil-mode
+;; ---------
+;;
+(use-package goto-chg :ensure t) ;; evil-mode dependency
+(require 'evil)
+(evil-mode 1)
+(evil-set-initial-state 'messages-buffer-mode 'emacs)
+(evil-set-initial-state 'help-mode 'emacs)
+(evil-set-initial-state 'package-menu-mode 'emacs)
+(evil-set-initial-state 'magit-mode 'emacs)
+(evil-set-initial-state 'bs-mode 'emacs)
+(evil-set-initial-state 'ibuffer-mode 'emacs)
+(evil-set-initial-state 'dired-mode 'emacs)
+(evil-set-initial-state 'rg-mode 'emacs)
+(evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
+(add-hook 'xref-backend-functions #'(lambda (&rest _) (evil-emacs-state)))
+(evil-set-initial-state 'compilation-mode 'emacs)
+(evil-set-initial-state 'shell-mode 'emacs)
+(evil-set-initial-state 'term-mode 'emacs)
+(evil-set-initial-state 'vterm-mode 'emacs)
+(evil-set-initial-state 'debugger-mode 'emacs)
+(evil-set-initial-state 'special-mode 'emacs)
+(evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
+
+
+;;
 ;; Navigation
 ;; ----------
 ;;
@@ -95,6 +121,10 @@
 (setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
                "*Messages*" "Async Shell Command"))
 
+;; completion
+(global-company-mode)
+(setq company-idle-delay 0.1)
+
 ;;
 ;; Annoying Defaults
 ;; -----------------
@@ -121,29 +151,6 @@
 ;; refresh open files to latest version on disk automtically
 ;; useful when an external program modified a file; e.g., `clang-format`
 (global-auto-revert-mode)
-
-;; evil-mode
-
-(use-package goto-chg :ensure t) ;; evil-mode dependency
-(require 'evil)
-(evil-mode 1)
-(evil-set-initial-state 'messages-buffer-mode 'emacs)
-(evil-set-initial-state 'help-mode 'emacs)
-(evil-set-initial-state 'package-menu-mode 'emacs)
-(evil-set-initial-state 'magit-mode 'emacs)
-(evil-set-initial-state 'bs-mode 'emacs)
-(evil-set-initial-state 'ibuffer-mode 'emacs)
-(evil-set-initial-state 'dired-mode 'emacs)
-(evil-set-initial-state 'rg-mode 'emacs)
-(evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
-(add-hook 'xref-backend-functions #'(lambda (&rest _) (evil-emacs-state)))
-(evil-set-initial-state 'compilation-mode 'emacs)
-(evil-set-initial-state 'shell-mode 'emacs)
-(evil-set-initial-state 'term-mode 'emacs)
-(evil-set-initial-state 'vterm-mode 'emacs)
-(evil-set-initial-state 'debugger-mode 'emacs)
-(evil-set-initial-state 'special-mode 'emacs)
-(evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
 
 (use-package paredit :ensure t)
 
@@ -206,16 +213,24 @@ this once."
 
 (use-package yaml-mode :ensure t)
 
-(require 'skynet)
-
 ;; Github Copilot
 (use-package s :ensure t)
 (use-package dash :ensure t)
 (use-package editorconfig :ensure t)
 (require 'copilot)
-(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-(add-hook 'prog-mode-hook 'copilot-mode)
+(with-eval-after-load 'copilot
+  (setq warning-minimum-level :error)
+  (add-hook 'prog-mode-hook 'copilot-mode)
+  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
+  (evil-define-key 'insert 'global (kbd "<tab>") #'(lambda ()
+                                                     (interactive)
+                                                     (if (and (bound-and-true-p copilot-mode)
+                                                              (copilot-completion-active-p))
+                                                         (copilot-accept-completion)
+                                                       (evil-insert 1)))))
 
 
 (use-package spinner :ensure t)
@@ -225,9 +240,18 @@ this once."
   (require 'llm-ollama)
   (setopt ellama-provider
           (make-llm-ollama
-           :chat-model
-           "deepseek-coder:6.7b-instruct"
-           )))
+           :chat-model "deepseek-coder:6.7b-instruct"
+           :embedding-model "deepseek-coder:6.7b-instruct"))
+  (setopt ellama-providers
+          '(("codellama" . (make-llm-ollama
+                            :chat-model "codellama:70b"
+                            :embedding-model "codellama:70b"))
+            ("deepseek" . (make-llm-ollama
+                           :chat-model "deepseek-coder:6.7b-instruct"
+                           :embedding-model "deepseek-coder:6.7b-instruct"))
+            ("mixtral" . (make-llm-ollama
+                          :chat-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k"
+                          :embedding-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k")))))
 
 ;; completions
 (setq completions-format 'one-column)
@@ -236,10 +260,13 @@ this once."
 (setq completion-auto-select nil)
 (define-key minibuffer-local-completion-map (kbd "C-n") 'minibuffer-next-line-completion)
 (define-key minibuffer-local-completion-map (kbd "C-p") 'minibuffer-previous-line-completion)
+(define-key global-map (kbd "C-c b") 'switch-to-minibuffer)
 
 (fido-mode 1)
 (fido-vertical-mode 1)
 (setq fido-vertical-mode-show-count t)
+
+  
 
 ;;
 ;; Appearance
@@ -248,18 +275,12 @@ this once."
 
 ;; theme
 (use-package solarized-theme
-  :disabled
   :ensure t
   :init
   (load-theme 'solarized-dark t))
 
-(use-package doom-themes
-  :disabled
-  :ensure t
-  :config
-  (load-theme 'doom-challenger-deep t))
-
 (use-package challenger-deep-theme
+  :disabled
   :ensure t
   :config
   (load-theme 'challenger-deep t))
@@ -267,9 +288,23 @@ this once."
 ;; font
 (set-face-attribute 'default nil :font "FiraCode Nerd Font Mono" :height 120)
 
-(use-package indent-bars
-  :hook ((yaml-mode . indent-bars-mode)
-         (python-mode . indent-bars-mode)))
+;; line numbers
+(global-display-line-numbers-mode)
+(setq display-line-numbers-type 'relative)
+
+(require 'indent-bars)
+(eval-after-load 'indent-bars
+  (progn
+    (setq indent-bars-treesit-support t)
+    (setq indent-bars-no-descend-string t)
+    (setq indent-bars-treesit-ignore-blank-lines-types '("module"))
+    (setq indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
+                                             list list_comprehension
+                                             dictionary dictionary_comprehension
+                                             parenthesized_expression subscript)))
+    (add-hook 'python-base-mode 'indent-bars-mode)
+    (add-hook 'yaml-mode 'indent-bars-mode)))
+
 
 (setq package-install-upgrade-built-in t)
 
@@ -281,11 +316,12 @@ this once."
  '(package-selected-packages
    '(bind-key challenger-deep-theme company doom-themes editorconfig
               eglot eldoc ellama faceup flymake jsonrpc magit nix-mode
-              org project projectile seq soap-client spinner tramp
-              use-package use-package-ensure-system-package
-              verilog-mode yaml-mode))
+              org project projectile seq soap-client solarized-theme
+              spinner tramp use-package
+              use-package-ensure-system-package verilog-mode yaml-mode))
  '(warning-suppress-log-types
    '(((copilot copilot-no-mode-indent))
+     ((copilot copilot-no-mode-indent))
      ((copilot copilot-no-mode-indent))
      ((copilot copilot-no-mode-indent)))))
 (custom-set-faces

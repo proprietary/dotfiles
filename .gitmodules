@@ -1,0 +1,6 @@
+[submodule "emacs/third_party/indent-bars"]
+	path = emacs/third_party/indent-bars
+	url = https://github.com/jdtsmith/indent-bars.git
+[submodule "emacs/third_party/copilot.el"]
+	path = emacs/third_party/copilot.el
+	url = https://github.com/copilot-emacs/copilot.el.git
