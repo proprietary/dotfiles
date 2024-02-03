@@ -21,8 +21,8 @@
   home.file.".lldbinit".source = include/.lldbinit;
   home.file.".gdbinit".source = include/.gdbinit;
   home.file.".tmux.conf".source = include/.tmux.conf;
-  home.file.".config/starship.toml".source = include/starship.toml;
   home.file.".tmux".source = include/.tmux;
+  home.file.".config/starship.toml".source = include/starship.toml;
 
   services.gpg-agent = {
     enable = true;
@@ -30,8 +30,6 @@
     enableSshSupport = true;
     defaultCacheTtlSsh = 86400;
   };
-
-  programs.tmux.enable = true;
 
   programs.vim = {
     enable = true;
