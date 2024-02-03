@@ -79,8 +79,8 @@
     wireguard-tools
     gnupg
     gitFull
-    jdk
-    python3
+    jdk21
+    python312Full
     ruby
     julia
     R

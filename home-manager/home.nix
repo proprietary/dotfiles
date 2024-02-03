@@ -14,6 +14,8 @@
     pkgs.jdt-language-server
     pkgs.dotnet-sdk_8
     pkgs.starship
+    pkgs.nodejs_21
+    pkgs.nodePackages_latest.pyright
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;

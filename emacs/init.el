@@ -122,13 +122,12 @@
                "*Messages*" "Async Shell Command"))
 
 ;; completion
-(global-company-mode)
-(setq company-idle-delay 0.1)
+(use-package company
+  :ensure t
+  :config
+  (global-company-mode)
+  (setq company-idle-delay 0.1))
 
-;;
-;; Annoying Defaults
-;; -----------------
-;;
 
 (setq ring-bell-function nil)
 
@@ -276,7 +275,7 @@ this once."
 ;; theme
 (use-package solarized-theme
   :ensure t
-  :init
+  :config
   (load-theme 'solarized-dark t))
 
 (use-package challenger-deep-theme
@@ -314,11 +313,7 @@ this once."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(bind-key challenger-deep-theme company doom-themes editorconfig
-              eglot eldoc ellama faceup flymake jsonrpc magit nix-mode
-              org project projectile seq soap-client solarized-theme
-              spinner tramp use-package
-              use-package-ensure-system-package verilog-mode yaml-mode))
+   '(bind-key challenger-deep-theme company doom-themes editorconfig eglot eldoc ellama faceup flymake jsonrpc magit nix-mode org project projectile seq soap-client solarized-theme spinner tramp use-package use-package-ensure-system-package verilog-mode yaml-mode))
  '(warning-suppress-log-types
    '(((copilot copilot-no-mode-indent))
      ((copilot copilot-no-mode-indent))
