@@ -1,0 +1,3 @@
+[submodule "emacs/third_party/indent-bars"]
+	path = emacs/third_party/indent-bars
+	url = https://github.com/jdtsmith/indent-bars.git
