@@ -51,6 +51,8 @@
 
   programs.zsh.enable = true;
 
+  programs.direnv.enable = true;
+
   security.sudo.wheelNeedsPassword = false;
 
   users.defaultUserShell = pkgs.zsh;
