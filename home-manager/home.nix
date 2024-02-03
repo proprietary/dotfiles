@@ -13,11 +13,13 @@
     pkgs.fortune
     pkgs.jdt-language-server
     pkgs.dotnet-sdk_8
+    pkgs.starship
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;
   home.file.".gdbinit".source = include/.gdbinit;
   home.file.".tmux.conf".source = include/.tmux.conf;
+  home.file.".config/starship.toml".source = include/starship.toml;
 
   services.gpg-agent = {
     enable = true;
@@ -95,6 +97,10 @@
       precmd() { vcs_info }
       setopt prompt_subst
       zstyle ':vcs_info:git*' formats "%{$fg[grey]%}%s %{$reset_color%}%r/%S%{$fg[grey]%} %{$fg[blue]%}%b%{$reset_color%}%m%u%c%{$reset_color%} "
+
+      eval "$(starship init zsh)"
+
+      eval "$(direnv hook zsh)"
     '';
   };
 }
