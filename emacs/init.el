@@ -279,17 +279,18 @@ this once."
 (global-display-line-numbers-mode)
 (setq display-line-numbers-type 'relative)
 
-(use-package indent-bars
-  :load-path (locate-user-emacs-file "third_party/indent-bars")
-  :custom
-  (indent-bars-treesit-support t)
-  (indent-bars-no-descend-string t)
-  (indent-bars-treesit-ignore-blank-lines-types '("module"))
-  (indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
-				      list list_comprehension
-				      dictionary dictionary_comprehension
-				      parenthesized_expression subscript)))
-  :hook ((python-base-mode yaml-mode python-mode) . indent-bars-mode))
+(require 'indent-bars)
+(eval-after-load 'indent-bars
+  (progn
+    (setq indent-bars-treesit-support t)
+    (setq indent-bars-no-descend-string t)
+    (setq indent-bars-treesit-ignore-blank-lines-types '("module"))
+    (setq indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
+                                             list list_comprehension
+                                             dictionary dictionary_comprehension
+                                             parenthesized_expression subscript)))
+    (add-hook 'python-base-mode 'indent-bars-mode)
+    (add-hook 'yaml-mode 'indent-bars-mode)))
 
 
 (setq package-install-upgrade-built-in t)
