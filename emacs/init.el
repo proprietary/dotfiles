@@ -151,12 +151,7 @@
 ;; useful when an external program modified a file; e.g., `clang-format`
 (global-auto-revert-mode)
 
-(use-package paredit :ensure t)
-
-(use-package projectile
-  :ensure t
-  :bind (:map projectile-mode-map
-              ("C-c p" . projectile-command-map)))
+(use-package paredit :ensure t :disabled)
 
 ;;
 ;; Language Support
@@ -312,8 +307,7 @@ this once."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(bind-key challenger-deep-theme company doom-themes editorconfig eglot eldoc ellama faceup flymake jsonrpc magit nix-mode org project projectile seq soap-client solarized-theme spinner tramp use-package use-package-ensure-system-package verilog-mode yaml-mode))
+ '(package-selected-packages nil)
  '(warning-suppress-log-types
    '(((copilot copilot-no-mode-indent))
      ((copilot copilot-no-mode-indent))
