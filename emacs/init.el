@@ -271,7 +271,7 @@ this once."
 (use-package solarized-theme
   :ensure t
   :config
-  (load-theme 'solarized-dark t))
+  (load-theme 'solarized-gruvbox-dark t))
 
 (use-package challenger-deep-theme
   :disabled
@@ -279,8 +279,19 @@ this once."
   :config
   (load-theme 'challenger-deep t))
 
-;; font
-(set-face-attribute 'default nil :font "FiraCode Nerd Font Mono" :height 120)
+;; frame size
+(defun zelcon/set-frame-size-according-to-resolution ()
+  (interactive)
+  (when window-system
+    (if (> (x-display-pixel-width) 1500)
+        (progn (set-frame-size (selected-frame) 120 65)
+               (add-to-list 'default-frame-alist '(height . 65))
+               (add-to-list 'default-frame-alist '(width . 120)))
+      (progn (set-frame-size (selected-frame) 85 48)
+                (add-to-list 'default-frame-alist '(height . 48))
+                (add-to-list 'default-frame-alist '(width . 85))))))
+(add-hook 'after-init-hook 'zelcon/set-frame-size-according-to-resolution)
+
 
 ;; line numbers
 (global-display-line-numbers-mode)
