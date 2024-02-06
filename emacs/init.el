@@ -264,6 +264,8 @@ this once."
 (fido-vertical-mode 1)
 (setq fido-vertical-mode-show-count t)
 
+(setq completion-styles '(flex partial-completion substring initials basic))
+
   
 
 ;;
@@ -313,6 +315,11 @@ this once."
                                              parenthesized_expression subscript)))
     (add-hook 'python-base-mode 'indent-bars-mode)
     (add-hook 'yaml-mode 'indent-bars-mode)))
+
+;; save place
+(save-place-mode 1)
+(setq save-place-file (concat user-emacs-directory "places"))
+(setq save-place-forget-unreadable-files nil)
 
 
 (setq package-install-upgrade-built-in t)
