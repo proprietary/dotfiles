@@ -166,7 +166,9 @@
         (java "https://github.com/tree-sitter/tree-sitter-java")
         (python "https://github.com/tree-sitter/tree-sitter-python")
         (go "https://github.com/tree-sitter/tree-sitter-go")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+        (starlark "https://github.com/amaanq/tree-sitter-starlark")
+        ))
 
 (defun zelcon/install-tree-sitter-langs ()
   "Install all tree-sitter languages. Typically you only need to run
@@ -202,6 +204,8 @@ this once."
           (go-ts-mode . eglot-ensure))
   :bind (:map eglot-mode-map
               ("C-c C-a" . eglot-code-actions)))
+
+(use-package cmake-mode :ensure t)
 
 (use-package nix-mode :ensure t :mode "\\.nix\\'")
 
