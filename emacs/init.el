@@ -306,6 +306,8 @@ this once."
 (require 'indent-bars)
 (eval-after-load 'indent-bars
   (progn
+    (when (eq system-type 'darwin)
+      (setq indent-bars-prefer-character t))
     (setq indent-bars-treesit-support t)
     (setq indent-bars-no-descend-string t)
     (setq indent-bars-treesit-ignore-blank-lines-types '("module"))
@@ -320,6 +322,32 @@ this once."
 (save-place-mode 1)
 (setq save-place-file (concat user-emacs-directory "places"))
 (setq save-place-forget-unreadable-files nil)
+
+;; treemacs
+(use-package treemacs
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+
+  :config
+  (progn
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode 'always)
+    )
+  :bind
+  (:map global-map
+        ("M-0" . treemacs-select-window)
+        ("C-x t t" . treemacs)
+        ("C-x t B" . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag))
+  )
+(use-package treemacs-evil
+  :ensure t
+  :after (treemacs evil))
 
 
 (setq package-install-upgrade-built-in t)
