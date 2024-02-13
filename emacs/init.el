@@ -226,6 +226,7 @@ this once."
   (evil-define-key 'insert 'global (kbd "<tab>") #'(lambda ()
                                                      (interactive)
                                                      (if (and (bound-and-true-p copilot-mode)
+                                                              (functionp 'copilot-completion-active-p)
                                                               (copilot-completion-active-p))
                                                          (copilot-accept-completion)
                                                        (indent-for-tab-command)))))
@@ -317,6 +318,12 @@ this once."
                                              parenthesized_expression subscript)))
     (add-hook 'python-base-mode 'indent-bars-mode)
     (add-hook 'yaml-mode 'indent-bars-mode)))
+
+;; truncate lines
+(setq-default truncate-lines t)
+
+;; scroll horizontally one column at a time
+(setq hscroll-step 1)
 
 ;; save place
 (save-place-mode 1)
