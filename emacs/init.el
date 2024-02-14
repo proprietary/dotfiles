@@ -304,20 +304,19 @@ this once."
 (global-display-line-numbers-mode)
 (setq display-line-numbers-type 'relative)
 
+;; indent guides
 (require 'indent-bars)
-(eval-after-load 'indent-bars
-  (progn
-    (when (eq system-type 'darwin)
-      (setq indent-bars-prefer-character t))
-    (setq indent-bars-treesit-support t)
-    (setq indent-bars-no-descend-string t)
-    (setq indent-bars-treesit-ignore-blank-lines-types '("module"))
-    (setq indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
-                                             list list_comprehension
-                                             dictionary dictionary_comprehension
-                                             parenthesized_expression subscript)))
-    (add-hook 'python-base-mode 'indent-bars-mode)
-    (add-hook 'yaml-mode 'indent-bars-mode)))
+(when (eq system-type 'darwin)
+    (setq indent-bars-prefer-character t))
+(setq indent-bars-treesit-support t)
+(setq indent-bars-no-descend-string t)
+(setq indent-bars-treesit-ignore-blank-lines-types '("module"))
+(setq indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
+                                            list list_comprehension
+                                            dictionary dictionary_comprehension
+                                            parenthesized_expression subscript)))
+(add-hook 'python-ts-mode-hook 'indent-bars-mode)
+(add-hook 'yaml-ts-mode-hook 'indent-bars-mode)
 
 ;; truncate lines
 (setq-default truncate-lines t)
