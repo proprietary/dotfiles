@@ -31,24 +31,70 @@
   (normal-top-level-add-subdirs-to-load-path))
 
 ;; Common Lisp extensions to Emacs Lisp
-(require 'cl)
+(require 'cl-lib)
+
+;; set customizations file
+;; but don't load this until the end
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
+
+;;
+;; System Copy & Paste
+;; --------------------
+
+(cl-case system-type
+  (gnu/linux
+   (progn
+     (if (string-equal (getenv "WAYLAND_DISPLAY") "wayland")
+         (progn
+           (setq interprogram-cut-function
+                 (lambda (text &optional push)
+                   (let* ((process-connection-type nil)
+                          (proc (start-process "wl-copy" "*Messages*" "wl-copy")))
+                     (process-send-string proc text)
+                     (process-send-eof proc))))
+           (setq interprogram-paste-function
+                 (lambda (text &optional push)
+                   (shell-command-to-string "wl-paste -n"))))
+       (progn
+         (setq interprogram-cut-function
+               (lambda (text &optional push)
+                 (let* ((process-connection-type nil)
+                        (proc (start-process "xsel" "*Messages*" "xsel" "-i" "-b")))
+                   (process-send-string proc text)
+                   (process-send-eof proc))))
+         (setq interprogram-paste-function
+               (lambda ()
+                 (shell-command-to-string "xsel -o -b")))))))
+  (darwin
+   (progn
+     (defun zelcon/copy-from-osx ()
+       (shell-command-to-string "pbpaste"))
+
+     (defun zelcon/paste-to-osx (text &optional push)
+       (let ((process-connection-type nil))
+         (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+           (process-send-string proc text)
+           (process-send-eof proc))))
+
+     (setq interprogram-cut-function 'zelcon/paste-to-osx)
+     (setq interprogram-paste-function 'zelcon/copy-from-osx)))
+
+  (windows-nt
+   (progn
+     (setq interprogram-cut-function
+           (lambda (text &optional push)
+             (let* ((process-connection-type nil)
+                    (proc (start-process "clip" "*Messages*" "clip")))
+               (process-send-string proc text)
+               (process-send-eof proc))))
+     (setq interprogram-paste-function
+           (lambda ()
+             (shell-command-to-string "powershell.exe Get-Clipboard"))))))
 
 ;;
 ;; MacOS
 ;; -----
-
-(when (string-equal "darwin" system-type)
-  (defun copy-from-osx ()
-    (shell-command-to-string "pbpaste"))
-
-  (defun paste-to-osx (text &optional push)
-    (let ((process-connection-type nil))
-      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-        (process-send-string proc text)
-        (process-send-eof proc))))
-
-  (setq interprogram-cut-function 'paste-to-osx)
-  (setq interprogram-paste-function 'copy-from-osx))
 
 ;; Make the shell PATH work in windowed GUI mode
 (when (memq window-system '(mac ns x))
@@ -68,6 +114,8 @@
 (use-package goto-chg :ensure t) ;; evil-mode dependency
 (require 'evil)
 (evil-mode 1)
+
+;; set some modes to use emacs mode by default
 (evil-set-initial-state 'messages-buffer-mode 'emacs)
 (evil-set-initial-state 'help-mode 'emacs)
 (evil-set-initial-state 'package-menu-mode 'emacs)
@@ -84,7 +132,10 @@
 (evil-set-initial-state 'vterm-mode 'emacs)
 (evil-set-initial-state 'debugger-mode 'emacs)
 (evil-set-initial-state 'special-mode 'emacs)
+(evil-set-initial-state 'treemacs-mode 'emacs)
+(evil-set-initial-state 'messages-buffer-mode 'emacs)
 (evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
+(add-hook 'special-mode-hook 'evil-emacs-state)
 
 
 ;;
@@ -139,7 +190,15 @@
 
 ;; prevent creation of junk tilde files
 (setq backup-directory-alist
-      `(("." . ,(concat user-emacs-directory "backups"))))
+      `(("." . ,(concat user-emacs-directory "backups")))
+      backup-by-copying t
+      version-control t
+      delete-old-versions t
+      kept-old-versions 100
+      create-lockfiles nil)
+;; ensure that auto-save files end up in the right place
+(append auto-save-file-name-transforms
+        `((".*" ,(concat user-emacs-directory "backups") t)))
 
 ;; Interactively Do Things -- fast buffer switch
 (require 'ido)
@@ -168,7 +227,20 @@
         (go "https://github.com/tree-sitter/tree-sitter-go")
         (yaml "https://github.com/ikatyang/tree-sitter-yaml")
         (starlark "https://github.com/amaanq/tree-sitter-starlark")
-        ))
+        (lua "https://github.com/tree-sitter-grammars/tree-sitter-lua")
+        (json "https://github.com/tree-sitter/tree-sitter-json")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
+        (swift "https://github.com/alex-pinkus/tree-sitter-swift")
+        (toml "https://github.com/ikatyang/tree-sitter-toml")
+        (latex "https://github.com/latex-lsp/tree-sitter-latex")
+        (rust "https://github.com/tree-sitter/tree-sitter-rust")
+        (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+        (r "https://github.com/r-lib/tree-sitter-r")
+        (make "https://github.com/alemuller/tree-sitter-make")
+        (julia "https://github.com/tree-sitter/tree-sitter-julia")
+        (rst "https://github.com/stsewd/tree-sitter-rst")
+        (nix "https://github.com/nix-community/tree-sitter-nix")))
 
 (defun zelcon/install-tree-sitter-langs ()
   "Install all tree-sitter languages. Typically you only need to run
@@ -184,52 +256,62 @@ this once."
         (python-mode . python-ts-mode)
         (java-mode . java-ts-mode)
         (c-mode . c-ts-mode)
-        (c++-mode . cpp-ts-mode)))
+        (c++-mode . cpp-ts-mode)
+        (rust-mode . rust-ts-mode)
+        (ruby-mode . ruby-ts-mode)
+        (r-mode . r-ts-mode)
+        (lua-mode . lua-ts-mode)
+        (julia-mode . julia-ts-mode)
+        (lua-mode . lua-ts-mode)
+        (js-mode . javascript-ts-mode)
+        (typescript-mode . typescript-ts-mode)
+        (go-mode . go-ts-mode)
+        (js2-mode . javascript-ts-mode)
+        (nix-mode . nix-ts-mode)))
 
-(use-package eglot
-  :ensure t
-  :hook '((python-ts-mode . eglot-ensure)
-          (python-mode . eglot-ensure)
-          (scala-mode . eglot-ensure)
-          (rust-mode . eglot-ensure)
-          (c-ts-mode . eglot-ensure)
-          (c++-ts-mode . eglot-ensure)
-          (java-mode . eglot-ensure)
-          (java-ts-mode . eglot-ensure)
-          (js-mode . eglot-ensure)
-          (typescript-mode . eglot-ensure)
-          (lua-mode . eglot-ensure)
-          (haskell-mode . eglot-ensure)
-          (lisp-mode . eglot-ensure)
-          (go-ts-mode . eglot-ensure))
-  :bind (:map eglot-mode-map
-              ("C-c C-a" . eglot-code-actions)))
+(require 'eglot)
+
+(add-hook 'python-ts-mode-hook 'eglot-ensure)
+(add-hook 'java-ts-mode-hook 'eglot-ensure)
+(add-hook 'c-ts-mode-hook 'eglot-ensure)
+(add-hook 'c++-ts-mode-hook 'eglot-ensure)
+(add-hook 'yaml-ts-mode-hook 'eglot-ensure)
+(add-hook 'go-ts-mode-hook 'eglot-ensure)
+(add-hook 'lua-ts-mode-hook 'eglot-ensure)
+(add-hook 'javascript-ts-mode-hook 'eglot-ensure)
+(add-hook 'typescript-ts-mode-hook 'eglot-ensure)
+(add-hook 'rust-ts-mode-hook 'eglot-ensure)
+(add-hook 'ruby-ts-mode-hook 'eglot-ensure)
+(add-hook 'r-ts-mode-hook 'eglot-ensure)
+(add-hook 'julia-ts-mode-hook 'eglot-ensure)
+
+(define-key eglot-mode-map (kbd "C-c C-a") 'eglot-code-actions)
 
 (use-package cmake-mode :ensure t)
 
 (use-package nix-mode :ensure t :mode "\\.nix\\'")
 
-(use-package yaml-mode :ensure t)
-
 ;; Github Copilot
 (use-package s :ensure t)
 (use-package dash :ensure t)
 (use-package editorconfig :ensure t)
-(require 'copilot)
+(add-hook 'prog-mode-hook #'(lambda ()
+                              (require 'copilot)))
 (with-eval-after-load 'copilot
+  (defun zelcon/copilot-tab ()
+    (interactive)
+    (if (and (bound-and-true-p copilot-mode)
+             (functionp 'copilot-completion-active-p)
+             (copilot-completion-active-p))
+        (or (copilot-accept-completion)
+            (indent-for-tab-command))
+      (indent-for-tab-command)))
   (setq warning-minimum-level :error)
-  (add-hook 'prog-mode-hook 'copilot-mode)
   (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
   (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
-  (evil-define-key 'insert 'global (kbd "<tab>") #'(lambda ()
-                                                     (interactive)
-                                                     (if (and (bound-and-true-p copilot-mode)
-                                                              (functionp 'copilot-completion-active-p)
-                                                              (copilot-completion-active-p))
-                                                         (copilot-accept-completion)
-                                                       (indent-for-tab-command)))))
+  (evil-define-key 'insert 'global (kbd "<tab>") 'zelcon/copilot-tab))
 
 
 (use-package spinner :ensure t)
@@ -278,7 +360,7 @@ this once."
 (use-package solarized-theme
   :ensure t
   :config
-  (load-theme 'solarized-gruvbox-dark t))
+  (load-theme 'solarized-dark t))
 
 (use-package challenger-deep-theme
   :disabled
@@ -326,8 +408,14 @@ this once."
 
 ;; save place
 (save-place-mode 1)
-(setq save-place-file (concat user-emacs-directory "places"))
-(setq save-place-forget-unreadable-files nil)
+(setq save-place-file (concat user-emacs-directory "places")
+      save-place-forget-unreadable-files nil
+      save-place-limit 10000
+      save-place-version-control t
+      save-place-save-skipped nil)
+
+;; hide ugly buttons on the toolbar
+(tool-bar-mode -1)
 
 ;; treemacs
 (use-package treemacs
@@ -358,20 +446,5 @@ this once."
 
 (setq package-install-upgrade-built-in t)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil)
- '(warning-suppress-log-types
-   '(((copilot copilot-no-mode-indent))
-     ((copilot copilot-no-mode-indent))
-     ((copilot copilot-no-mode-indent))
-     ((copilot copilot-no-mode-indent)))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;; load custom file
+(load custom-file t)
