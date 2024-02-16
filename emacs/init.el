@@ -115,8 +115,9 @@
 (require 'evil)
 (evil-mode 1)
 
+(setq evil-want-C-i-jump t)
+
 ;; set some modes to use emacs mode by default
-(evil-set-initial-state 'messages-buffer-mode 'emacs)
 (evil-set-initial-state 'help-mode 'emacs)
 (evil-set-initial-state 'package-menu-mode 'emacs)
 (evil-set-initial-state 'magit-mode 'emacs)
@@ -133,12 +134,14 @@
 (evil-set-initial-state 'debugger-mode 'emacs)
 (evil-set-initial-state 'special-mode 'emacs)
 (evil-set-initial-state 'treemacs-mode 'emacs)
-(evil-set-initial-state 'messages-buffer-mode 'emacs)
-(evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
 (add-hook 'special-mode-hook 'evil-emacs-state)
+(evil-set-initial-state 'messages-buffer-mode 'emacs)
+(with-current-buffer (get-buffer "*Messages*")
+  (evil-emacs-state))
 
+(evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
 
-;;
+;
 ;; Navigation
 ;; ----------
 ;;
@@ -223,6 +226,8 @@
         (c "https://github.com/tree-sitter/tree-sitter-c")
         (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
         (java "https://github.com/tree-sitter/tree-sitter-java")
+        (commonlisp "https://github.com/tree-sitter-grammars/tree-sitter-commonlisp")
+        (cuda "https://github.com/theHamsta/tree-sitter-cuda")
         (python "https://github.com/tree-sitter/tree-sitter-python")
         (go "https://github.com/tree-sitter/tree-sitter-go")
         (yaml "https://github.com/ikatyang/tree-sitter-yaml")
@@ -295,8 +300,25 @@ this once."
 (use-package s :ensure t)
 (use-package dash :ensure t)
 (use-package editorconfig :ensure t)
-(add-hook 'prog-mode-hook #'(lambda ()
-                              (require 'copilot)))
+(defconst +zelcon/copilot-modes+ '(python-ts-mode
+                                   rust-ts-mode
+                                   java-ts-mode
+                                   c++-ts-mode
+                                   c-ts-mode
+                                   go-ts-mode
+                                   javascript-ts-mode
+                                   typescript-ts-mode
+                                   ruby-ts-mode
+                                   swift-ts-mode
+                                   julia-ts-mode
+                                   bash-ts-mode
+                                   sh-mode
+                                   shell-script-mode))
+(defun zelcon/copilot-setup ()
+  (when (member major-mode +zelcon/copilot-modes+)
+    (require 'copilot)
+    (copilot-mode)))
+(add-hook 'prog-mode-hook 'zelcon/copilot-setup)
 (with-eval-after-load 'copilot
   (defun zelcon/copilot-tab ()
     (interactive)
@@ -311,7 +333,20 @@ this once."
   (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
   (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
   (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
-  (evil-define-key 'insert 'global (kbd "<tab>") 'zelcon/copilot-tab))
+  (evil-define-key 'insert 'global (kbd "<tab>") 'zelcon/copilot-tab)
+  ;; https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
+  (nconc copilot-major-mode-alist '(("python-ts" . "python")
+                                    ("rust-ts" . "rust")
+                                    ("java-ts" . "java")
+                                    ("c++-ts" . "cpp")
+                                    ("c-ts" . "c")
+                                    ("go-ts" . "go")
+                                    ("javascript-ts" . "javascript")
+                                    ("typescript-ts" . "typescript")
+                                    ("ruby-ts" . "ruby")
+                                    ("swift-ts" . "swift")
+                                    ("yaml-ts" . "yaml")
+                                    ("julia-ts" . "julia"))))
 
 
 (use-package spinner :ensure t)
@@ -332,12 +367,14 @@ this once."
                            :embedding-model "deepseek-coder:6.7b-instruct"))
             ("mixtral" . (make-llm-ollama
                           :chat-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k"
-                          :embedding-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k")))))
+                          :embedding-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k"))))
+  :config
+  (setq ellama-keymap-prefix "C-c e"))
 
 ;; completions
 (setq completions-format 'one-column)
 (setq completions-header-format nil)
-(setq completions-max-height 20)
+(setq completions-max-height 10)
 (setq completion-auto-select nil)
 (define-key minibuffer-local-completion-map (kbd "C-n") 'minibuffer-next-line-completion)
 (define-key minibuffer-local-completion-map (kbd "C-p") 'minibuffer-previous-line-completion)
