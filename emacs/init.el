@@ -181,6 +181,9 @@
   :config
   (global-company-mode)
   (setq company-idle-delay 0.1))
+(use-package company-box
+  :ensure t
+  :hook (company-mode . company-box-mode))
 
 
 (setq ring-bell-function nil)
