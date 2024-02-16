@@ -85,6 +85,12 @@
       setopt autocd # so I may omit "cd" to change dirs
 
       export EDITOR=emacs
+      export VISUAL=emacs
+      export PAGER=less
+      export LESS="-R"
+
+      alias ls='ls --color --group-directories-first --time-style=long-iso --human-readable -la'
+      alias emacs='emacs -nw'
 
       export GPG_TTY=$(tty)
 
