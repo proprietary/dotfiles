@@ -37,6 +37,15 @@
 ;; but don't load this until the end
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
+;; utils
+
+(defun zelcon/alist-find (alist elt)
+  (let ((found nil))
+    (dolist (pair eglot-server-programs)
+      (when (or (and (listp (car pair)) (member elt (car pair)))
+                (eq (car pair) elt))
+        (setq found pair)))
+    found))
 
 ;;
 ;; System Copy & Paste
@@ -302,6 +311,20 @@ this once."
 
 (define-key eglot-mode-map (kbd "C-c C-a") 'eglot-code-actions)
 
+(defun zelcon/clear-eglot-server-program (mode-name)
+  (setq eglot-server-programs
+        (assoc-delete-all mode-name
+                          eglot-server-programs
+                          (lambda (alist-key our-key)
+                            (if (listp alist-key)
+                                (member our-key alist-key)
+                              (equal our-key alist-key))))))
+
+(zelcon/clear-eglot-server-program 'rust-ts-mode)
+(add-to-list 'eglot-server-programs
+             '((rust-ts-mode rust-mode) .
+               ("rust-analyzer" :initializationOptions (:check (:command "clippy")))))
+
 (use-package cmake-mode :ensure t)
 
 (use-package nix-mode :ensure t :mode "\\.nix\\'")
@@ -426,12 +449,12 @@ this once."
   (interactive)
   (when window-system
     (if (> (x-display-pixel-width) 1500)
-        (progn (set-frame-size (selected-frame) 120 65)
-               (add-to-list 'default-frame-alist '(height . 65))
+        (progn (set-frame-size (selected-frame) 120 180)
+               (add-to-list 'default-frame-alist '(height . 180))
                (add-to-list 'default-frame-alist '(width . 120)))
-      (progn (set-frame-size (selected-frame) 85 48)
-                (add-to-list 'default-frame-alist '(height . 48))
-                (add-to-list 'default-frame-alist '(width . 85))))))
+      (progn (set-frame-size (selected-frame) 80 65)
+                (add-to-list 'default-frame-alist '(height . 80))
+                (add-to-list 'default-frame-alist '(width . 65))))))
 (add-hook 'after-init-hook 'zelcon/set-frame-size-according-to-resolution)
 
 
