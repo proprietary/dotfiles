@@ -281,6 +281,16 @@ this once."
         (js2-mode . javascript-ts-mode)
         (nix-mode . nix-ts-mode)))
 
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.lua\\'" . lua-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.jl\\'" . julia-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.r\\'" . r-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
+
 (use-package paredit
   :ensure t
   :hook '((emacs-lisp-mode . paredit-mode)
