@@ -140,6 +140,7 @@
   (evil-emacs-state))
 
 (evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
+(evil-define-key 'normal 'global (kbd "SPC o") 'other-window)
 
 ;
 ;; Navigation
@@ -169,12 +170,6 @@
 ;; always highlight current line
 (global-hl-line-mode)
 
-;; Interactively Do Things -- fast buffer switch
-(require 'ido)
-(ido-mode 'buffers) ;; only use this line to turn off ido for file names!
-(setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
-               "*Messages*" "Async Shell Command"))
-
 ;; completion
 (use-package company
   :ensure t
@@ -185,6 +180,14 @@
   :ensure t
   :hook (company-mode . company-box-mode))
 
+;;
+;; Fixing Annoying Defaults
+;; ------------------------
+;;
+
+;;; tramp
+;;; http://stackoverflow.com/questions/13794433/how-to-disable-autosave-for-tramp-buffers-in-emacs
+(setq tramp-auto-save-directory "/tmp")
 
 (setq ring-bell-function nil)
 
@@ -206,17 +209,9 @@
 (append auto-save-file-name-transforms
         `((".*" ,(concat user-emacs-directory "backups") t)))
 
-;; Interactively Do Things -- fast buffer switch
-(require 'ido)
-(ido-mode 'buffers) ;; only use this line to turn off ido for file names!
-(setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
-               "*Messages*" "Async Shell Command"))
-
 ;; refresh open files to latest version on disk automtically
 ;; useful when an external program modified a file; e.g., `clang-format`
 (global-auto-revert-mode)
-
-(use-package paredit :ensure t :disabled)
 
 ;;
 ;; Language Support
@@ -276,6 +271,18 @@ this once."
         (go-mode . go-ts-mode)
         (js2-mode . javascript-ts-mode)
         (nix-mode . nix-ts-mode)))
+
+(use-package paredit
+  :ensure t
+  :hook '((emacs-lisp-mode . paredit-mode)
+          (common-lisp-mode . paredit-mode)
+          (clojure-mode . paredit-mode)
+          (scheme-mode . paredit-mode)
+          (racket-mode . paredit-mode)
+          (lisp-mode . paredit-mode))
+  )
+
+;; Language Server Protocol (LSP)
 
 (require 'eglot)
 
@@ -383,6 +390,12 @@ this once."
 (define-key minibuffer-local-completion-map (kbd "C-p") 'minibuffer-previous-line-completion)
 (define-key global-map (kbd "C-c b") 'switch-to-minibuffer)
 
+;; Interactively Do Things -- fast buffer switch
+(require 'ido)
+(ido-mode 1)
+(setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
+               "*Messages*" "Async Shell Command"))
+(ido-everywhere 1)
 (fido-mode 1)
 (fido-vertical-mode 1)
 (setq fido-vertical-mode-show-count t)
@@ -483,6 +496,11 @@ this once."
   :ensure t
   :after (treemacs evil))
 
+;; Yasnippet
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
 
 (setq package-install-upgrade-built-in t)
 
