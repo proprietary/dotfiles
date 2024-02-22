@@ -307,6 +307,11 @@ this once."
 (define-key global-map (kbd "C-=") 'expreg-expand)
 (define-key global-map (kbd "C--") 'expreg-contract)
 
+;; move region
+(require 'move-region)
+(evil-define-key 'visual 'global (kbd "M-S-<down>") 'zelcon/move-region-down)
+(evil-define-key 'visual 'global (kbd "M-S-<up>") 'zelcon/move-region-up)
+
 (use-package paredit
   :ensure t
   :hook '((emacs-lisp-mode . paredit-mode)
