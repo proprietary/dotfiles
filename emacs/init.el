@@ -241,8 +241,11 @@
         (starlark "https://github.com/amaanq/tree-sitter-starlark")
         (lua "https://github.com/tree-sitter-grammars/tree-sitter-lua")
         (json "https://github.com/tree-sitter/tree-sitter-json")
-        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript")
+        (cmake "https://github.com/uyha/tree-sitter-cmake")
+        (make "https://github.com/alemuller/tree-sitter-make")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
         (swift "https://github.com/alex-pinkus/tree-sitter-swift")
         (toml "https://github.com/ikatyang/tree-sitter-toml")
         (latex "https://github.com/latex-lsp/tree-sitter-latex")
@@ -348,40 +351,40 @@ this once."
 (use-package s :ensure t)
 (use-package dash :ensure t)
 (use-package editorconfig :ensure t)
-(defconst +zelcon/copilot-modes+ '(python-ts-mode
-                                   rust-ts-mode
-                                   java-ts-mode
-                                   c++-ts-mode
-                                   c-ts-mode
-                                   go-ts-mode
-                                   javascript-ts-mode
-                                   typescript-ts-mode
-                                   ruby-ts-mode
-                                   swift-ts-mode
-                                   julia-ts-mode
-                                   bash-ts-mode
-                                   sh-mode
-                                   shell-script-mode))
-(defun zelcon/copilot-setup ()
-  (when (member major-mode +zelcon/copilot-modes+)
-    (require 'copilot)
-    (copilot-mode)))
-(add-hook 'prog-mode-hook 'zelcon/copilot-setup)
-(with-eval-after-load 'copilot
+(use-package copilot
+  :ensure nil
+  :requires (s dash editorconfig)
+  :defer t
+  :after (evil jsonrpc)
+  :init
+  (unless (package-installed-p 'copilot)
+    (package-vc-install "https://github.com/copilot-emacs/copilot.el.git"))
+  :hook ((python-ts . copilot-mode)
+         (rust-ts . copilot-mode)
+         (java-ts . copilot-mode)
+         (c++-ts . copilot-mode)
+         (c-ts . copilot-mode)
+         (go-ts . copilot-mode)
+         (javascript-ts . copilot-mode)
+         (typescript-ts . copilot-mode)
+         (ruby-ts . copilot-mode)
+         (swift-ts . copilot-mode)
+         (julia-ts . copilot-mode)
+         (bash-ts . copilot-mode)
+         (shell-script . copilot-mode))
+  :config
+  (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent))
   (defun zelcon/copilot-tab ()
+    "Accept copilot or company completion, or indent if no completion is available."
     (interactive)
-    (if (and (bound-and-true-p copilot-mode)
-             (functionp 'copilot-completion-active-p)
-             (copilot-completion-active-p))
-        (or (copilot-accept-completion)
-            (indent-for-tab-command))
-      (indent-for-tab-command)))
-  (setq warning-minimum-level :error)
-  (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-  (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-  (define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
-  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
-  (evil-define-key 'insert 'global (kbd "<tab>") 'zelcon/copilot-tab)
+    (or (copilot-accept-completion)
+        (company-indent-or-complete-common nil)))
+  (evil-define-key 'insert 'copilot-mode-map
+    (kbd "<tab>") 'zelcon/copilot-tab
+    (kbd "C-j") 'copilot-next-completion
+    (kbd "C-k") 'copilot-previous-completion
+    (kbd "C-<tab>") 'copilot-accept-completion-by-word
+    (kbd "ESC") 'copilot-clear-overlay)
   ;; https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
   (nconc copilot-major-mode-alist '(("python-ts" . "python")
                                     ("rust-ts" . "rust")
@@ -478,18 +481,22 @@ this once."
 (setq display-line-numbers-type 'relative)
 
 ;; indent guides
-(require 'indent-bars)
-(when (eq system-type 'darwin)
+(use-package indent-bars
+  :ensure nil
+  :init
+  (unless (package-installed-p 'indent-bars)
+    (package-vc-install "https://github.com/jdtsmith/indent-bars.git"))
+  :config
+  (when (eq system-type 'darwin)
     (setq indent-bars-prefer-character t))
-(setq indent-bars-treesit-support t)
-(setq indent-bars-no-descend-string t)
-(setq indent-bars-treesit-ignore-blank-lines-types '("module"))
-(setq indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
-                                            list list_comprehension
-                                            dictionary dictionary_comprehension
-                                            parenthesized_expression subscript)))
-(add-hook 'python-ts-mode-hook 'indent-bars-mode)
-(add-hook 'yaml-ts-mode-hook 'indent-bars-mode)
+  :custom
+  (indent-bars-treesit-support t)
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  (indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
+                                      list list_comprehension
+                                      dictionary dictionary_comprehension
+                                      parenthesized_expression subscript)
+                              (c argument_list parameter_list init_declarator))))
 
 ;; truncate lines
 (setq-default truncate-lines t)
