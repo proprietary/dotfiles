@@ -183,10 +183,17 @@
 (use-package company
   :ensure t
   :config
-  (global-company-mode)
-  (setq company-idle-delay 0.1))
+  (add-hook 'after-init-hook 'global-company-mode)
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-require-match nil)
+  (company-idle-delay 0.3)
+  :bind (:map company-active-map
+              ("C-f" . company-filter-candidates)))
 (use-package company-box
   :ensure t
+  :requires company
+  :after company
   :hook (company-mode . company-box-mode))
 
 ;;
@@ -295,6 +302,11 @@ this once."
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
 
+;; expand-region which uses tree-sitter
+(require 'expreg)
+(define-key global-map (kbd "C-=") 'expreg-expand)
+(define-key global-map (kbd "C--") 'expreg-contract)
+
 (use-package paredit
   :ensure t
   :hook '((emacs-lisp-mode . paredit-mode)
@@ -354,24 +366,24 @@ this once."
 (use-package copilot
   :ensure nil
   :requires (s dash editorconfig)
-  :defer t
-  :after (evil jsonrpc)
+  :after evil
   :init
   (unless (package-installed-p 'copilot.el)
     (package-vc-install "https://github.com/copilot-emacs/copilot.el.git"))
-  :hook ((python-ts . copilot-mode)
-         (rust-ts . copilot-mode)
-         (java-ts . copilot-mode)
-         (c++-ts . copilot-mode)
-         (c-ts . copilot-mode)
-         (go-ts . copilot-mode)
-         (javascript-ts . copilot-mode)
-         (typescript-ts . copilot-mode)
-         (ruby-ts . copilot-mode)
-         (swift-ts . copilot-mode)
-         (julia-ts . copilot-mode)
-         (bash-ts . copilot-mode)
-         (shell-script . copilot-mode))
+  :hook ((python-ts-mode . copilot-mode)
+         (rust-ts-mode . copilot-mode)
+         (java-ts-mode . copilot-mode)
+         (c++-ts-mode . copilot-mode)
+         (c-ts-mode . copilot-mode)
+         (go-ts-mode . copilot-mode)
+         (javascript-ts-mode . copilot-mode)
+         (tsx-ts-mode . copilot-mode)
+         (typescript-ts-mode . copilot-mode)
+         (ruby-ts-mode . copilot-mode)
+         (swift-ts-mode . copilot-mode)
+         (julia-ts-mode . copilot-mode)
+         (bash-ts-mode . copilot-mode)
+         (shell-script-mode . copilot-mode))
   :config
   (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent))
   (defun zelcon/copilot-tab ()
@@ -489,9 +501,9 @@ this once."
   :config
   (when (eq system-type 'darwin)
     (setq indent-bars-prefer-character t))
-  :hook ((python-ts . indent-bars-mode)
-         (yaml-ts . indent-bars-mode)
-         (json-ts . indent-bars-mode))
+  :hook ((python-ts-mode . indent-bars-mode)
+         (yaml-ts-mode . indent-bars-mode)
+         (json-ts-mode . indent-bars-mode))
   :custom
   (indent-bars-treesit-support t)
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
