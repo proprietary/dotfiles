@@ -184,9 +184,8 @@
   :ensure t
   :config
   (add-hook 'after-init-hook 'global-company-mode)
+  :hook (prog-mode . company-mode)
   :custom
-  (company-begin-commands '(self-insert-command))
-  (company-require-match nil)
   (company-idle-delay 0.3)
   :bind (:map company-active-map
               ("C-f" . company-filter-candidates)))
@@ -240,8 +239,8 @@
         (c "https://github.com/tree-sitter/tree-sitter-c")
         (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
         (java "https://github.com/tree-sitter/tree-sitter-java")
-        (commonlisp "https://github.com/tree-sitter-grammars/tree-sitter-commonlisp")
         (cuda "https://github.com/theHamsta/tree-sitter-cuda")
+        (commonlisp "https://github.com/tree-sitter-grammars/tree-sitter-commonlisp")
         (python "https://github.com/tree-sitter/tree-sitter-python")
         (go "https://github.com/tree-sitter/tree-sitter-go")
         (yaml "https://github.com/ikatyang/tree-sitter-yaml")
@@ -250,9 +249,9 @@
         (json "https://github.com/tree-sitter/tree-sitter-json")
         (cmake "https://github.com/uyha/tree-sitter-cmake")
         (make "https://github.com/alemuller/tree-sitter-make")
-        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
         (swift "https://github.com/alex-pinkus/tree-sitter-swift")
         (toml "https://github.com/ikatyang/tree-sitter-toml")
         (latex "https://github.com/latex-lsp/tree-sitter-latex")
@@ -263,7 +262,10 @@
         (julia "https://github.com/tree-sitter/tree-sitter-julia")
         (rst "https://github.com/stsewd/tree-sitter-rst")
         (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-        (nix "https://github.com/nix-community/tree-sitter-nix")))
+        (nix "https://github.com/nix-community/tree-sitter-nix")
+        (clojure "https://github.com/sogaiu/tree-sitter-clojure")
+        (proto "https://github.com/mitchellh/tree-sitter-proto")
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")))
 
 (defun zelcon/install-tree-sitter-langs ()
   "Install all tree-sitter languages. Typically you only need to run
@@ -301,6 +303,7 @@ this once."
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
+(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-ts-mode))
 
 ;; expand-region which uses tree-sitter
 (require 'expreg)
