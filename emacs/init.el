@@ -228,6 +228,9 @@
 ;; useful when an external program modified a file; e.g., `clang-format`
 (global-auto-revert-mode)
 
+;; "yes or no" ➙ "y or n"
+(setopt use-short-answers t)
+
 ;;
 ;; Language Support
 ;; ----------------
@@ -320,6 +323,7 @@ this once."
 (evil-define-key 'normal 'global (kbd "M-S-<up>") 'zelcon/move-line-up)
 (evil-define-key 'normal 'global (kbd "M-S-<down>") 'zelcon/move-line-down)
 
+;; structural editing for S-expressions
 (use-package paredit
   :ensure t
   :hook '((emacs-lisp-mode . paredit-mode)
@@ -363,6 +367,9 @@ this once."
              '((rust-ts-mode rust-mode) .
                ("rust-analyzer" :initializationOptions (:check (:command "clippy")))))
 
+;; Lisp
+(use-package slime :ensure t)
+(setq inferior-lisp-program "sbcl")
 
 
 (use-package cmake-mode :ensure t)
