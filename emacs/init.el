@@ -357,7 +357,7 @@ this once."
   :defer t
   :after (evil jsonrpc)
   :init
-  (unless (package-installed-p 'copilot)
+  (unless (package-installed-p 'copilot.el)
     (package-vc-install "https://github.com/copilot-emacs/copilot.el.git"))
   :hook ((python-ts . copilot-mode)
          (rust-ts . copilot-mode)
@@ -489,6 +489,9 @@ this once."
   :config
   (when (eq system-type 'darwin)
     (setq indent-bars-prefer-character t))
+  :hook ((python-ts . indent-bars-mode)
+         (yaml-ts . indent-bars-mode)
+         (json-ts . indent-bars-mode))
   :custom
   (indent-bars-treesit-support t)
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
