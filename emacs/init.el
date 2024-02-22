@@ -315,6 +315,11 @@ this once."
 (evil-define-key 'visual 'global (kbd "M-S-<down>") 'zelcon/move-region-down)
 (evil-define-key 'visual 'global (kbd "M-S-<up>") 'zelcon/move-region-up)
 
+;; move lines
+(require 'move-lines)
+(evil-define-key 'normal 'global (kbd "M-S-<up>") 'zelcon/move-line-up)
+(evil-define-key 'normal 'global (kbd "M-S-<down>") 'zelcon/move-line-down)
+
 (use-package paredit
   :ensure t
   :hook '((emacs-lisp-mode . paredit-mode)
@@ -322,8 +327,7 @@ this once."
           (clojure-mode . paredit-mode)
           (scheme-mode . paredit-mode)
           (racket-mode . paredit-mode)
-          (lisp-mode . paredit-mode))
-  )
+          (lisp-mode . paredit-mode)))
 
 ;; Language Server Protocol (LSP)
 
