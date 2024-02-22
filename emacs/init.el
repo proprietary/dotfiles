@@ -252,6 +252,7 @@
         (make "https://github.com/alemuller/tree-sitter-make")
         (julia "https://github.com/tree-sitter/tree-sitter-julia")
         (rst "https://github.com/stsewd/tree-sitter-rst")
+        (markdown "https://github.com/ikatyang/tree-sitter-markdown")
         (nix "https://github.com/nix-community/tree-sitter-nix")))
 
 (defun zelcon/install-tree-sitter-langs ()
@@ -335,9 +336,13 @@ this once."
              '((rust-ts-mode rust-mode) .
                ("rust-analyzer" :initializationOptions (:check (:command "clippy")))))
 
+
+
 (use-package cmake-mode :ensure t)
 
 (use-package nix-mode :ensure t :mode "\\.nix\\'")
+
+(use-package markdown-mode :ensure t)
 
 ;; Github Copilot
 (use-package s :ensure t)
@@ -459,9 +464,9 @@ this once."
   (interactive)
   (when window-system
     (if (> (x-display-pixel-width) 1500)
-        (progn (set-frame-size (selected-frame) 120 180)
+        (progn (set-frame-size (selected-frame) 140 180)
                (add-to-list 'default-frame-alist '(height . 180))
-               (add-to-list 'default-frame-alist '(width . 120)))
+               (add-to-list 'default-frame-alist '(width . 140)))
       (progn (set-frame-size (selected-frame) 80 65)
                 (add-to-list 'default-frame-alist '(height . 80))
                 (add-to-list 'default-frame-alist '(width . 65))))))
@@ -536,6 +541,8 @@ this once."
   (yas-global-mode 1))
 
 (setq package-install-upgrade-built-in t)
+
+(setq load-prefer-newer t)
 
 ;; load custom file
 (load custom-file t)
