@@ -182,8 +182,10 @@
 ;; completion
 (use-package company
   :ensure t
+  :after evil
   :config
   (add-hook 'after-init-hook 'global-company-mode)
+  (evil-define-key '(normal insert visual) company-active-map (kbd "ESC") 'company-abort)
   :hook (prog-mode . company-mode)
   :custom
   (company-idle-delay 0.3)
@@ -410,7 +412,7 @@ this once."
     (interactive)
     (or (copilot-accept-completion)
         (company-indent-or-complete-common nil)))
-  (evil-define-key 'insert 'copilot-mode-map
+  (evil-define-key 'insert 'copilot-completion-map
     (kbd "<tab>") 'zelcon/copilot-tab
     (kbd "C-j") 'copilot-next-completion
     (kbd "C-k") 'copilot-previous-completion
