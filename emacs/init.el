@@ -390,8 +390,8 @@ this once."
   (company-idle-delay 0.3))
 (use-package company-box
     :ensure t
-    :when window-system
-    :hook (prog-mode . company-mode))
+    :when (not (null window-system))
+    :hook (company-mode . company-box-mode))
 
 ;; Github Copilot
 (use-package s :ensure t)
