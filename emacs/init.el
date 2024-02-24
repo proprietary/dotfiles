@@ -7,9 +7,6 @@
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-;; and `package-pinned-packages`. Most users will not need or want to do this.
-;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
              (cons "nongnu" (format "http%s://elpa.nongnu.org/nongnu/"
                                     (if (gnutls-available-p) "s" ""))))
@@ -111,12 +108,6 @@
   (exec-path-from-shell-initialize))
 
 ;;
-;; Git
-;; ---
-;;
-(use-package magit :ensure t)
-
-;;
 ;; evil-mode
 ;; ---------
 ;;
@@ -152,6 +143,13 @@
 (evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
 (evil-define-key 'normal 'global (kbd "SPC o") 'other-window)
 
+;;
+;; Git
+;; ---
+;;
+
+(use-package magit :ensure t)
+
 ;
 ;; Navigation
 ;; ----------
@@ -177,52 +175,54 @@
 (setq scroll-step 1
       scroll-conservatively 10000)
 
-;; always highlight current line
-(global-hl-line-mode)
+;; expand-region which uses tree-sitter
+(require 'expreg)
+(define-key global-map (kbd "C-=") 'expreg-expand)
+(define-key global-map (kbd "C--") 'expreg-contract)
 
-;; completion
-(use-package company
-  :ensure t
-  :after evil
-  :config
-  (add-hook 'after-init-hook 'global-company-mode)
-  (evil-define-key '(normal insert visual) company-active-map (kbd "ESC") 'company-abort)
-  :hook (prog-mode . company-mode)
-  :custom
-  (company-idle-delay 0.3)
-  :bind (:map company-active-map
-              ("C-f" . company-filter-candidates)))
-(use-package company-box
-  :ensure t
-  :requires company
-  :after company
-  :hook (company-mode . company-box-mode))
+;; move region
+(require 'move-region)
+(evil-define-key 'visual 'global (kbd "M-S-<down>") 'zelcon/move-region-down)
+(evil-define-key 'visual 'global (kbd "M-S-<up>") 'zelcon/move-region-up)
+
+;; move lines
+(require 'move-lines)
+(evil-define-key 'normal 'global (kbd "M-S-<up>") 'zelcon/move-line-up)
+(evil-define-key 'normal 'global (kbd "M-S-<down>") 'zelcon/move-line-down)
+
+(use-package which-key :ensure t)
 
 ;;
 ;; Fixing Annoying Defaults
 ;; ------------------------
 ;;
 
-;;; tramp
-;;; http://stackoverflow.com/questions/13794433/how-to-disable-autosave-for-tramp-buffers-in-emacs
-(setq tramp-auto-save-directory "/tmp")
+(setopt
 
-(setq ring-bell-function nil)
+ tramp-auto-save-directory "/tmp"
 
-(setq inhibit-start-screen t
-      inhibit-startup-screen t)
+ ;; "yes or no" ➙ "y or n"
+ use-short-answers t
 
-;; Do not show the prompt: "Symbolic link to Git-controlled source file; follow link (y or n)"
-(setq vc-follow-symlinks t)
+ ring-bell-function nil
 
-;; prevent creation of junk tilde files
-(setq backup-directory-alist
-      `(("." . ,(concat user-emacs-directory "backups")))
-      backup-by-copying t
-      version-control t
-      delete-old-versions t
-      kept-old-versions 100
-      create-lockfiles nil)
+ inhibit-start-screen t
+ inhibit-startup-screen t
+
+ ;; Do not show the prompt: "Symbolic link to Git-controlled source file; follow link (y or n)"
+ vc-follow-symlinks t
+
+ ;; prevent creation of junk tilde files
+ ;; http://stackoverflow.com/questions/13794433/how-to-disable-autosave-for-tramp-buffers-in-emacs
+ backup-directory-alist
+ `(("." . ,(concat user-emacs-directory "backups")))
+ ;; sane backup settings
+ backup-by-copying t
+ version-control t
+ delete-old-versions t
+ kept-old-versions 100
+ create-lockfiles nil)
+
 ;; ensure that auto-save files end up in the right place
 (append auto-save-file-name-transforms
         `((".*" ,(concat user-emacs-directory "backups") t)))
@@ -231,8 +231,12 @@
 ;; useful when an external program modified a file; e.g., `clang-format`
 (global-auto-revert-mode)
 
-;; "yes or no" ➙ "y or n"
-(setopt use-short-answers t)
+;; In the minibuffer, make C-h do backspace, not help
+(define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
+
+;; hide ugly buttons on the toolbar
+(tool-bar-mode -1)
+
 
 ;;
 ;; Language Support
@@ -249,6 +253,8 @@
         (commonlisp "https://github.com/tree-sitter-grammars/tree-sitter-commonlisp")
         (python "https://github.com/tree-sitter/tree-sitter-python")
         (go "https://github.com/tree-sitter/tree-sitter-go")
+        (go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
+        (go-work "https://github.com/omertuc/tree-sitter-go-work")
         (yaml "https://github.com/ikatyang/tree-sitter-yaml")
         (starlark "https://github.com/amaanq/tree-sitter-starlark")
         (lua "https://github.com/tree-sitter-grammars/tree-sitter-lua")
@@ -273,32 +279,6 @@
         (proto "https://github.com/mitchellh/tree-sitter-proto")
         (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")))
 
-(defun zelcon/install-tree-sitter-langs ()
-  "Install all tree-sitter languages. Typically you only need to run
-this once."
-  (interactive)
-  (mapc #'treesit-install-language-grammar
-        (mapcar #'car treesit-language-source-alist)))
-
-(setq major-mode-remap-alist
-      '((yaml-mode . yaml-ts-mode)
-        (bash-mode . bash-ts-mode)
-        (json-mode . json-ts-mode)
-        (python-mode . python-ts-mode)
-        (java-mode . java-ts-mode)
-        (c-mode . c-ts-mode)
-        (c++-mode . cpp-ts-mode)
-        (rust-mode . rust-ts-mode)
-        (ruby-mode . ruby-ts-mode)
-        (r-mode . r-ts-mode)
-        (lua-mode . lua-ts-mode)
-        (julia-mode . julia-ts-mode)
-        (lua-mode . lua-ts-mode)
-        (js-mode . javascript-ts-mode)
-        (typescript-mode . typescript-ts-mode)
-        (go-mode . go-ts-mode)
-        (js2-mode . javascript-ts-mode)
-        (nix-mode . nix-ts-mode)))
 
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode))
@@ -311,21 +291,17 @@ this once."
 (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-ts-mode))
 
-;; expand-region which uses tree-sitter
-(require 'expreg)
-(define-key global-map (kbd "C-=") 'expreg-expand)
-(define-key global-map (kbd "C--") 'expreg-contract)
 
-;; move region
-(require 'move-region)
-(evil-define-key 'visual 'global (kbd "M-S-<down>") 'zelcon/move-region-down)
-(evil-define-key 'visual 'global (kbd "M-S-<up>") 'zelcon/move-region-up)
+(defun zelcon/install-tree-sitter-langs ()
+  "Install all tree-sitter languages. Typically you only need to run
+this once."
+  (interactive)
+  (mapc #'treesit-install-language-grammar
+        (mapcar #'car treesit-language-source-alist)))
 
-;; move lines
-(require 'move-lines)
-(evil-define-key 'normal 'global (kbd "M-S-<up>") 'zelcon/move-line-up)
-(evil-define-key 'normal 'global (kbd "M-S-<down>") 'zelcon/move-line-down)
-
+;; Lisp
+(use-package slime :ensure t)
+(setq inferior-lisp-program "sbcl")
 ;; structural editing for S-expressions
 (use-package paredit
   :ensure t
@@ -365,21 +341,46 @@ this once."
                                 (member our-key alist-key)
                               (equal our-key alist-key))))))
 
+;; Rust
 (zelcon/clear-eglot-server-program 'rust-ts-mode)
 (add-to-list 'eglot-server-programs
              '((rust-ts-mode rust-mode) .
                ("rust-analyzer" :initializationOptions (:check (:command "clippy")))))
 
-;; Lisp
-(use-package slime :ensure t)
-(setq inferior-lisp-program "sbcl")
-
-
+;; CMake
 (use-package cmake-mode :ensure t)
 
+;; Nix
 (use-package nix-mode :ensure t :mode "\\.nix\\'")
 
+;; Markdown
 (use-package markdown-mode :ensure t)
+
+;; Gherkin
+(use-package feature-mode
+  :ensure t
+  :config
+  (when (boundp evil-mode)
+    (evil-set-initial-state 'feature-mode 'emacs)))
+ 
+;;;
+;;; Completion
+;;; ----------
+;;;
+
+(use-package company
+  :ensure t
+  :config
+  (define-key company-active-map (kbd "<tab>") nil)
+  ;; disable inline previews
+  (delq 'company-preview-if-just-one-frontend company-frontends)
+  :hook (prog-mode . company-mode)
+  :custom
+  (company-idle-delay 0.3))
+(use-package company-box
+    :ensure t
+    :when window-system
+    :hook (prog-mode . company-mode))
 
 ;; Github Copilot
 (use-package s :ensure t)
@@ -388,24 +389,25 @@ this once."
 (use-package copilot
   :ensure nil
   :requires (s dash editorconfig)
-  :after evil
+  :after (evil company)
   :init
   (unless (package-installed-p 'copilot.el)
     (package-vc-install "https://github.com/copilot-emacs/copilot.el.git"))
-  :hook ((python-ts-mode . copilot-mode)
-         (rust-ts-mode . copilot-mode)
-         (java-ts-mode . copilot-mode)
-         (c++-ts-mode . copilot-mode)
-         (c-ts-mode . copilot-mode)
-         (go-ts-mode . copilot-mode)
-         (javascript-ts-mode . copilot-mode)
-         (tsx-ts-mode . copilot-mode)
-         (typescript-ts-mode . copilot-mode)
-         (ruby-ts-mode . copilot-mode)
-         (swift-ts-mode . copilot-mode)
-         (julia-ts-mode . copilot-mode)
-         (bash-ts-mode . copilot-mode)
-         (shell-script-mode . copilot-mode))
+  :hook
+  ((python-ts-mode . copilot-mode)
+   (rust-ts-mode . copilot-mode)
+   (java-ts-mode . copilot-mode)
+   (c++-ts-mode . copilot-mode)
+   (c-ts-mode . copilot-mode)
+   (go-ts-mode . copilot-mode)
+   (javascript-ts-mode . copilot-mode)
+   (tsx-ts-mode . copilot-mode)
+   (typescript-ts-mode . copilot-mode)
+   (ruby-ts-mode . copilot-mode)
+   (swift-ts-mode . copilot-mode)
+   (julia-ts-mode . copilot-mode)
+   (bash-ts-mode . copilot-mode)
+   (shell-script-mode . copilot-mode))
   :config
   (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent))
   (defun zelcon/copilot-tab ()
@@ -413,76 +415,84 @@ this once."
     (interactive)
     (or (copilot-accept-completion)
         (company-indent-or-complete-common nil)))
-  (evil-define-key 'insert 'copilot-completion-map
-    (kbd "<tab>") 'zelcon/copilot-tab
-    (kbd "C-j") 'copilot-next-completion
-    (kbd "C-k") 'copilot-previous-completion
-    (kbd "C-<tab>") 'copilot-accept-completion-by-word
-    (kbd "ESC") 'copilot-clear-overlay)
+  (define-key company-active-map (kbd "<tab>") 'zelcon/copilot-tab)
+  (evil-define-key 'insert 'global (kbd "<tab>") 'zelcon/copilot-tab)
+  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-next-completion)
+  (define-key copilot-completion-map (kbd "<backtab>") 'copilot-previous-completion)
+  (define-key copilot-completion-map (kbd "<f7>") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "<f8>") 'copilot-accept-completion-by-line)
   ;; https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
-  (nconc copilot-major-mode-alist '(("python-ts" . "python")
-                                    ("rust-ts" . "rust")
-                                    ("java-ts" . "java")
-                                    ("c++-ts" . "cpp")
-                                    ("c-ts" . "c")
-                                    ("go-ts" . "go")
-                                    ("javascript-ts" . "javascript")
-                                    ("typescript-ts" . "typescript")
-                                    ("ruby-ts" . "ruby")
-                                    ("swift-ts" . "swift")
-                                    ("yaml-ts" . "yaml")
-                                    ("julia-ts" . "julia"))))
-
+  (dolist (item '(("python-ts" . "python")
+                  ("rust-ts" . "rust")
+                  ("java-ts" . "java")
+                  ("c++-ts" . "cpp")
+                  ("c-ts" . "c")
+                  ("go-ts" . "go")
+                  ("javascript-ts" . "javascript")
+                  ("typescript-ts" . "typescript")
+                  ("ruby-ts" . "ruby")
+                  ("swift-ts" . "swift")
+                  ("yaml-ts" . "yaml")
+                  ("julia-ts" . "julia")))
+    (add-to-list 'copilot-major-mode-alist item))
+  )
 
 (use-package spinner :ensure t)
 
 (use-package ellama :ensure t
+  :requires spinner
   :init
   (require 'llm-ollama)
   (setopt ellama-provider
           (make-llm-ollama
-           :chat-model "deepseek-coder:6.7b-instruct"
-           :embedding-model "deepseek-coder:6.7b-instruct"))
+           :chat-model "deepseek-coder:33b-instruct"
+           :embedding-model "deepseek-coder:33b-instruct"))
   (setopt ellama-providers
-          '(("codellama" . (make-llm-ollama
+          '(("wizardcoder" . (make-llm-ollama
+                             :chat-model "wizardcoder:33b-v1.1"
+                             :embedding-model "wizardcoder:33b-v1.1"))
+            ("codellama" . (make-llm-ollama
                             :chat-model "codellama:70b"
                             :embedding-model "codellama:70b"))
-            ("deepseek" . (make-llm-ollama
-                           :chat-model "deepseek-coder:6.7b-instruct"
-                           :embedding-model "deepseek-coder:6.7b-instruct"))
-            ("mixtral" . (make-llm-ollama
-                          :chat-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k"
-                          :embedding-model "mixtral:8x7b-instruct-v0.1-q3_K_M-4k"))))
+            ("deepseek-big" . (make-llm-ollama
+                               :chat-model "deepseek-coder:33b-instruct"
+                               :embedding-model "deepseek-coder:33b-instruct"))
+            ("deepseek-small" . (make-llm-ollama
+                                 :chat-model "deepseek-coder:6.7b-instruct"
+                                 :embedding-model "deepseek-coder:6.7b-instruct"))))
   :config
   (setq ellama-keymap-prefix "C-c e"))
 
-;; completions
-(setq completions-format 'one-column)
-(setq completions-header-format nil)
-(setq completions-max-height 10)
-(setq completion-auto-select nil)
-(define-key minibuffer-local-completion-map (kbd "C-n") 'minibuffer-next-line-completion)
-(define-key minibuffer-local-completion-map (kbd "C-p") 'minibuffer-previous-line-completion)
-(define-key global-map (kbd "C-c b") 'switch-to-minibuffer)
-
-;; Interactively Do Things -- fast buffer switch
-(require 'ido)
-(ido-mode 1)
-(setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
-               "*Messages*" "Async Shell Command"))
-(ido-everywhere 1)
+;; minibuffer completions
 (fido-mode 1)
 (fido-vertical-mode 1)
-(setq fido-vertical-mode-show-count t)
-
 (setq completion-styles '(flex partial-completion substring initials basic))
+(setopt completions-format 'one-column
+        completions-header-format nil
+        completions-max-height 10
+        completion-auto-select nil
+        fido-vertical-mode-show-count t)
+;; Interactively Do Things -- fast buffer switch
+(setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
+               "*Messages*" "Async Shell Command"))
 
-(use-package feature-mode
-  :ensure t
-  :config
-  (when (boundp evil-mode)
-    (evil-set-initial-state 'feature-mode 'emacs)))
-  
+ 
+
+;; searching
+(setopt
+ case-fold-search t ;; case-insensitive search
+ )
+(defun zelcon/isearch-region-or-thing-at-point ()
+  "If a region is active, search for the contents of the region. Otherwise, search for the symbol at point."
+  (interactive)
+  (if (use-region-p)
+      (let ((search-term (buffer-substring-no-properties (region-beginning) (region-end))))
+        (deactivate-mark)
+        (isearch-forward search-term))
+    (isearch-forward-thing-at-point)))
+(define-key global-map (kbd "C-s") 'zelcon/isearch-region-or-thing-at-point)
+(define-key isearch-mode-map (kbd "C-s") 'isearch-repeat-forward)
+
 
 ;;
 ;; Appearance
@@ -500,6 +510,9 @@ this once."
   :ensure t
   :config
   (load-theme 'challenger-deep t))
+
+;; always highlight current line
+(global-hl-line-mode)
 
 ;; frame size
 (defun zelcon/set-frame-size-according-to-resolution ()
@@ -553,9 +566,6 @@ this once."
       save-place-limit 10000
       save-place-version-control t
       save-place-save-skipped nil)
-
-;; hide ugly buttons on the toolbar
-(tool-bar-mode -1)
 
 ;; treemacs
 (use-package treemacs
