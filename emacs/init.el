@@ -34,16 +34,6 @@
 ;; but don't load this until the end
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-;; utils
-
-(defun zelcon/alist-find (alist elt)
-  (let ((found nil))
-    (dolist (pair eglot-server-programs)
-      (when (or (and (listp (car pair)) (member elt (car pair)))
-                (eq (car pair) elt))
-        (setq found pair)))
-    found))
-
 ;;
 ;; System Copy & Paste
 ;; --------------------
@@ -190,7 +180,15 @@
 (evil-define-key 'normal 'global (kbd "M-S-<up>") 'zelcon/move-line-up)
 (evil-define-key 'normal 'global (kbd "M-S-<down>") 'zelcon/move-line-down)
 
+;; which-key
 (use-package which-key :ensure t)
+
+;; ace-jump-mode
+(use-package ace-jump-mode
+  :ensure t
+  :after evil
+  :config
+  (define-key evil-motion-state-map "gs" 'evil-ace-jump-word-mode))
 
 ;;
 ;; Fixing Annoying Defaults
@@ -230,6 +228,8 @@
 ;; refresh open files to latest version on disk automtically
 ;; useful when an external program modified a file; e.g., `clang-format`
 (global-auto-revert-mode)
+;; Revert Dired buffers too
+(setopt global-auto-revert-non-file-buffers t)
 
 ;; In the minibuffer, make C-h do backspace, not help
 (define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
@@ -237,6 +237,12 @@
 ;; hide ugly buttons on the toolbar
 (tool-bar-mode -1)
 
+;;
+;; Org Mode
+;; --------
+;;
+
+(require 'org)
 
 ;;
 ;; Language Support
@@ -332,6 +338,10 @@ this once."
 
 (define-key eglot-mode-map (kbd "C-c C-a") 'eglot-code-actions)
 
+(evil-define-key 'normal eglot-mode-map (kbd "SPC r") 'eglot-rename)
+(evil-define-key 'normal eglot-mode-map (kbd "SPC f") 'eglot-format-buffer)
+(evil-define-key 'normal eglot-mode-map (kbd "SPC a") 'eglot-code-actions)
+
 (defun zelcon/clear-eglot-server-program (mode-name)
   (setq eglot-server-programs
         (assoc-delete-all mode-name
@@ -360,6 +370,7 @@ this once."
 (use-package feature-mode
   :ensure t
   :config
+  (require 'org)
   (when (boundp evil-mode)
     (evil-set-initial-state 'feature-mode 'emacs)))
  
@@ -543,7 +554,10 @@ this once."
     (setq indent-bars-prefer-character t))
   :hook ((python-ts-mode . indent-bars-mode)
          (yaml-ts-mode . indent-bars-mode)
-         (json-ts-mode . indent-bars-mode))
+         (js-json-mode . indent-bars-mode)
+         (tsx-ts-mode . indent-bars-mode)
+         (json-ts-mode . indent-bars-mode)
+         (nxml-mode . indent-bars-mode))
   :custom
   (indent-bars-treesit-support t)
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
@@ -562,10 +576,11 @@ this once."
 ;; save place
 (save-place-mode 1)
 (setq save-place-file (concat user-emacs-directory "places")
-      save-place-forget-unreadable-files nil
+      save-place-forget-unreadable-files t
       save-place-limit 10000
       save-place-version-control t
       save-place-save-skipped nil)
+
 
 ;; treemacs
 (use-package treemacs
