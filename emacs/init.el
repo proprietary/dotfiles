@@ -143,6 +143,7 @@
 (evil-set-initial-state 'debugger-mode 'emacs)
 (evil-set-initial-state 'special-mode 'emacs)
 (evil-set-initial-state 'treemacs-mode 'emacs)
+(evil-set-initial-state 'org-mode 'emacs)
 (add-hook 'special-mode-hook 'evil-emacs-state)
 (evil-set-initial-state 'messages-buffer-mode 'emacs)
 (with-current-buffer (get-buffer "*Messages*")
@@ -476,6 +477,11 @@ this once."
 
 (setq completion-styles '(flex partial-completion substring initials basic))
 
+(use-package feature-mode
+  :ensure t
+  :config
+  (when (boundp evil-mode)
+    (evil-set-initial-state 'feature-mode 'emacs)))
   
 
 ;;
