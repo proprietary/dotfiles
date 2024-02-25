@@ -12,10 +12,10 @@
     pkgs.tree
     pkgs.fortune
     pkgs.jdt-language-server
-    pkgs.dotnet-sdk_8
     pkgs.starship
     pkgs.nodejs_21
     pkgs.nodePackages_latest.pyright
+    pkgs.kubectl
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;

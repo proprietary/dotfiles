@@ -44,9 +44,9 @@
   };
 
   # Configure keymap in X11
-  services.xserver = {
+  services.xserver.xkb = {
     layout = "us";
-    xkbVariant = "";
+    variant = "";
   };
 
   programs.zsh.enable = true;
@@ -108,12 +108,14 @@
     boost
     python311Packages.boost
     python311Packages.numpy
+    cudaPackages.cudatoolkit
+    cudaPackages.cuda_cudart
+    linuxPackages.nvidia_x11
     folly
     ffmpeg
     opencv
     grafana
     prometheus
-    cudaPackages.cudatoolkit
     rustup
     sbcl
     valgrind
@@ -130,6 +132,8 @@
     aspellDicts.en
     mosh
     zstd
+    k3s
+    ollama
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
