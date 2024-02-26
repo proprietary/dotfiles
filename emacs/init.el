@@ -133,6 +133,10 @@
 (evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
 (evil-define-key 'normal 'global (kbd "SPC o") 'other-window)
 
+;; Allows you to click buttons without initiating a selection
+(define-key evil-motion-state-map [down-mouse-1] nil)
+
+
 ;;
 ;; Git
 ;; ---
@@ -191,20 +195,11 @@
 (define-key global-map (kbd "C-:") 'expreg-contract)
 
 ;; multiple-cursors
-(use-package multiple-cursors
+(use-package evil-mc
   :ensure t
-  :custom
-  (mc/always-run-for-all t)
   :config
-  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-  (global-unset-key (kbd "M-<down-mouse-1>"))
-  (global-set-key (kbd "M-<down-mouse-1>") 'mc/add-cursor-on-click)
-
-  (evil-define-key '(normal emacs visual) mc/keymap [escape] 'mc/keyboard-quit)
-  )
+  (global-evil-mc-mode)
+  (global-set-key (kbd "s-<down-mouse-1>") 'evil-mc-toggle-cursor-on-click))
 
 ;; emulates the legendary surround.vim
 ;; You can surround in visual-state with `S<textobject>` or `gS<textobject>`. Or in normal-state with `ys<textobject>` or `yS<textobject>`.
@@ -227,10 +222,15 @@
  ;; "yes or no" ➙ "y or n"
  use-short-answers t
 
- ring-bell-function nil
+ ring-bell-function 'ignore
 
  inhibit-start-screen t
  inhibit-startup-screen t
+
+ apropos-do-all t
+
+ ;; save whatever's in the clipboard before replacing it
+ save-interprogram-paste-before-kill t
 
  ;; Do not show the prompt: "Symbolic link to Git-controlled source file; follow link (y or n)"
  vc-follow-symlinks t
@@ -238,6 +238,8 @@
  ;; recent files
  recentf-max-saved-items 200
  recentf-max-menu-items 200
+
+ sentence-end-double-space nil
 
  ;; prevent creation of junk tilde files
  ;; http://stackoverflow.com/questions/13794433/how-to-disable-autosave-for-tramp-buffers-in-emacs
@@ -588,6 +590,9 @@ this once."
 (global-display-line-numbers-mode)
 (setq display-line-numbers-type 'relative)
 
+;; column numbers
+(add-hook 'after-init-hook 'column-number-mode)
+
 ;; indent guides
 (use-package indent-bars
   :ensure nil
@@ -616,7 +621,15 @@ this once."
 (setq-default truncate-lines t)
 
 ;; scroll horizontally one column at a time
-(setq hscroll-step 1)
+(setopt hscroll-step 1
+        scroll-step 1
+        scroll-conservatively 10000
+        scroll-margin 1
+        scroll-preserve-screen-position 1)
+
+;; display time and date
+(add-hook 'after-init-hook 'display-time-mode)
+(setopt display-time-day-and-date t)
 
 ;; save place
 (save-place-mode 1)
