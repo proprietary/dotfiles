@@ -165,11 +165,6 @@
 (setq scroll-step 1
       scroll-conservatively 10000)
 
-;; expand-region which uses tree-sitter
-(require 'expreg)
-(define-key global-map (kbd "C-=") 'expreg-expand)
-(define-key global-map (kbd "C--") 'expreg-contract)
-
 ;; move region
 (require 'move-region)
 (evil-define-key 'visual 'global (kbd "M-S-<down>") 'zelcon/move-region-down)
@@ -190,6 +185,36 @@
   :config
   (define-key evil-motion-state-map "gs" 'evil-ace-jump-word-mode))
 
+;; expand-region which uses tree-sitter
+(require 'expreg)
+(define-key global-map (kbd "C-;") 'expreg-expand)
+(define-key global-map (kbd "C-:") 'expreg-contract)
+
+;; multiple-cursors
+(use-package multiple-cursors
+  :ensure t
+  :custom
+  (mc/always-run-for-all t)
+  :config
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+  (global-unset-key (kbd "M-<down-mouse-1>"))
+  (global-set-key (kbd "M-<down-mouse-1>") 'mc/add-cursor-on-click)
+
+  (evil-define-key '(normal emacs visual) mc/keymap [escape] 'mc/keyboard-quit)
+  )
+
+;; emulates the legendary surround.vim
+;; You can surround in visual-state with `S<textobject>` or `gS<textobject>`. Or in normal-state with `ys<textobject>` or `yS<textobject>`.
+;; You can change a surrounding with `cs<old-textobject><new-textobject>`.
+;; You can delete a surrounding with `ds<textobject>`.
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+
 ;;
 ;; Fixing Annoying Defaults
 ;; ------------------------
@@ -209,6 +234,10 @@
 
  ;; Do not show the prompt: "Symbolic link to Git-controlled source file; follow link (y or n)"
  vc-follow-symlinks t
+
+ ;; recent files
+ recentf-max-saved-items 200
+ recentf-max-menu-items 200
 
  ;; prevent creation of junk tilde files
  ;; http://stackoverflow.com/questions/13794433/how-to-disable-autosave-for-tramp-buffers-in-emacs
@@ -366,9 +395,16 @@ this once."
 ;; Markdown
 (use-package markdown-mode :ensure t)
 
+;; Protocol Buffers
+(use-package protobuf-mode
+  :ensure t
+  :defer t
+  )
+
 ;; Gherkin
 (use-package feature-mode
   :ensure t
+  :defer t
   :config
   (require 'org)
   (when (boundp evil-mode)
@@ -385,6 +421,8 @@ this once."
   (define-key company-active-map (kbd "<tab>") nil)
   ;; disable inline previews
   (delq 'company-preview-if-just-one-frontend company-frontends)
+  ;; escape from company completions
+  (evil-define-key 'insert company-active-map (kbd "ESC") 'company-abort)
   :hook (prog-mode . company-mode)
   :custom
   (company-idle-delay 0.3))
@@ -425,10 +463,18 @@ this once."
     "Accept copilot or company completion, or indent if no completion is available."
     (interactive)
     (or (copilot-accept-completion)
-        (company-indent-or-complete-common nil)))
+        (company-indent-or-complete-common nil)
+        (indent-for-tab-command)))
+  (defun zelcon/copilot-c-tab ()
+    (interactive)
+    (or (copilot-accept-completion-by-line)
+        (indent-for-tab-command)))
+  (define-key company-active-map (kbd "TAB") 'zelcon/copilot-tab)
   (define-key company-active-map (kbd "<tab>") 'zelcon/copilot-tab)
-  (evil-define-key 'insert 'global (kbd "<tab>") 'zelcon/copilot-tab)
-  (define-key copilot-completion-map (kbd "C-<tab>") 'copilot-next-completion)
+  (define-key copilot-completion-map (kbd "TAB") 'zelcon/copilot-tab)
+  (define-key copilot-completion-map (kbd "<tab>") 'zelcon/copilot-tab)
+  (define-key copilot-completion-map (kbd "C-<tab>") 'zelcon/copilot-c-tab)
+  (define-key copilot-completion-map (kbd "C-TAB") 'zelcon/copilot-c-tab)
   (define-key copilot-completion-map (kbd "<backtab>") 'copilot-previous-completion)
   (define-key copilot-completion-map (kbd "<f7>") 'copilot-accept-completion-by-word)
   (define-key copilot-completion-map (kbd "<f8>") 'copilot-accept-completion-by-line)
@@ -501,8 +547,7 @@ this once."
         (deactivate-mark)
         (isearch-forward search-term))
     (isearch-forward-thing-at-point)))
-(define-key global-map (kbd "C-s") 'zelcon/isearch-region-or-thing-at-point)
-(define-key isearch-mode-map (kbd "C-s") 'isearch-repeat-forward)
+(evil-define-key '(normal) 'global (kbd "SPC s") 'zelcon/isearch-region-or-thing-at-point)
 
 
 ;;
@@ -607,6 +652,12 @@ this once."
 (use-package treemacs-evil
   :ensure t
   :after (treemacs evil))
+
+;; highlight symbol
+(use-package highlight-symbol
+  :ensure t
+  :custom
+  (highlight-symbol-idle-delay 1.5))
 
 ;; Yasnippet
 (use-package yasnippet
