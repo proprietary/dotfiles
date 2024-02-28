@@ -52,16 +52,17 @@
            (setq interprogram-paste-function
                  (lambda (text &optional push)
                    (shell-command-to-string "wl-paste -n"))))
-       (progn
-         (setq interprogram-cut-function
-               (lambda (text &optional push)
-                 (let* ((process-connection-type nil)
-                        (proc (start-process "xsel" "*Messages*" "xsel" "-i" "-b")))
-                   (process-send-string proc text)
-                   (process-send-eof proc))))
-         (setq interprogram-paste-function
-               (lambda ()
-                 (shell-command-to-string "xsel -o -b")))))))
+       (when (executable-find "xsel")
+         (progn
+           (setq interprogram-cut-function
+                 (lambda (text &optional push)
+                   (let* ((process-connection-type nil)
+                          (proc (start-process "xsel" "*Messages*" "xsel" "-i" "-b")))
+                     (process-send-string proc text)
+                     (process-send-eof proc))))
+           (setq interprogram-paste-function
+                 (lambda ()
+                   (shell-command-to-string "xsel -o -b"))))))))
   (darwin
    (progn
      (defun zelcon/copy-from-osx ()
