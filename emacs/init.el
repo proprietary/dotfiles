@@ -692,5 +692,7 @@ this once."
 
 (setq load-prefer-newer t)
 
+(load "format-sql.el")
+
 ;; load custom file
 (load custom-file t)
