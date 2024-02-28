@@ -649,6 +649,20 @@ this once."
       save-place-version-control t
       save-place-save-skipped nil)
 
+;; Tab Bars
+(tab-bar-mode)
+(defun zelcon/disable-tab-bar-for-company-box ()
+  "Disables tab bar-mode if the current frame is the company-box frame."
+  (when (and (bound-and-true-p tab-bar-mode)
+             (bound-and-true-p company-box-mode)
+             (equal (selected-frame)
+                    (company-box--get-frame)))
+    (tab-bar-mode -1)))
+(add-hook 'after-make-frame-functions 'zelcon/disable-tab-bar-for-company-box)
+(global-unset-key (kbd "s-t"))
+(global-set-key (kbd "s-t") 'tab-bar-new-tab)
+(global-unset-key (kbd "s-w"))
+(global-set-key (kbd "s-w") 'tab-bar-close-tab)
 
 ;; treemacs
 (use-package treemacs
