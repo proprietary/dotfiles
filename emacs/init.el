@@ -42,16 +42,17 @@
   (gnu/linux
    (progn
      (if (string-equal (getenv "WAYLAND_DISPLAY") "wayland")
-         (progn
-           (setq interprogram-cut-function
-                 (lambda (text &optional push)
-                   (let* ((process-connection-type nil)
-                          (proc (start-process "wl-copy" "*Messages*" "wl-copy")))
-                     (process-send-string proc text)
-                     (process-send-eof proc))))
-           (setq interprogram-paste-function
-                 (lambda (text &optional push)
-                   (shell-command-to-string "wl-paste -n"))))
+         (when (and (executable-find "wl-copy") (executable-find "wl-paste"))
+           (progn
+             (setq interprogram-cut-function
+                   (lambda (text &optional push)
+                     (let* ((process-connection-type nil)
+                            (proc (start-process "wl-copy" "*Messages*" "wl-copy")))
+                       (process-send-string proc text)
+                       (process-send-eof proc))))
+             (setq interprogram-paste-function
+                   (lambda (text &optional push)
+                     (shell-command-to-string "wl-paste -n")))))
        (when (executable-find "xsel")
          (progn
            (setq interprogram-cut-function
