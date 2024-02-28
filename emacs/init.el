@@ -306,24 +306,24 @@
         (latex "https://github.com/latex-lsp/tree-sitter-latex")
         (rust "https://github.com/tree-sitter/tree-sitter-rust")
         (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-        (r "https://github.com/r-lib/tree-sitter-r")
         (make "https://github.com/alemuller/tree-sitter-make")
+        (jq "https://github.com/flurie/tree-sitter-jq")
         (julia "https://github.com/tree-sitter/tree-sitter-julia")
         (rst "https://github.com/stsewd/tree-sitter-rst")
         (markdown "https://github.com/ikatyang/tree-sitter-markdown")
         (nix "https://github.com/nix-community/tree-sitter-nix")
         (clojure "https://github.com/sogaiu/tree-sitter-clojure")
         (proto "https://github.com/mitchellh/tree-sitter-proto")
-        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")))
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+        (verilog "https://github.com/tree-sitter/tree-sitter-verilog")))
 
 
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.lua\\'" . lua-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.jl\\'" . julia-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.r\\'" . r-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.go.mod\\'" . go-mod-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-ts-mode))
@@ -358,6 +358,7 @@ this once."
 (add-hook 'c-ts-mode-hook 'eglot-ensure)
 (add-hook 'c++-ts-mode-hook 'eglot-ensure)
 (add-hook 'yaml-ts-mode-hook 'eglot-ensure)
+(add-hook 'yaml-mode-hook 'eglot-ensure)
 (add-hook 'go-ts-mode-hook 'eglot-ensure)
 (add-hook 'lua-ts-mode-hook 'eglot-ensure)
 (add-hook 'javascript-ts-mode-hook 'eglot-ensure)
@@ -392,7 +393,16 @@ this once."
 (use-package cmake-mode :ensure t)
 
 ;; Nix
-(use-package nix-mode :ensure t :mode "\\.nix\\'")
+(use-package nix-ts-mode :ensure t :mode "\\.nix\\'")
+
+;; Clojure
+(use-package clojure-ts-mode :ensure t)
+
+;; Verilog
+(use-package verilog-ts-mode :ensure t)
+
+;; Julia
+(use-package julia-ts-mode :ensure t)
 
 ;; Markdown
 (use-package markdown-mode :ensure t)
@@ -609,7 +619,7 @@ this once."
          (json-ts-mode . indent-bars-mode)
          (nxml-mode . indent-bars-mode))
   :custom
-  (indent-bars-treesit-support t)
+  (indent-bars-treesit-support (treesit-available-p))
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
   (indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
                                       list list_comprehension
