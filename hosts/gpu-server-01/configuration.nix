@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./sops.nix
       ./zelcon.net-vpn.nix
     ];
 
@@ -253,30 +254,6 @@
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
-
-  # Secrets management
-  sops = {
-    defaultSopsFile = ../../../secrets/secrets.yaml;
-    age = {
-      sshKeyPaths = [
-        "/etc/ssh/ssh_host_ed25519_key"
-      ];
-    };
-    secrets."net_zelcon/wg/psk" = {
-      # See: systemd-netdev(5)
-      group = config.users.users.systemd-network.name;
-      mode = "0640";
-    };
-    secrets."net_zelcon/wg/prv" = {
-      # See: systemd-netdev(5)
-      group = config.users.users.systemd-network.name;
-      mode = "0640";
-    };
-    secrets."net_zelcon/ssh_CA_pub" = {
-      mode = "0640";
-    };
-  };
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
