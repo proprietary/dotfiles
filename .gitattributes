@@ -1,1 +1,1 @@
-eval-time-secrets/** filter=git-crypt diff=git-crypt
+secrets/eval-time-secrets/** filter=git-crypt diff=git-crypt
