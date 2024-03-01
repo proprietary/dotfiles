@@ -12,7 +12,7 @@
     };
   };
 
-  outputs = all@{ self, nixpkgs, sops-nix, ... }: {
+  outputs = { self, nixpkgs, sops-nix, home-manager, ... }@inputs: {
     # Used with `nixos-rebuild --flake .#<hostname>`
     # nixosConfigurations."<hostname>".config.system.build.toplevel must be a derivation
     nixosConfigurations.gpu-server-01 = nixpkgs.lib.nixosSystem {
@@ -21,6 +21,18 @@
         ./hosts/gpu-server-01/configuration.nix
         sops-nix.nixosModules.sops
       ];
+    };
+
+    homeConfigurations = {
+      "zds@gpu-server-01" = home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          config.allowUnfree = true;
+        };
+        modules = [
+          ./home-manager/home.nix
+        ];
+      };
     };
   };
 }

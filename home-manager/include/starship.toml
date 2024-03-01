@@ -1,4 +1,4 @@
 [time]
 disabled = false
-use_12hr = true
 format = '🕚[\[ $time \]]($style) '
+time_format = "%a %e-%b-%Y %I:%M:%S%p"

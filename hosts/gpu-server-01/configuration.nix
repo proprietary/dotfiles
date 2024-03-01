@@ -73,6 +73,8 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    home-manager
+
     emacs29
     jansson
     wget
@@ -165,6 +167,7 @@
     ollama
     xsel
     vim
+    neovim
   ];
 
   fonts.packages = with pkgs; [

@@ -1,18 +1,15 @@
-{ config, pkgs, ... }:
+{ nixpkgs, pkgs, config, file, home-manager, ... }:
 {
   home.username = "zds";
   home.homeDirectory = "/home/zds";
 
   home.stateVersion = "23.11";
 
-  programs.home-manager.enable = true;
-
-  home.packages = [
-    pkgs.htop
-    pkgs.tree
-    pkgs.fortune
-    pkgs.starship
-    pkgs.nodejs_21
+  home.packages = with pkgs; [
+    htop
+    tree
+    fortune
+    starship
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;
