@@ -15,7 +15,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "gpu-server-01"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -23,7 +23,9 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
-  networking.networkmanager.enable = true;
+  networking.networkmanager.enable = false;
+  networking.useNetworkd = true;
+  systemd.network.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
@@ -79,6 +81,7 @@
     wireguard-tools
     gnupg
     gitFull
+    git-crypt
     jdk21
     python312Full
     ruby
@@ -134,7 +137,16 @@
     zstd
     k3s
     ollama
+    xsel
   ];
+
+  fonts.packages = with pkgs; [
+    font-awesome_5
+    nerdfonts
+    fira-code
+    whatsapp-emoji-font
+  ];
+
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
@@ -162,7 +174,12 @@
 
   # WireGuard
   systemd.network = {
-    enable = true;
+    networks."ethernet" = {
+      matchConfig.Name = "enp*s*";
+      networkConfig = {
+        DHCP = "yes";
+      };
+    };
   };
 
   systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
@@ -203,11 +220,31 @@
     open = false;
 
     # Enable the Nvidia settings menu,
-	# accessible via `nvidia-settings`.
+	  # accessible via `nvidia-settings`.
     nvidiaSettings = true;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+
+  # Secrets management
+  sops = {
+    defaultSopsFile = ../../../secrets/secrets.yaml;
+    age = {
+      sshKeyPaths = [
+        "/etc/ssh/ssh_host_ed25519_key"
+      ];
+    };
+    secrets."net_zelcon/wg/psk" = {
+      # See: systemd-netdev(5)
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
+    secrets."net_zelcon/wg/prv" = {
+      # See: systemd-netdev(5)
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
   };
 
 
