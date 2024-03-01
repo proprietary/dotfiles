@@ -666,32 +666,6 @@ this once."
 (global-unset-key (kbd "s-w"))
 (global-set-key (kbd "s-w") 'tab-bar-close-tab)
 
-;; treemacs
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-
-  :config
-  (progn
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode 'always)
-    )
-  :bind
-  (:map global-map
-        ("M-0" . treemacs-select-window)
-        ("C-x t t" . treemacs)
-        ("C-x t B" . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag))
-  )
-(use-package treemacs-evil
-  :ensure t
-  :after (treemacs evil))
-
 ;; highlight symbol
 (use-package highlight-symbol
   :ensure t
