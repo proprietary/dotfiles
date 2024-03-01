@@ -61,7 +61,7 @@
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.zds.isNormalUser = true;
-  users.users.zds.extraGroups = [ "networkmanager" "wheel" ];
+  users.users.zds.extraGroups = [ "wheel" ];
 
   # get zsh completions for system packages (e.g., systemd)
   environment.pathsToLink = [ "/share/zsh" ];
@@ -163,7 +163,7 @@
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
   services.openssh.extraConfig = ''
-    TrustedUserCAKeys /var/net_zelcon_CA.pub
+    TrustedUserCAKeys /run/secrets/net_zelcon/ssh_CA_pub
   '';
 
   # Open ports in the firewall.
@@ -243,6 +243,9 @@
     secrets."net_zelcon/wg/prv" = {
       # See: systemd-netdev(5)
       group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
+    secrets."net_zelcon/ssh_CA_pub" = {
       mode = "0640";
     };
   };
