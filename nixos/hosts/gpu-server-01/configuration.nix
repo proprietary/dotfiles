@@ -72,9 +72,9 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    vim
-    wget
     emacs29
+    jansson
+    wget
     tree-sitter
     tmux
     curl
@@ -82,6 +82,8 @@
     gnupg
     gitFull
     git-crypt
+    openssl
+
     jdk21
     python312Full
     ruby
@@ -89,38 +91,63 @@
     R
     postgresql
     go
+    rustup
+    sbcl
+
+    docker
+    kubectl
+    k3s
+    skaffold
+
     gcc
     gdb
-    docker
     llvmPackages_17.libcxxabi
     llvmPackages_17.openmp
     llvmPackages_17.lldb-manpages
     llvmPackages_17.libunwind
     llvmPackages_17.compiler-rt
-    llvmPackages_17.compiler-rt-libc
     llvmPackages_17.libclc
-    llvmPackages_17.bintools
-    llvmPackages_17.libcxxClang
-    clang-tools
+    llvmPackages_17.libcxx
+    llvmPackages_17.clang-unwrapped
+    llvmPackages_17.bintools-unwrapped
+    llvmPackages_17.clang-manpages
+    llvmPackages_17.stdenv
     bazel
     cmake
     pkg-config
     gnumake
     ninja
     autoconf
+
+    cudaPackages.cudatoolkit
+    cudaPackages.cuda_cudart
+    #cudaPackages.tensorrt
+    cudaPackages.cudnn
+    linuxPackages.nvidia_x11
+
+    nodejs_21
+    corepack_21
+    nodePackages.pyright
+    jdt-language-server
+    yaml-language-server
+    nixd
+    gopls
+    lemminx
+    sqls
+    clojure-lsp
+    lua-language-server
+    nodePackages.vscode-json-languageserver
+    nodePackages.bash-language-server
+
     boost
     python311Packages.boost
     python311Packages.numpy
-    cudaPackages.cudatoolkit
-    cudaPackages.cuda_cudart
-    linuxPackages.nvidia_x11
     folly
     ffmpeg
     opencv
+
     grafana
     prometheus
-    rustup
-    sbcl
     valgrind
     fzf
     sqlite
@@ -129,15 +156,14 @@
     ripgrep
     nix-index
     coreutils-full
-    openssl
     patchelf
     aspell
     aspellDicts.en
     mosh
     zstd
-    k3s
     ollama
     xsel
+    vim
   ];
 
   fonts.packages = with pkgs; [
@@ -145,6 +171,7 @@
     nerdfonts
     fira-code
     whatsapp-emoji-font
+    go-font
   ];
 
 

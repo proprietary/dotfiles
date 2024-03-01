@@ -11,11 +11,8 @@
     pkgs.htop
     pkgs.tree
     pkgs.fortune
-    pkgs.jdt-language-server
     pkgs.starship
     pkgs.nodejs_21
-    pkgs.nodePackages_latest.pyright
-    pkgs.kubectl
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;
