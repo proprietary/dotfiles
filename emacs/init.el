@@ -41,19 +41,23 @@
 (cl-case system-type
   (gnu/linux
    (progn
-     (if (string-equal (getenv "WAYLAND_DISPLAY") "wayland")
-         (when (and (executable-find "wl-copy") (executable-find "wl-paste"))
-           (progn
-             (setq interprogram-cut-function
-                   (lambda (text &optional push)
-                     (let* ((process-connection-type nil)
-                            (proc (start-process "wl-copy" "*Messages*" "wl-copy")))
-                       (process-send-string proc text)
-                       (process-send-eof proc))))
-             (setq interprogram-paste-function
-                   (lambda (text &optional push)
-                     (shell-command-to-string "wl-paste -n")))))
-       (when (executable-find "xsel")
+     (cond
+      ;; Wayland
+      ((and (string-equal (getenv "WAYLAND_DISPLAY") "wayland")
+            (executable-find "wl-copy")
+            (executable-find "wl-paste"))
+       (progn
+         (setq interprogram-cut-function
+               (lambda (text &optional push)
+                 (let* ((process-connection-type nil)
+                        (proc (start-process "wl-copy" "*Messages*" "wl-copy")))
+                   (process-send-string proc text)
+                   (process-send-eof proc))))
+         (setq interprogram-paste-function
+               (lambda (text &optional push)
+                 (shell-command-to-string "wl-paste -n")))))
+      ;; X11
+       ((and (not (null window-system)) (executable-find "xsel"))
          (progn
            (setq interprogram-cut-function
                  (lambda (text &optional push)
@@ -63,7 +67,19 @@
                      (process-send-eof proc))))
            (setq interprogram-paste-function
                  (lambda ()
-                   (shell-command-to-string "xsel -o -b"))))))))
+                   (shell-command-to-string "xsel -o -b")))))
+       ;; tmux
+        ((and (getenv "TMUX") (executable-find "tmux"))
+          (setq interprogram-cut-function
+                (lambda (text &optional push)
+                  (let* ((process-connection-type nil)
+                         (proc (start-process "tmux" "*Messages*" "tmux" "load-buffer" "-")))
+                    (process-send-string proc text)
+                    (process-send-eof proc))))
+          (setq interprogram-paste-function
+                (lambda ()
+                  (shell-command-to-string "tmux paste-buffer")))))))
+
   (darwin
    (progn
      (defun zelcon/copy-from-osx ()
@@ -189,7 +205,8 @@
   :ensure t
   :after evil
   :config
-  (define-key evil-motion-state-map "gs" 'evil-ace-jump-word-mode))
+  (define-key evil-motion-state-map "g/" 'evil-ace-jump-word-mode)
+  (define-key evil-motion-state-map "g." 'evil-ace-jump-char-mode))
 
 ;; expand-region which uses tree-sitter
 (require 'expreg)
