@@ -414,7 +414,10 @@ this once."
 (use-package cmake-mode :ensure t)
 
 ;; Nix
-(use-package nix-ts-mode :ensure t :mode "\\.nix\\'")
+(use-package nix-ts-mode :ensure t :mode "\\.nix\\'"
+  :config
+  (add-to-list 'eglot-server-programs
+               '(nix-ts-mode (eglot-alternatives '("nixd" "rnix-lsp")))))
 
 ;; Clojure
 (use-package clojure-ts-mode :ensure t)
@@ -491,7 +494,7 @@ this once."
    (bash-ts-mode . copilot-mode)
    (shell-script-mode . copilot-mode))
   :config
-  (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent))
+  (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char))
   (defun zelcon/copilot-tab ()
     "Accept copilot or company completion, or indent if no completion is available."
     (interactive)
