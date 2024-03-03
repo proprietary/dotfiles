@@ -1,15 +1,18 @@
-{ nixpkgs, pkgs, config, file, home-manager, ... }:
+{ nixpkgs, pkgs, config, file, ... }:
 {
   home.username = "zds";
   home.homeDirectory = "/home/zds";
 
   home.stateVersion = "23.11";
 
+  programs.home-manager.enable = true;
+
   home.packages = with pkgs; [
     htop
     tree
     fortune
     starship
+    pinentry
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;
@@ -20,9 +23,15 @@
 
   services.gpg-agent = {
     enable = true;
-    defaultCacheTtl = 86400;
     enableSshSupport = true;
-    defaultCacheTtlSsh = 86400;
+    defaultCacheTtl = 604800;
+    defaultCacheTtlSsh = 604800;
+    pinentryFlavor = "curses";
+    extraConfig =
+    ''
+      allow-emacs-pinentry
+      allow-loopback-pinentry
+     '';
   };
 
   programs.vim = {
