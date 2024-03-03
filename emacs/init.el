@@ -269,7 +269,12 @@
  version-control t
  delete-old-versions t
  kept-old-versions 100
- create-lockfiles nil)
+ create-lockfiles nil
+
+ ;; handle C-h on terminals; maps help-command to <f1>; keeeps
+ ;; backspace behavior of C-h
+ normal-erase-is-backspace t
+ )
 
 ;; ensure that auto-save files end up in the right place
 (append auto-save-file-name-transforms
@@ -286,6 +291,7 @@
 
 ;; hide ugly buttons on the toolbar
 (tool-bar-mode -1)
+
 
 ;;
 ;; Org Mode
