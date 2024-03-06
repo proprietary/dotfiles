@@ -168,10 +168,10 @@
 ;;
 
 ;; 4 width spaces as indentation
-(setq standard-indent 4)
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-(setq c-basic-indent 4)
+(setopt standard-indent 4
+        tab-width 4
+        indent-tabs-mode nil
+        c-basic-indent 4)
 
 ;; Customize word boundaries to treat '_' as part of words
 (modify-syntax-entry ?_ "w")
@@ -182,10 +182,6 @@
 ;; Customize word boundaries to treat '/' as part of words
 (modify-syntax-entry ?/ "w")
 (put 'upcase-region 'disabled nil)
-
-;; scroll smoothly one step at a time
-(setq scroll-step 1
-      scroll-conservatively 10000)
 
 ;; move region
 (require 'move-region)
@@ -198,7 +194,9 @@
 (evil-define-key 'normal 'global (kbd "M-S-<down>") 'zelcon/move-line-down)
 
 ;; which-key
-(use-package which-key :ensure t)
+(use-package which-key :ensure t
+  :config
+  (add-hook 'after-init-hook 'which-key-mode))
 
 ;; ace-jump-mode
 (use-package ace-jump-mode
