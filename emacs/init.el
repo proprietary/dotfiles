@@ -343,6 +343,13 @@
         (verilog "https://github.com/tree-sitter/tree-sitter-verilog")))
 
 
+;; Remap common major modes to tree-sitter versions
+(add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
+(add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
+(add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
+
+
+;; Associate file extensions
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.lua\\'" . lua-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.jl\\'" . julia-ts-mode))
