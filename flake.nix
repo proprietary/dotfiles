@@ -23,7 +23,21 @@
       ];
     };
 
+    nixosConfigurations.thinkpad-t420 = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./hosts/thinkpad-t420/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.zds = import ./home-manager/home.nix;
+        }
+      ];
+    };
+
     homeConfigurations = {
+      # Use with `home-manager switch --flake .`
       "zds@gpu-server-01" = home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs {
           system = "x86_64-linux";
@@ -33,6 +47,15 @@
           ./home-manager/home.nix
         ];
       };
+      "zds@thinkpad-t420" = home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          config.allowUnfree = true;
+        };
+        modules = [
+          ./home-manager/home.nix
+        ];
+     };
     };
   };
 }

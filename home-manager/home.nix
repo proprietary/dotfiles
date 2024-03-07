@@ -8,9 +8,6 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
-    htop
-    tree
-    fortune
     starship
     pinentry
   ];
@@ -35,7 +32,6 @@
   };
 
   programs.vim = {
-    enable = true;
     plugins = with pkgs.vimPlugins; [
       vim-nix
       vim-fugitive
