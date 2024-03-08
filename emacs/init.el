@@ -408,6 +408,9 @@ this once."
 (evil-define-key 'normal eglot-mode-map (kbd "SPC f") 'eglot-format-buffer)
 (evil-define-key 'normal eglot-mode-map (kbd "SPC a") 'eglot-code-actions)
 
+(evil-define-key 'normal eglot-mode-map (kbd "SPC <down>") 'flymake-goto-next-error)
+(evil-define-key 'normal eglot-mode-map (kbd "SPC <up>") 'flymake-goto-prev-error)
+
 (defun zelcon/clear-eglot-server-program (mode-name)
   (setq eglot-server-programs
         (assoc-delete-all mode-name
