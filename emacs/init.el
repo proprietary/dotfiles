@@ -459,8 +459,7 @@ this once."
   :defer t
   :config
   (require 'org)
-  (when (boundp evil-mode)
-    (evil-set-initial-state 'feature-mode 'emacs)))
+  )
  
 ;;;
 ;;; Completion
