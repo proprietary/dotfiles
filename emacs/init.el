@@ -343,7 +343,6 @@
 
 ;; Remap common major modes to tree-sitter versions
 (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
-(add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
 (add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
@@ -435,6 +434,11 @@ this once."
   (add-to-list 'eglot-server-programs
                '(nix-ts-mode (eglot-alternatives '("nixd" "rnix-lsp")))))
 
+;; YAML
+(use-package yaml-pro :ensure t
+  :mode ("\\.yaml\\'" . yaml-pro-ts-mode)
+  :hook (yaml-pro-ts-mode . eglot-ensure))
+
 ;; Clojure
 (use-package clojure-ts-mode :ensure t)
 
@@ -514,7 +518,6 @@ this once."
     "Accept copilot or company completion, or indent if no completion is available."
     (interactive)
     (or (copilot-accept-completion)
-        (company-indent-or-complete-common nil)
         (evil-insert 1)
         (indent-for-tab-command)))
   (defun zelcon/copilot-c-tab ()
