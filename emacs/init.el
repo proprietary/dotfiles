@@ -668,7 +668,8 @@ this once."
          (js-json-mode . indent-bars-mode)
          (tsx-ts-mode . indent-bars-mode)
          (json-ts-mode . indent-bars-mode)
-         (nxml-mode . indent-bars-mode))
+         (nxml-mode . indent-bars-mode)
+         (java-ts-mode . indent-bars-mode))
   :custom
   (indent-bars-treesit-support (treesit-available-p))
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
