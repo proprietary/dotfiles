@@ -434,6 +434,9 @@ this once."
   (add-to-list 'eglot-server-programs
                '(nix-ts-mode (eglot-alternatives '("nixd" "rnix-lsp")))))
 
+;; SQL
+(use-package sql-cassandra :ensure t)
+
 ;; YAML
 (use-package yaml-pro :ensure t
   :mode ("\\.yaml\\'" . yaml-pro-ts-mode)
@@ -659,6 +662,9 @@ this once."
     (setq indent-bars-prefer-character t))
   :hook ((python-ts-mode . indent-bars-mode)
          (yaml-ts-mode . indent-bars-mode)
+         (yaml-pro-mode . indent-bars-mode)
+         (yaml-pro-ts-mode . indent-bars-mode)
+         (yaml-mode . indent-bars-mode)
          (js-json-mode . indent-bars-mode)
          (tsx-ts-mode . indent-bars-mode)
          (json-ts-mode . indent-bars-mode)
