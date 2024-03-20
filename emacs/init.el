@@ -449,7 +449,7 @@ this once."
 (use-package verilog-ts-mode :ensure t)
 
 ;; Julia
-(use-package julia-ts-mode :ensure t)
+(use-package julia-ts-mode :ensure t :disabled t)
 
 ;; Markdown
 (use-package markdown-mode :ensure t)
@@ -593,7 +593,7 @@ this once."
 (setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
                "*Messages*" "Async Shell Command"))
 
- 
+
 
 ;; searching
 (setopt
@@ -617,18 +617,20 @@ this once."
 
 ;; theme
 (use-package solarized-theme
+  :disabled t
   :ensure t
   :config
   (load-theme 'solarized-dark t))
 
-(use-package challenger-deep-theme
-  :disabled
-  :ensure t
-  :config
-  (load-theme 'challenger-deep t))
-
 ;; always highlight current line
 (global-hl-line-mode)
+
+;; whitespace-mode
+(setopt
+ whitespace-style
+ '(face trailing tabs spaces empty indentation space-after-tab
+        space-before-tab space-mark tab-mark))
+(global-whitespace-mode 1)
 
 ;; frame size
 (defun zelcon/set-frame-size-according-to-resolution ()
@@ -639,10 +641,9 @@ this once."
                (add-to-list 'default-frame-alist '(height . 180))
                (add-to-list 'default-frame-alist '(width . 140)))
       (progn (set-frame-size (selected-frame) 80 65)
-                (add-to-list 'default-frame-alist '(height . 80))
-                (add-to-list 'default-frame-alist '(width . 65))))))
+             (add-to-list 'default-frame-alist '(height . 80))
+             (add-to-list 'default-frame-alist '(width . 65))))))
 (add-hook 'after-init-hook 'zelcon/set-frame-size-according-to-resolution)
-
 
 ;; line numbers
 (global-display-line-numbers-mode)
