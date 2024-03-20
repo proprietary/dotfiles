@@ -16,8 +16,8 @@
 
 (eval-when-compile
   (let ((default-directory (expand-file-name
-			                (concat user-emacs-directory
-				                    "third_party"))))
+                            (concat user-emacs-directory
+                                    "third_party"))))
     (normal-top-level-add-subdirs-to-load-path))
   (require 'use-package))
 
@@ -290,6 +290,9 @@
 ;; hide ugly buttons on the toolbar
 (tool-bar-mode -1)
 
+;; clean up whitespace
+(add-hook 'before-save-hook 'whitespace-cleanup)
+
 
 ;;
 ;; Org Mode
@@ -467,7 +470,7 @@ this once."
   :config
   (require 'org)
   )
- 
+
 ;;;
 ;;; Completion
 ;;; ----------
@@ -608,7 +611,6 @@ this once."
         (isearch-forward search-term))
     (isearch-forward-thing-at-point)))
 (evil-define-key '(normal) 'global (kbd "SPC s") 'zelcon/isearch-region-or-thing-at-point)
-
 
 ;;
 ;; Appearance
