@@ -617,10 +617,9 @@ this once."
 
 ;; theme
 (use-package solarized-theme
-  :disabled t
   :ensure t
   :config
-  (load-theme 'solarized-dark t))
+  (load-theme 'solarized-zenburn t))
 
 ;; always highlight current line
 (global-hl-line-mode)
