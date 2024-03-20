@@ -349,6 +349,7 @@
 (add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+(add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
 
 
 ;; Associate file extensions
@@ -441,9 +442,14 @@ this once."
 (use-package sql-cassandra :ensure t)
 
 ;; YAML
+(defun zelcon/set-yaml-tab-width ()
+  (setq-default tab-width 2))
+(add-hook 'yaml-ts-mode-hook 'zelcon/set-yaml-tab-width)
 (use-package yaml-pro :ensure t
-  :mode ("\\.yaml\\'" . yaml-pro-ts-mode)
-  :hook (yaml-pro-ts-mode . eglot-ensure))
+  :hook ((yaml-ts-mode . yaml-pro-ts-mode)
+         (yaml-pro-ts-mode . eglot-ensure))
+  :config
+  (setq-default tab-width 2))
 
 ;; Clojure
 (use-package clojure-ts-mode :ensure t)
@@ -672,8 +678,6 @@ this once."
     (setq indent-bars-prefer-character t))
   :hook ((python-ts-mode . indent-bars-mode)
          (yaml-ts-mode . indent-bars-mode)
-         (yaml-pro-mode . indent-bars-mode)
-         (yaml-pro-ts-mode . indent-bars-mode)
          (yaml-mode . indent-bars-mode)
          (js-json-mode . indent-bars-mode)
          (tsx-ts-mode . indent-bars-mode)
