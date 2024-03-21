@@ -631,7 +631,15 @@ this once."
  whitespace-style
  '(face trailing tabs spaces empty indentation space-after-tab
         space-before-tab space-mark tab-mark))
-(global-whitespace-mode 1)
+(add-hook 'c++-ts-mode-hook 'whitespace-mode)
+(add-hook 'yaml-ts-mode-hook 'whitespace-mode)
+(add-hook 'python-ts-mode-hook 'whitespace-mode)
+(add-hook 'json-ts-mode-hook 'whitespace-mode)
+(add-hook 'java-ts-mode-hook 'whitespace-mode)
+(add-hook 'lua-ts-mode-hook 'whitespace-mode)
+(add-hook 'lisp-mode-hook 'whitespace-mode)
+(add-hook 'clojure-ts-mode-hook 'whitespace-mode)
+(add-hook 'rust-ts-mode-hook 'whitespace-mode)
 
 ;; frame size
 (defun zelcon/set-frame-size-according-to-resolution ()
