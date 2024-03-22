@@ -451,6 +451,11 @@ this once."
   :config
   (setq-default tab-width 2))
 
+;; Ruby
+(add-to-list 'eglot-server-programs
+             '((ruby-mode ruby-ts-mode) .
+               ("ruby-lsp")))
+
 ;; Clojure
 (use-package clojure-ts-mode :ensure t)
 
