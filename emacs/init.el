@@ -432,6 +432,11 @@ this once."
 ;; CMake
 (use-package cmake-mode :ensure t)
 
+;; Makefile
+(with-eval-after-load 'makefile-mode
+  (setq-default tab-width 4)
+  (indent-tabs-mode 1))
+
 ;; Nix
 (use-package nix-ts-mode :ensure t :mode "\\.nix\\'"
   :config
@@ -448,6 +453,8 @@ this once."
 (use-package yaml-pro :ensure t
   :hook ((yaml-ts-mode . yaml-pro-ts-mode)
          (yaml-pro-ts-mode . eglot-ensure))
+  :custom
+  (yaml-indent-offset 2)
   :config
   (setq-default tab-width 2))
 
