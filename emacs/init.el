@@ -115,6 +115,9 @@
   (require 'exec-path-from-shell)
   (exec-path-from-shell-initialize))
 
+(when (eq system-type 'darwin)
+  (setopt dired-use-ls-dired nil))
+
 ;;
 ;; evil-mode
 ;; ---------
