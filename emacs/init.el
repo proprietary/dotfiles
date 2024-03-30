@@ -116,7 +116,11 @@
   (exec-path-from-shell-initialize))
 
 (when (eq system-type 'darwin)
-  (setopt dired-use-ls-dired nil))
+  (if-let ((gnu-ls (executable-find "gls")))
+      (setopt dired-use-ls t
+              insert-directory-program gnu-ls
+              dired-listing-switches "-aBhl --group-directories-first")
+    (setopt dired-use-ls-dired nil)))
 
 ;;
 ;; evil-mode
