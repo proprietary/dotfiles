@@ -1,8 +1,8 @@
 { config, ... }:
 let
-  net_zelcon_wg_endpoint = ../../secrets/eval-time-secrets/net_zelcon_wg_endpoint;
+  net_zelcon_wg_endpoint = ../../secrets/eval-time-secrets/net_zelcon/wg/endpoint;
   endpoint = builtins.readFile net_zelcon_wg_endpoint;
-  net_zelcon_wg_pubkey = ../../secrets/eval-time-secrets/net_zelcon_wg_pubkey;
+  net_zelcon_wg_pubkey = ../../secrets/eval-time-secrets/net_zelcon/wg/pubkey;
   pubkey = builtins.readFile net_zelcon_wg_pubkey;
 in
 {

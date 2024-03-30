@@ -21,5 +21,21 @@
     secrets."net_zelcon/ssh_CA_pub" = {
       mode = "0640";
     };
+    secrets."flamingo/wg/prv" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
+    secrets."flamingo/wg/mbp/psk" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
+    secrets."flamingo/wg/omen/psk" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
+    secrets."flamingo/wg/iphone15/psk" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
   };
 }

@@ -10,6 +10,7 @@
       ./hardware-configuration.nix
       ./sops.nix
       ./zelcon.net-vpn.nix
+      ./flamingo-vpn.nix
     ];
 
   # Bootloader.
@@ -208,6 +209,8 @@
       matchConfig.Name = "enp*s*";
       networkConfig = {
         DHCP = "yes";
+        IPForward = "yes";
+        IPMasquerade = "both";
       };
     };
   };
