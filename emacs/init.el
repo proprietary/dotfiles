@@ -639,6 +639,15 @@ this once."
 (evil-define-key '(normal) 'global (kbd "SPC s") 'zelcon/isearch-region-or-thing-at-point)
 
 ;;
+;; Misc
+;; ----
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
+;;
 ;; Appearance
 ;; ----------
 ;;
