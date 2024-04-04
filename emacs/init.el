@@ -276,7 +276,7 @@
  kept-old-versions 100
  create-lockfiles nil
 
- ;; handle C-h on terminals; maps help-command to <f1>; keeeps
+ ;; handle C-h on terminals
  ;; backspace behavior of C-h
  normal-erase-is-backspace t
  )
@@ -546,23 +546,8 @@ this once."
    (shell-script-mode . copilot-mode))
   :config
   (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char))
-  (defun zelcon/copilot-tab ()
-    "Accept copilot or company completion, or indent if no completion is available."
-    (interactive)
-    (or (copilot-accept-completion)
-        (evil-insert 1)
-        (indent-for-tab-command)))
-  (defun zelcon/copilot-c-tab ()
-    (interactive)
-    (or (copilot-accept-completion-by-line)
-        (evil-insert 1)
-        (indent-for-tab-command)))
-  (define-key company-active-map (kbd "TAB") 'zelcon/copilot-tab)
-  (define-key company-active-map (kbd "<tab>") 'zelcon/copilot-tab)
-  (define-key copilot-completion-map (kbd "TAB") 'zelcon/copilot-tab)
-  (define-key copilot-completion-map (kbd "<tab>") 'zelcon/copilot-tab)
-  (define-key copilot-completion-map (kbd "C-M-<tab>") 'zelcon/copilot-c-tab)
-  (define-key copilot-completion-map (kbd "C-M-TAB") 'zelcon/copilot-c-tab)
+  (define-key copilot-completion-map (kbd "M-<tab>") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "M-TAB") 'copilot-accept-completion-by-word)
   (define-key copilot-mode-map (kbd "C-'") 'copilot-accept-completion-by-word)
   (define-key copilot-completion-map (kbd "<backtab>") 'copilot-previous-completion)
   (define-key copilot-completion-map (kbd "<f7>") 'copilot-accept-completion-by-word)
@@ -608,6 +593,15 @@ this once."
                                  :embedding-model "deepseek-coder:6.7b-instruct"))))
   :config
   (setq ellama-keymap-prefix "C-c e"))
+
+;; Yasnippet
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
+;; install official snippets
+(use-package yasnippet-snippets
+  :ensure t)
 
 ;; minibuffer completions
 (fido-mode 1)
@@ -757,12 +751,6 @@ this once."
   :ensure t
   :custom
   (highlight-symbol-idle-delay 1.5))
-
-;; Yasnippet
-(use-package yasnippet
-  :ensure t
-  :config
-  (yas-global-mode 1))
 
 (setq package-install-upgrade-built-in t)
 
