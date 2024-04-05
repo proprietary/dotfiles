@@ -548,6 +548,8 @@ this once."
   (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char))
   (define-key copilot-completion-map (kbd "M-<tab>") 'copilot-accept-completion-by-word)
   (define-key copilot-completion-map (kbd "M-TAB") 'copilot-accept-completion-by-word)
+  (define-key copilot-completion-map (kbd "C-M-<tab>") 'copilot-accept-completion-by-line)
+  (define-key copilot-completion-map (kbd "C-M-TAB") 'copilot-accept-completion-by-line)
   (define-key copilot-mode-map (kbd "C-'") 'copilot-accept-completion-by-word)
   (define-key copilot-completion-map (kbd "<backtab>") 'copilot-previous-completion)
   (define-key copilot-completion-map (kbd "<f7>") 'copilot-accept-completion-by-word)
