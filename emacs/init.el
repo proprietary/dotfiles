@@ -279,6 +279,9 @@
  ;; handle C-h on terminals
  ;; backspace behavior of C-h
  normal-erase-is-backspace t
+
+ ;; send deleted files to system Trash instead of physically deleting them
+ delete-by-moving-to-trash t
  )
 
 ;; ensure that auto-save files end up in the right place
