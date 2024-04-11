@@ -500,6 +500,11 @@ this once."
   (require 'org)
   )
 
+(setopt xref-backend-functions
+        '(eglot-xref-backend
+          etags--xref-backend
+          t))
+
 ;;;
 ;;; Completion
 ;;; ----------
