@@ -500,8 +500,12 @@ this once."
   (require 'org)
   )
 
+(use-package ggtags
+  :ensure t)
+
 (setopt xref-backend-functions
         '(eglot-xref-backend
+          ggtags-xref-backend
           etags--xref-backend
           t))
 
@@ -650,6 +654,16 @@ this once."
   :ensure t
   :config
   (editorconfig-mode 1))
+
+;; Insert shell commands to buffer
+(defun zelcon/insert-shell-command-output (command)
+  "Insert the output of a shell command into the current buffer."
+  (interactive "sShell command: ")
+  (insert
+   (string-trim-right
+    (shell-command-to-string command))))
+(evil-define-key 'normal 'global (kbd "SPC !") 'zelcon/insert-shell-command-output)
+(evil-define-key 'insert 'global (kbd "C-c !") 'zelcon/insert-shell-command-output)
 
 ;;
 ;; Appearance
