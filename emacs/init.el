@@ -282,6 +282,9 @@
 
  ;; send deleted files to system Trash instead of physically deleting them
  delete-by-moving-to-trash t
+
+ ;; prevent dired buffer clutter
+ dired-kill-when-opening-new-dired-buffer t
  )
 
 ;; ensure that auto-save files end up in the right place
