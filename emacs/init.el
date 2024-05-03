@@ -287,6 +287,9 @@
  dired-kill-when-opening-new-dired-buffer t
  )
 
+;; allow use of dired-find-alternate-file
+(put 'dired-find-alternate-file 'disabled nil)
+
 ;; ensure that auto-save files end up in the right place
 (append auto-save-file-name-transforms
         `((".*" ,(concat user-emacs-directory "backups") t)))
