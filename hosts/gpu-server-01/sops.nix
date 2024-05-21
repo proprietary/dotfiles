@@ -37,5 +37,9 @@
       group = config.users.users.systemd-network.name;
       mode = "0640";
     };
+    secrets."flamingo/wg/iphonex/psk" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
   };
 }

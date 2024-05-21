@@ -22,6 +22,14 @@
           }
           {
             wireguardPeerConfig = {
+              PublicKey = builtins.readFile ../../secrets/eval-time-secrets/flamingo/wg/iphonex/pubkey;
+              PresharedKeyFile = config.sops.secrets."flamingo/wg/iphonex/psk".path;
+              AllowedIPs = ["172.21.22.4/32" "fd02:9068:ef84:babe::4/128"];
+              PersistentKeepalive = 25;
+            };
+          }
+          {
+            wireguardPeerConfig = {
               PublicKey = builtins.readFile ../../secrets/eval-time-secrets/flamingo/wg/mbp/pubkey;
               PresharedKeyFile = config.sops.secrets."flamingo/wg/mbp/psk".path;
               AllowedIPs = ["172.21.22.2/32" "fd02:9068:ef84:babe::2/128"];
