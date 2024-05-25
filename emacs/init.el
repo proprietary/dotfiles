@@ -324,7 +324,7 @@
 
 ;; tree-sitter
 (setq treesit-language-source-alist
-      '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+      `((bash "https://github.com/tree-sitter/tree-sitter-bash")
         (c "https://github.com/tree-sitter/tree-sitter-c")
         (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
         (java "https://github.com/tree-sitter/tree-sitter-java")
@@ -332,8 +332,6 @@
         (commonlisp "https://github.com/tree-sitter-grammars/tree-sitter-commonlisp")
         (python "https://github.com/tree-sitter/tree-sitter-python")
         (go "https://github.com/tree-sitter/tree-sitter-go")
-        (go-mod "https://github.com/camdencheek/tree-sitter-go-mod")
-        (go-work "https://github.com/omertuc/tree-sitter-go-work")
         (yaml "https://github.com/ikatyang/tree-sitter-yaml")
         (starlark "https://github.com/amaanq/tree-sitter-starlark")
         (lua "https://github.com/tree-sitter-grammars/tree-sitter-lua")
@@ -343,7 +341,6 @@
         (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-        (swift "https://github.com/alex-pinkus/tree-sitter-swift")
         (toml "https://github.com/ikatyang/tree-sitter-toml")
         (latex "https://github.com/latex-lsp/tree-sitter-latex")
         (rust "https://github.com/tree-sitter/tree-sitter-rust")
@@ -357,7 +354,8 @@
         (clojure "https://github.com/sogaiu/tree-sitter-clojure")
         (proto "https://github.com/mitchellh/tree-sitter-proto")
         (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
-        (verilog "https://github.com/tree-sitter/tree-sitter-verilog")))
+        (verilog "https://github.com/tree-sitter/tree-sitter-verilog")
+        ))
 
 
 ;; Remap common major modes to tree-sitter versions
@@ -381,14 +379,23 @@
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.swift" . swift-ts-mode))
 
+(defun zelcon/install-tree-sitter-swift ()
+  (interactive)
+  (let ((parser-path (concat user-emacs-directory (file-name-as-directory "third_party") (file-name-as-directory "tree-sitter-swift"))))
+    (shell-command (format "cd %s && npm run build && make && cp libtree-sitter-swift.* $HOME/.emacs.d/tree-sitter" parser-path))))
 
 (defun zelcon/install-tree-sitter-langs ()
   "Install all tree-sitter languages. Typically you only need to run
 this once."
   (interactive)
   (mapc #'treesit-install-language-grammar
-        (mapcar #'car treesit-language-source-alist)))
+        (mapcar #'car treesit-language-source-alist))
+  (zelcon/install-tree-sitter-swift))
+
+;; Swift
+(use-package swift-ts-mode :ensure t)
 
 ;; Lisp
 (use-package slime :ensure t)

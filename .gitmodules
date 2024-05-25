@@ -4,3 +4,6 @@
 [submodule "emacs/third_party/emacs-bazel-mode"]
 	path = emacs/third_party/emacs-bazel-mode
 	url = https://github.com/bazelbuild/emacs-bazel-mode.git
+[submodule "emacs/third_party/tree-sitter-swift"]
+	path = emacs/third_party/tree-sitter-swift
+	url = https://github.com/alex-pinkus/tree-sitter-swift.git
