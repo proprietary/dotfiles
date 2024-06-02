@@ -467,6 +467,9 @@ this once."
   (add-to-list 'eglot-server-programs
                '(nix-ts-mode (eglot-alternatives '("nixd" "rnix-lsp")))))
 
+;; Terraform
+(use-package terraform-mode :ensure t)
+
 ;; SQL
 (use-package sql-cassandra :ensure t)
 
