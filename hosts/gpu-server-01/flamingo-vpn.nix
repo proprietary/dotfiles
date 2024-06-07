@@ -44,6 +44,14 @@
               PersistentKeepalive = 25;
             };
           }
+          {
+            wireguardPeerConfig = {
+              PublicKey = builtins.readFile ../../secrets/eval-time-secrets/flamingo/wg/raspi/pubkey;
+              PresharedKeyFile = config.sops.secrets."flamingo/wg/raspi/psk".path;
+              AllowedIPs = ["172.21.22.5/32"];
+              PersistentKeepalive = 25;
+            };
+          }
         ];
       };
     };

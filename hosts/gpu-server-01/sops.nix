@@ -41,5 +41,9 @@
       group = config.users.users.systemd-network.name;
       mode = "0640";
     };
+    secrets."flamingo/wg/raspi/psk" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
   };
 }
