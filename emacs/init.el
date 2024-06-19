@@ -363,7 +363,6 @@
 (add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
-(add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
 (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
 
 
@@ -481,7 +480,8 @@ this once."
   (setq-default tab-width 2))
 (add-hook 'yaml-ts-mode-hook 'zelcon/set-yaml-tab-width)
 (use-package yaml-pro :ensure t
-  :hook ((yaml-ts-mode . yaml-pro-ts-mode)
+  :hook ((yaml-mode . yaml-pro-ts-mode)
+         (yaml-ts-mode . yaml-pro-ts-mode)
          (yaml-pro-ts-mode . eglot-ensure))
   :custom
   (yaml-indent-offset 2)
@@ -692,7 +692,7 @@ this once."
 (use-package solarized-theme
   :ensure t
   :config
-  (load-theme 'solarized-zenburn t))
+  (load-theme 'solarized-wombat-dark t))
 
 ;; always highlight current line
 (global-hl-line-mode)
@@ -703,7 +703,7 @@ this once."
  '(face trailing tabs spaces empty indentation space-after-tab
         space-before-tab space-mark tab-mark))
 (add-hook 'c++-ts-mode-hook 'whitespace-mode)
-(add-hook 'yaml-ts-mode-hook 'whitespace-mode)
+(add-hook 'yaml-mode 'whitespace-mode)
 (add-hook 'python-ts-mode-hook 'whitespace-mode)
 (add-hook 'json-ts-mode-hook 'whitespace-mode)
 (add-hook 'java-ts-mode-hook 'whitespace-mode)
