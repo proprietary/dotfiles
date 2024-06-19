@@ -610,6 +610,7 @@ this once."
           (make-llm-ollama
            :chat-model "deepseek-coder-v2:16b"
            :embedding-model "deepseek-coder-v2:16b"))
+  (setopt ellama-language "English")
   (setopt ellama-providers
           '(("wizardcoder" . (make-llm-ollama
                              :chat-model "wizardcoder:33b-v1.1"
@@ -624,7 +625,7 @@ this once."
                                  :chat-model "deepseek-coder:6.7b-instruct"
                                  :embedding-model "deepseek-coder:6.7b-instruct"))))
   :config
-  (setq ellama-keymap-prefix "C-c e"))
+  (setopt ellama-keymap-prefix "C-c e"))
 
 ;; Yasnippet
 (use-package yasnippet
