@@ -111,9 +111,9 @@
 ;; -----
 
 ;; Make the shell PATH work in windowed GUI mode
-(when (memq window-system '(mac ns x))
-  (require 'exec-path-from-shell)
-  (exec-path-from-shell-initialize))
+;; (when (memq window-system '(mac ns x))
+;;   (require 'exec-path-from-shell)
+;;   (exec-path-from-shell-initialize))
 
 (when (eq system-type 'darwin)
   (if-let ((gnu-ls (executable-find "gls")))
@@ -384,7 +384,7 @@
 (defun zelcon/install-tree-sitter-swift ()
   (interactive)
   (let ((parser-path (concat user-emacs-directory (file-name-as-directory "third_party") (file-name-as-directory "tree-sitter-swift"))))
-    (shell-command (format "cd %s && npm run build && make && cp libtree-sitter-swift.* $HOME/.emacs.d/tree-sitter" parser-path))))
+    (async-shell-command (format "cd %s && npm run build && make && cp libtree-sitter-swift.* $HOME/.emacs.d/tree-sitter" parser-path) nil nil)))
 
 (defun zelcon/install-tree-sitter-langs ()
   "Install all tree-sitter languages. Typically you only need to run
@@ -413,6 +413,9 @@ this once."
 ;; Language Server Protocol (LSP)
 
 (require 'eglot)
+
+(add-to-list 'warning-suppress-types '(eglot eglot--server-stderr))
+(add-to-list 'warning-suppress-log-types '(eglot eglot--server-stderr))
 
 (add-hook 'python-ts-mode-hook 'eglot-ensure)
 (add-hook 'java-ts-mode-hook 'eglot-ensure)
@@ -533,7 +536,6 @@ this once."
 (use-package company
   :ensure t
   :config
-  (define-key company-active-map (kbd "<tab>") nil)
   ;; disable inline previews
   (delq 'company-preview-if-just-one-frontend company-frontends)
   ;; escape from company completions
@@ -571,17 +573,17 @@ this once."
    (swift-ts-mode . copilot-mode)
    (julia-ts-mode . copilot-mode)
    (bash-ts-mode . copilot-mode)
+   (sh-mode . copilot-mode)
    (shell-script-mode . copilot-mode))
+  :custom
+  (copilot--infer-indentation-offset t)
   :config
-  (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char))
-  (define-key copilot-completion-map (kbd "M-<tab>") 'copilot-accept-completion-by-line)
-  (define-key copilot-completion-map (kbd "M-TAB") 'copilot-accept-completion-by-line)
-  (define-key copilot-completion-map (kbd "C-M-<tab>") 'copilot-accept-completion-by-line)
-  (define-key copilot-completion-map (kbd "C-M-TAB") 'copilot-accept-completion-by-line)
-  (define-key copilot-mode-map (kbd "C-'") 'copilot-accept-completion-by-word)
-  (define-key copilot-completion-map (kbd "<backtab>") 'copilot-previous-completion)
-  (define-key copilot-completion-map (kbd "<f7>") 'copilot-accept-completion-by-word)
-  (define-key copilot-completion-map (kbd "<f8>") 'copilot-accept-completion-by-line)
+  (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
+  (add-to-list 'warning-suppress-log-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
+  (define-key copilot-completion-map (kbd "C-n") 'copilot-next-completion)
+  (define-key copilot-completion-map (kbd "C-p") 'copilot-previous-completion)
+  (define-key copilot-completion-map (kbd "C-'") 'copilot-accept-completion)
+  (define-key copilot-mode-map (kbd "<f8>") 'copilot-complete)
   ;; https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
   (dolist (item '(("python-ts" . "python")
                   ("rust-ts" . "rust")
@@ -606,8 +608,8 @@ this once."
   (require 'llm-ollama)
   (setopt ellama-provider
           (make-llm-ollama
-           :chat-model "deepseek-coder:33b-instruct"
-           :embedding-model "deepseek-coder:33b-instruct"))
+           :chat-model "deepseek-coder-v2:16b"
+           :embedding-model "deepseek-coder-v2:16b"))
   (setopt ellama-providers
           '(("wizardcoder" . (make-llm-ollama
                              :chat-model "wizardcoder:33b-v1.1"
