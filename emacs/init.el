@@ -703,7 +703,7 @@ this once."
  '(face trailing tabs spaces empty indentation space-after-tab
         space-before-tab space-mark tab-mark))
 (add-hook 'c++-ts-mode-hook 'whitespace-mode)
-(add-hook 'yaml-mode 'whitespace-mode)
+(add-hook 'yaml-mode-hook 'whitespace-mode)
 (add-hook 'python-ts-mode-hook 'whitespace-mode)
 (add-hook 'json-ts-mode-hook 'whitespace-mode)
 (add-hook 'java-ts-mode-hook 'whitespace-mode)
