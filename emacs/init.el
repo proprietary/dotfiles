@@ -576,7 +576,7 @@ this once."
    (sh-mode . copilot-mode)
    (shell-script-mode . copilot-mode))
   :custom
-  (copilot--infer-indentation-offset t)
+  (copilot-indent-offset-warning-disable t)
   :config
   (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
   (add-to-list 'warning-suppress-log-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
