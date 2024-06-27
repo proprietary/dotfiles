@@ -274,7 +274,10 @@
  version-control t
  delete-old-versions t
  kept-old-versions 100
+
+ ;; Don't create those '#filename.c#' lock files (🤮🗑️)
  create-lockfiles nil
+ remote-file-name-inhibit-locks t
 
  ;; handle C-h on terminals
  ;; backspace behavior of C-h
@@ -364,6 +367,8 @@
 (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
 (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
+(when (fboundp 'yaml-ts-mode)
+  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
 
 
 ;; Associate file extensions
@@ -421,7 +426,6 @@ this once."
 (add-hook 'c-ts-mode-hook 'eglot-ensure)
 (add-hook 'c++-ts-mode-hook 'eglot-ensure)
 (add-hook 'yaml-ts-mode-hook 'eglot-ensure)
-(add-hook 'yaml-mode-hook 'eglot-ensure)
 (add-hook 'go-ts-mode-hook 'eglot-ensure)
 (add-hook 'lua-ts-mode-hook 'eglot-ensure)
 (add-hook 'javascript-ts-mode-hook 'eglot-ensure)
@@ -704,7 +708,7 @@ this once."
  '(face trailing tabs spaces empty indentation space-after-tab
         space-before-tab space-mark tab-mark))
 (add-hook 'c++-ts-mode-hook 'whitespace-mode)
-(add-hook 'yaml-mode-hook 'whitespace-mode)
+(add-hook 'yaml-ts-mode-hook 'whitespace-mode)
 (add-hook 'python-ts-mode-hook 'whitespace-mode)
 (add-hook 'json-ts-mode-hook 'whitespace-mode)
 (add-hook 'java-ts-mode-hook 'whitespace-mode)
@@ -712,6 +716,7 @@ this once."
 (add-hook 'lisp-mode-hook 'whitespace-mode)
 (add-hook 'clojure-ts-mode-hook 'whitespace-mode)
 (add-hook 'rust-ts-mode-hook 'whitespace-mode)
+(add-hook 'sql-mode-hook 'whitespace-mode)
 
 ;; frame size
 (defun zelcon/set-frame-size-according-to-resolution ()
@@ -744,7 +749,6 @@ this once."
     (setq indent-bars-prefer-character t))
   :hook ((python-ts-mode . indent-bars-mode)
          (yaml-ts-mode . indent-bars-mode)
-         (yaml-mode . indent-bars-mode)
          (js-json-mode . indent-bars-mode)
          (tsx-ts-mode . indent-bars-mode)
          (json-ts-mode . indent-bars-mode)
@@ -752,6 +756,7 @@ this once."
          (java-ts-mode . indent-bars-mode)
          (rust-ts-mode . indent-bars-mode))
   :custom
+  (indent-bars-starting-column 0)
   (indent-bars-treesit-support (treesit-available-p))
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
   (indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
