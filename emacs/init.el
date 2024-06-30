@@ -478,17 +478,19 @@ this once."
 
 ;; SQL
 (use-package sql-cassandra :ensure t)
+(add-hook 'sql-mode-hook
+          (lambda ()
+            (setopt tab-width 4)))
 
 ;; YAML
 (defun zelcon/set-yaml-tab-width ()
   (setq-default tab-width 2))
 (add-hook 'yaml-ts-mode-hook 'zelcon/set-yaml-tab-width)
+(setopt yaml-indent-offset 2)
 (use-package yaml-pro :ensure t
   :hook ((yaml-mode . yaml-pro-ts-mode)
          (yaml-ts-mode . yaml-pro-ts-mode)
          (yaml-pro-ts-mode . eglot-ensure))
-  :custom
-  (yaml-indent-offset 2)
   :config
   (setq-default tab-width 2))
 
@@ -699,6 +701,8 @@ this once."
   :config
   (load-theme 'solarized-wombat-dark t))
 
+(set-frame-font "Operator Mono 12" nil t)
+
 ;; always highlight current line
 (global-hl-line-mode)
 
@@ -733,7 +737,7 @@ this once."
 
 ;; line numbers
 (global-display-line-numbers-mode)
-(setq display-line-numbers-type 'relative)
+(setopt display-line-numbers-type 'relative)
 
 ;; column numbers
 (add-hook 'after-init-hook 'column-number-mode)
@@ -746,7 +750,8 @@ this once."
     (package-vc-install "https://github.com/jdtsmith/indent-bars.git"))
   :config
   (when (eq system-type 'darwin)
-    (setq indent-bars-prefer-character t))
+    (setopt indent-bars-prefer-character t)
+    (custom-set-faces '(whitespace-space ((t (:slant normal))))))
   :hook ((python-ts-mode . indent-bars-mode)
          (yaml-ts-mode . indent-bars-mode)
          (js-json-mode . indent-bars-mode)
