@@ -614,22 +614,18 @@ this once."
   (require 'llm-ollama)
   (setopt ellama-provider
           (make-llm-ollama
-           :chat-model "deepseek-coder-v2:16b"
-           :embedding-model "deepseek-coder-v2:16b"))
-  (setopt ellama-language "English")
+           :chat-model "deepseek-coder-v2:16b-lite-instruct-q4_0"
+           :embedding-model "deepseek-coder-v2:16b-lite-instruct-q4_0"))
   (setopt ellama-providers
-          '(("wizardcoder" . (make-llm-ollama
-                             :chat-model "wizardcoder:33b-v1.1"
-                             :embedding-model "wizardcoder:33b-v1.1"))
-            ("codellama" . (make-llm-ollama
-                            :chat-model "codellama:70b"
-                            :embedding-model "codellama:70b"))
-            ("deepseek-big" . (make-llm-ollama
-                               :chat-model "deepseek-coder:33b-instruct"
-                               :embedding-model "deepseek-coder:33b-instruct"))
-            ("deepseek-small" . (make-llm-ollama
-                                 :chat-model "deepseek-coder:6.7b-instruct"
-                                 :embedding-model "deepseek-coder:6.7b-instruct"))))
+          '(("deepseek" . (make-llm-ollama :chat-model "deepseek-coder-v2:16b-lite-instruct-q4_0"
+                                           :embedding-model "deepseek-coder-v2:16b-lite-instruct-q4_0"))
+            ("codeqwen" . (make-llm-ollama :chat-model "codeqwen:7b-chat"
+                                           :embedding-model "codeqwen:7b-chat"))
+            ("codegemma" . (make-llm-ollama :chat-model "codegemma:7b-instruct"
+                                            :embedding-model "codegemma:7b-instruct"))))
+  (setopt ellama-language "English")
+  :custom
+  (ellama-auto-scroll t)
   :config
   (setopt ellama-keymap-prefix "C-c e"))
 
@@ -701,7 +697,7 @@ this once."
   :config
   (load-theme 'solarized-wombat-dark t))
 
-(set-frame-font "Operator Mono 12" nil t)
+;(set-frame-font "Operator Mono 12" nil t)
 
 ;; always highlight current line
 (global-hl-line-mode)
