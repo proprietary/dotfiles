@@ -154,6 +154,7 @@
 (evil-set-initial-state 'messages-buffer-mode 'emacs)
 (with-current-buffer (get-buffer "*Messages*")
   (evil-emacs-state))
+(evil-set-initial-state 'Buffer-menu-mode 'emacs)
 
 (evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
 (evil-define-key 'normal 'global (kbd "SPC o") 'other-window)
@@ -310,7 +311,25 @@
 (tool-bar-mode -1)
 
 ;; clean up whitespace
-(add-hook 'before-save-hook 'whitespace-cleanup)
+(add-hook 'before-save-hook
+          (lambda ()
+            (unless (member major-mode
+                            '(org-mode
+                              markdown-mode
+                              gfm-mode
+                              makefile-mode
+                              makefile-ts-mode
+                              makefile-gmake-mode
+                              makefile-bsdmake-mode
+                              makefile-automake-mode
+                              makefile-imake-mode
+                              makefile-makepp-mode
+                              makefile-cmake-mode
+                              makefile-bsdmake-mode
+                              cmake-mode
+                              cmake-ts-mode
+                              feature-mode))
+              (whitespace-cleanup))))
 
 
 ;;
@@ -484,7 +503,9 @@ this once."
 
 ;; YAML
 (defun zelcon/set-yaml-tab-width ()
-  (setq-default tab-width 2))
+  (setq-default tab-width 2)
+  (setq-local indent-bars-spacing-override 2)
+  (setq-local indent-bars-spacing 2))
 (add-hook 'yaml-ts-mode-hook 'zelcon/set-yaml-tab-width)
 (setopt yaml-indent-offset 2)
 (use-package yaml-pro :ensure t
@@ -588,7 +609,7 @@ this once."
   (add-to-list 'warning-suppress-log-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
   (define-key copilot-completion-map (kbd "C-n") 'copilot-next-completion)
   (define-key copilot-completion-map (kbd "C-p") 'copilot-previous-completion)
-  (define-key copilot-completion-map (kbd "C-'") 'copilot-accept-completion)
+  (define-key copilot-mode-map (kbd "C-'") 'copilot-accept-completion)
   (define-key copilot-mode-map (kbd "<f8>") 'copilot-complete)
   ;; https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
   (dolist (item '(("python-ts" . "python")
@@ -697,7 +718,7 @@ this once."
   :config
   (load-theme 'solarized-wombat-dark t))
 
-;(set-frame-font "Operator Mono 12" nil t)
+(set-frame-font "Operator Mono 12" nil t)
 
 ;; always highlight current line
 (global-hl-line-mode)
