@@ -1,14 +1,32 @@
+;;; format-sql.el ---- Reformat SQL scripts using sleek -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2024   Zelly Snyder
+
+;; Author: Zelly Snyder <zelcon@zelcon.net>
+;; Keywords: languages
+;; URL: https://github.com/proprietary/dotfiles
+;; Package-Requires: ((emacs "29" (reformatter "0.3")))
+;; Version: 1
+
+;;; Commentary
+
 ;; Formats SQL in a region or in a buffer.
 ;;
-;; Requires sqlformat(1), which you can install with:
-;; $ pipx install sqlparse
+;; Requires sleek(1), which you can install with:
+;; $ cargo install sleek
 ;;
 
-(defun zelcon/format-sql-region (start end)
-  (interactive "r")
-  (if (executable-find "sleek")
-      (shell-command-on-region
-       start end
-       "sleek --uppercase true"
-       nil t nil)
-    (error "`sqlformat` not found on path")))
+(require 'reformatter)
+
+(defgroup format-sql nil "Reformat SQL scripts" :group 'languages)
+
+(defcustom format-sql-command "sleek" "Command used for formatting SQL scripts" :type 'string)
+
+;;;###autoload (autoload 'format-sql-buffer "zelcon/format-sql" nil t)
+(reformatter-define format-sql
+  :program format-sql-command
+  :args nil
+  :lighter " SQLFormat"
+  :group 'format-sql)
+
+(provide 'format-sql)

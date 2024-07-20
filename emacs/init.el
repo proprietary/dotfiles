@@ -453,6 +453,7 @@ this once."
 (add-hook 'ruby-ts-mode-hook 'eglot-ensure)
 (add-hook 'r-ts-mode-hook 'eglot-ensure)
 (add-hook 'julia-ts-mode-hook 'eglot-ensure)
+(add-hook 'go-ts-mode 'eglot-ensure)
 
 (define-key eglot-mode-map (kbd "C-c C-a") 'eglot-code-actions)
 
@@ -473,10 +474,41 @@ this once."
                               (equal our-key alist-key))))))
 
 ;; Rust
-(zelcon/clear-eglot-server-program 'rust-ts-mode)
+;; Define a setup function that runs in the mode hook.
+(defun setup-rust ()
+  "Setup for ‘rust-mode’."
+  ;; Configuration taken from rust-analyzer’s manual:
+  ;; https://rust-analyzer.github.io/manual.html#configuration
+  (setq-local eglot-workspace-configuration
+              ;; Setting the workspace configuration for every
+              ;; rust-mode buffer, you can also set it with dir-local
+              ;; variables, should you want different configuration
+              ;; per project/directory.
+              '(:rust-analyzer
+                (:check (:command "clippy")
+                 :procMacro (:attributes (:enable t) :enable t)
+                 :cargo (:features "all")
+                 :diagnostics (:disabled ["unresolved-proc-macro"
+                                          "unresolved-macro-call"])))))
+
+;; Run our setup function in ‘rust-mode-hook’.
+(add-hook 'rust-ts-mode-hook #'setup-rust)
+
+;; Define a custom eglot LSP server for rust-analyzer because it
+;; expects initializationOptions done a bit differently (see below).
+(defclass eglot-rust-analyzer (eglot-lsp-server) ()
+  :documentation "A custom class for rust-analyzer.")
+
+;; Rust-analyzer requires the workspaceConfiguration sent as
+;; initializationOptions at startup time. See
+;; https://github.com/joaotavora/eglot/discussions/845 and
+;; rust-analyzer’s manual page.
+(cl-defmethod eglot-initialization-options ((server eglot-rust-analyzer))
+  eglot-workspace-configuration)
+
+;; Use our custom ‘eglot-rust-analyzer’ for ‘rust-mode’.
 (add-to-list 'eglot-server-programs
-             '((rust-ts-mode rust-mode) .
-               ("rust-analyzer" :initializationOptions (:check (:command "clippy")))))
+             '(rust-ts-mode . (eglot-rust-analyzer "rust-analyzer")))
 
 ;; CMake
 (use-package cmake-mode :ensure t)
@@ -493,7 +525,8 @@ this once."
                '(nix-ts-mode (eglot-alternatives '("nixd" "rnix-lsp")))))
 
 ;; Terraform
-(use-package terraform-mode :ensure t)
+(use-package terraform-mode :ensure t
+  :config (add-to-list 'eglot-server-programs `((terraform-mode terraform-ts-mode) . ("terraform-ls" "serve"))))
 
 ;; SQL
 (use-package sql-cassandra :ensure t)
@@ -514,6 +547,7 @@ this once."
          (yaml-pro-ts-mode . eglot-ensure))
   :config
   (setq-default tab-width 2))
+
 
 ;; Ruby
 (add-to-list 'eglot-server-programs
@@ -689,6 +723,16 @@ this once."
 (evil-define-key '(normal) 'global (kbd "SPC s") 'zelcon/isearch-region-or-thing-at-point)
 
 ;;
+;; Code formatting
+;; ---------------
+
+(use-package reformatter :ensure t)
+
+(use-package shfmt)
+
+(use-package format-sql)
+
+;;
 ;; Misc
 ;; ----
 
@@ -826,7 +870,6 @@ this once."
 
 (setq load-prefer-newer t)
 
-(load "format-sql.el")
 (load "camelize.el")
 
 ;; load custom file
