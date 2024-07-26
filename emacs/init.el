@@ -403,6 +403,7 @@
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.swift" . swift-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.envrc" . sh-mode))
 
 (defun zelcon/install-tree-sitter-swift ()
   (interactive)
@@ -416,6 +417,27 @@ this once."
   (mapc #'treesit-install-language-grammar
         (mapcar #'car treesit-language-source-alist))
   (zelcon/install-tree-sitter-swift))
+
+(use-package tree-sitter :ensure t)
+(use-package tree-sitter-langs :ensure t
+  :hook '((rust-ts-mode . tree-sitter-hl-mode)
+          (yaml-ts-mode . tree-sitter-hl-mode)
+          (python-ts-mode . tree-sitter-hl-mode)
+          (java-ts-mode . tree-sitter-hl-mode)
+          (json-ts-mode . tree-sitter-hl-mode))
+  :config
+  (tree-sitter-require 'rust)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(rust-ts-mode . rust))
+  (tree-sitter-require 'yaml)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(yaml-ts-mode . yaml))
+  (tree-sitter-require 'java)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(java-ts-mode . java))
+  (tree-sitter-require 'python)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(python-ts-mode . python))
+  (tree-sitter-require 'go)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(go-ts-mode . go))
+  (tree-sitter-require 'json)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(json-ts-mode . json)))
 
 ;; Swift
 (use-package swift-ts-mode :ensure t)
@@ -556,6 +578,7 @@ this once."
 
 ;; Clojure
 (use-package clojure-ts-mode :ensure t)
+(use-package cider :ensure t)
 
 ;; Verilog
 (use-package verilog-ts-mode :ensure t)
@@ -631,11 +654,7 @@ this once."
    (tsx-ts-mode . copilot-mode)
    (typescript-ts-mode . copilot-mode)
    (ruby-ts-mode . copilot-mode)
-   (swift-ts-mode . copilot-mode)
-   (julia-ts-mode . copilot-mode)
-   (bash-ts-mode . copilot-mode)
-   (sh-mode . copilot-mode)
-   (shell-script-mode . copilot-mode))
+   (swift-ts-mode . copilot-mode))
   :custom
   (copilot-indent-offset-warning-disable t)
   :config
@@ -751,6 +770,12 @@ this once."
 (evil-define-key 'normal 'global (kbd "SPC !") 'zelcon/insert-shell-command-output)
 (evil-define-key 'insert 'global (kbd "C-c !") 'zelcon/insert-shell-command-output)
 
+;;;;;;;;;;;;;;;;;;;;;;;;
+;; Random keybindings ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+(evil-define-key 'normal 'global (kbd "SPC q") 'bury-buffer)
+
 ;;
 ;; Appearance
 ;; ----------
@@ -782,6 +807,9 @@ this once."
 (add-hook 'clojure-ts-mode-hook 'whitespace-mode)
 (add-hook 'rust-ts-mode-hook 'whitespace-mode)
 (add-hook 'sql-mode-hook 'whitespace-mode)
+(add-hook 'makefile-mode 'whitespace-mode)
+(add-hook 'makefile-bsdmake-mode 'whitespace-mode)
+(add-hook 'makefile-gmake-mode 'whitespace-mode)
 
 ;; frame size
 (defun zelcon/set-frame-size-according-to-resolution ()
