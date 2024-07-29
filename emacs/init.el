@@ -26,6 +26,14 @@
                                   "site-lisp"))))
   (normal-top-level-add-to-load-path '("."))
   (normal-top-level-add-subdirs-to-load-path))
+(let ((default-directory (expand-file-name
+                              (concat user-emacs-directory
+                                      "per-machine-lisp"))))
+  (when (file-exists-p default-directory)
+    (normal-top-level-add-to-load-path '("."))
+    (normal-top-level-add-subdirs-to-load-path)
+    (dolist (file (directory-files default-directory t "\\.el$"))
+      (load file))))
 
 ;; Common Lisp extensions to Emacs Lisp
 (require 'cl-lib)
