@@ -419,8 +419,9 @@ this once."
   (zelcon/install-tree-sitter-swift))
 
 (use-package tree-sitter :ensure t)
-(use-package tree-sitter-langs :ensure t
-  :hook '((rust-ts-mode . tree-sitter-hl-mode)
+(use-package tree-sitter-langs
+  :ensure t
+  :hook ((rust-ts-mode . tree-sitter-hl-mode)
           (yaml-ts-mode . tree-sitter-hl-mode)
           (python-ts-mode . tree-sitter-hl-mode)
           (java-ts-mode . tree-sitter-hl-mode)
@@ -531,6 +532,9 @@ this once."
 ;; Use our custom ‘eglot-rust-analyzer’ for ‘rust-mode’.
 (add-to-list 'eglot-server-programs
              '(rust-ts-mode . (eglot-rust-analyzer "rust-analyzer")))
+
+;; LLDB
+(use-package realgud :ensure t)
 
 ;; CMake
 (use-package cmake-mode :ensure t)
@@ -785,7 +789,7 @@ this once."
 (use-package solarized-theme
   :ensure t
   :config
-  (load-theme 'solarized-wombat-dark t))
+  (load-theme 'solarized-gruvbox-dark t))
 
 (set-frame-font "Operator Mono 12" nil t)
 
@@ -806,10 +810,11 @@ this once."
 (add-hook 'lisp-mode-hook 'whitespace-mode)
 (add-hook 'clojure-ts-mode-hook 'whitespace-mode)
 (add-hook 'rust-ts-mode-hook 'whitespace-mode)
-(add-hook 'sql-mode-hook 'whitespace-mode)
-(add-hook 'makefile-mode 'whitespace-mode)
-(add-hook 'makefile-bsdmake-mode 'whitespace-mode)
-(add-hook 'makefile-gmake-mode 'whitespace-mode)
+(add-hook 'makefile-mode-hook 'whitespace-mode)
+(add-hook 'makefile-bsdmake-mode-hook 'whitespace-mode)
+(add-hook 'makefile-gmake-mode-hook 'whitespace-mode)
+(add-hook 'sql-mode-hook (lambda ()
+                           (whitespace-mode 1)))
 
 ;; frame size
 (defun zelcon/set-frame-size-according-to-resolution ()
