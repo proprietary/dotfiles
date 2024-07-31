@@ -131,6 +131,11 @@
     (setopt dired-use-ls-dired nil)))
 
 ;;
+;; Direnv
+;; ------
+(use-package direnv :ensure t)
+
+;;
 ;; evil-mode
 ;; ---------
 ;;
@@ -543,6 +548,7 @@ this once."
 
 ;; LLDB
 (use-package realgud :ensure t)
+(use-package realgud-lldb :ensure t)
 
 ;; CMake
 (use-package cmake-mode :ensure t)
