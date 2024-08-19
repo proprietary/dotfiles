@@ -175,6 +175,7 @@
 ;; Allows you to click buttons without initiating a selection
 (define-key evil-motion-state-map [down-mouse-1] nil)
 
+(define-key evil-insert-state-map (kbd "DEL") 'backward-delete-char-untabify)
 
 ;;
 ;; Git
