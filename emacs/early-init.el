@@ -11,6 +11,7 @@
           (zelcon/make-path
            (getenv "LIBRARY_PATH")
            ;(concat (getenv "HOME") "/.local/lib")
+           (concat (getenv "HOME") "/.cargo/bin")
            "/usr/lib" "/usr/local/lib" "/opt/homebrew/lib" "/opt/homebrew/lib/gcc/current"
            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/lib"))
   (setenv "LD_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
