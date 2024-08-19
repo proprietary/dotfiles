@@ -643,7 +643,9 @@ this once."
   (delq 'company-preview-if-just-one-frontend company-frontends)
   ;; escape from company completions
   (evil-define-key 'insert company-active-map (kbd "ESC") 'company-abort)
-  :hook (prog-mode . company-mode)
+  (evil-define-key 'insert company-mode-map (kbd "C-c /") 'company-files)
+  :hook ((prog-mode . company-mode)
+         (yaml-ts-mode . company-mode))
   :custom
   (company-idle-delay 0.3))
 (use-package company-box
