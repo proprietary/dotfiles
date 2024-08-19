@@ -175,7 +175,14 @@
 ;; Allows you to click buttons without initiating a selection
 (define-key evil-motion-state-map [down-mouse-1] nil)
 
-(define-key evil-insert-state-map (kbd "DEL") 'backward-delete-char-untabify)
+
+;; hitting backspace at an indentation column with whitespace
+;; preceding the cursor also deletes backward up to the last
+;; indentation column
+(use-package hungry-delete :ensure t
+  :config
+  (global-hungry-delete-mode)
+  (setopt hungry-delete-join-reluctantly t))
 
 ;;
 ;; Git
