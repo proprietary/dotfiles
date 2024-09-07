@@ -261,9 +261,10 @@
 ;; ------------------------
 ;;
 
-(when (and (null window-system)
+(if (and (null window-system)
 	   (eq system-type 'darwin))
-  (normal-erase-is-backspace-mode 0))
+  (normal-erase-is-backspace-mode 0)
+  (normal-erase-is-backspace-mode 1))
 
 (setopt
 
