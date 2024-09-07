@@ -8,27 +8,27 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives
-             (cons "nongnu" (format "http%s://elpa.nongnu.org/nongnu/"
-                                    (if (gnutls-available-p) "s" ""))))
+	     (cons "nongnu" (format "http%s://elpa.nongnu.org/nongnu/"
+				    (if (gnutls-available-p) "s" ""))))
 (package-initialize)
 
 ;; Load vendored packages
 
 (eval-when-compile
   (let ((default-directory (expand-file-name
-                            (concat user-emacs-directory
-                                    "third_party"))))
+			    (concat user-emacs-directory
+				    "third_party"))))
     (normal-top-level-add-subdirs-to-load-path))
   (require 'use-package))
 
 (let ((default-directory (expand-file-name
-                          (concat user-emacs-directory
-                                  "site-lisp"))))
+			  (concat user-emacs-directory
+				  "site-lisp"))))
   (normal-top-level-add-to-load-path '("."))
   (normal-top-level-add-subdirs-to-load-path))
 (let ((default-directory (expand-file-name
-                              (concat user-emacs-directory
-                                      "per-machine-lisp"))))
+			      (concat user-emacs-directory
+				      "per-machine-lisp"))))
   (when (file-exists-p default-directory)
     (normal-top-level-add-to-load-path '("."))
     (normal-top-level-add-subdirs-to-load-path)
@@ -52,41 +52,41 @@
      (cond
       ;; Wayland
       ((and (string-equal (getenv "WAYLAND_DISPLAY") "wayland")
-            (executable-find "wl-copy")
-            (executable-find "wl-paste"))
+	    (executable-find "wl-copy")
+	    (executable-find "wl-paste"))
        (progn
-         (setq interprogram-cut-function
-               (lambda (text &optional push)
-                 (let* ((process-connection-type nil)
-                        (proc (start-process "wl-copy" "*Messages*" "wl-copy")))
-                   (process-send-string proc text)
-                   (process-send-eof proc))))
-         (setq interprogram-paste-function
-               (lambda (text &optional push)
-                 (shell-command-to-string "wl-paste -n")))))
+	 (setq interprogram-cut-function
+	       (lambda (text &optional push)
+		 (let* ((process-connection-type nil)
+			(proc (start-process "wl-copy" "*Messages*" "wl-copy")))
+		   (process-send-string proc text)
+		   (process-send-eof proc))))
+	 (setq interprogram-paste-function
+	       (lambda (text &optional push)
+		 (shell-command-to-string "wl-paste -n")))))
       ;; X11
        ((and (not (null window-system)) (executable-find "xsel"))
-         (progn
-           (setq interprogram-cut-function
-                 (lambda (text &optional push)
-                   (let* ((process-connection-type nil)
-                          (proc (start-process "xsel" "*Messages*" "xsel" "-i" "-b")))
-                     (process-send-string proc text)
-                     (process-send-eof proc))))
-           (setq interprogram-paste-function
-                 (lambda ()
-                   (shell-command-to-string "xsel -o -b")))))
+	 (progn
+	   (setq interprogram-cut-function
+		 (lambda (text &optional push)
+		   (let* ((process-connection-type nil)
+			  (proc (start-process "xsel" "*Messages*" "xsel" "-i" "-b")))
+		     (process-send-string proc text)
+		     (process-send-eof proc))))
+	   (setq interprogram-paste-function
+		 (lambda ()
+		   (shell-command-to-string "xsel -o -b")))))
        ;; tmux
-        ((and (getenv "TMUX") (executable-find "tmux"))
-          (setq interprogram-cut-function
-                (lambda (text &optional push)
-                  (let* ((process-connection-type nil)
-                         (proc (start-process "tmux" "*Messages*" "tmux" "load-buffer" "-")))
-                    (process-send-string proc text)
-                    (process-send-eof proc))))
-          (setq interprogram-paste-function
-                (lambda ()
-                  (shell-command-to-string "tmux paste-buffer")))))))
+	((and (getenv "TMUX") (executable-find "tmux"))
+	  (setq interprogram-cut-function
+		(lambda (text &optional push)
+		  (let* ((process-connection-type nil)
+			 (proc (start-process "tmux" "*Messages*" "tmux" "load-buffer" "-")))
+		    (process-send-string proc text)
+		    (process-send-eof proc))))
+	  (setq interprogram-paste-function
+		(lambda ()
+		  (shell-command-to-string "tmux paste-buffer")))))))
 
   (darwin
    (progn
@@ -95,9 +95,9 @@
 
      (defun zelcon/paste-to-osx (text &optional push)
        (let ((process-connection-type nil))
-         (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-           (process-send-string proc text)
-           (process-send-eof proc))))
+	 (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+	   (process-send-string proc text)
+	   (process-send-eof proc))))
 
      (setq interprogram-cut-function 'zelcon/paste-to-osx)
      (setq interprogram-paste-function 'zelcon/copy-from-osx)))
@@ -105,14 +105,14 @@
   (windows-nt
    (progn
      (setq interprogram-cut-function
-           (lambda (text &optional push)
-             (let* ((process-connection-type nil)
-                    (proc (start-process "clip" "*Messages*" "clip")))
-               (process-send-string proc text)
-               (process-send-eof proc))))
+	   (lambda (text &optional push)
+	     (let* ((process-connection-type nil)
+		    (proc (start-process "clip" "*Messages*" "clip")))
+	       (process-send-string proc text)
+	       (process-send-eof proc))))
      (setq interprogram-paste-function
-           (lambda ()
-             (shell-command-to-string "powershell.exe Get-Clipboard"))))))
+	   (lambda ()
+	     (shell-command-to-string "powershell.exe Get-Clipboard"))))))
 
 ;;
 ;; MacOS
@@ -126,8 +126,8 @@
 (when (eq system-type 'darwin)
   (if-let ((gnu-ls (executable-find "gls")))
       (setopt dired-use-ls t
-              insert-directory-program gnu-ls
-              dired-listing-switches "-aBhl --group-directories-first")
+	      insert-directory-program gnu-ls
+	      dired-listing-switches "-aBhl --group-directories-first")
     (setopt dired-use-ls-dired nil)))
 
 ;;
@@ -197,10 +197,10 @@
 ;;
 
 ;; 4 width spaces as indentation
-(setopt standard-indent 4
-        tab-width 4
-        indent-tabs-mode nil
-        c-basic-indent 4)
+;; (setopt standard-indent 4
+;;         tab-width 4
+;;         indent-tabs-mode nil
+;;         c-basic-indent 4)
 
 ;; Customize word boundaries to treat '_' as part of words
 (modify-syntax-entry ?_ "w")
@@ -261,6 +261,10 @@
 ;; ------------------------
 ;;
 
+(when (and (null window-system)
+	   (eq system-type 'darwin))
+  (normal-erase-is-backspace-mode 0))
+
 (setopt
 
  tramp-auto-save-directory "/tmp"
@@ -301,10 +305,6 @@
  create-lockfiles nil
  remote-file-name-inhibit-locks t
 
- ;; handle C-h on terminals
- ;; backspace behavior of C-h
- normal-erase-is-backspace t
-
  ;; send deleted files to system Trash instead of physically deleting them
  delete-by-moving-to-trash t
 
@@ -317,7 +317,7 @@
 
 ;; ensure that auto-save files end up in the right place
 (append auto-save-file-name-transforms
-        `((".*" ,(concat user-emacs-directory "backups") t)))
+	`((".*" ,(concat user-emacs-directory "backups") t)))
 
 ;; refresh open files to latest version on disk automtically
 ;; useful when an external program modified a file; e.g., `clang-format`
@@ -325,32 +325,29 @@
 ;; Revert Dired buffers too
 (setopt global-auto-revert-non-file-buffers t)
 
-;; In the minibuffer, make C-h do backspace, not help
-(define-key minibuffer-local-map (kbd "C-h") 'delete-backward-char)
-
 ;; hide ugly buttons on the toolbar
 (tool-bar-mode -1)
 
 ;; clean up whitespace
 (add-hook 'before-save-hook
-          (lambda ()
-            (unless (member major-mode
-                            '(org-mode
-                              markdown-mode
-                              gfm-mode
-                              makefile-mode
-                              makefile-ts-mode
-                              makefile-gmake-mode
-                              makefile-bsdmake-mode
-                              makefile-automake-mode
-                              makefile-imake-mode
-                              makefile-makepp-mode
-                              makefile-cmake-mode
-                              makefile-bsdmake-mode
-                              cmake-mode
-                              cmake-ts-mode
-                              feature-mode))
-              (whitespace-cleanup))))
+	  (lambda ()
+	    (unless (member major-mode
+			    '(org-mode
+			      markdown-mode
+			      gfm-mode
+			      makefile-mode
+			      makefile-ts-mode
+			      makefile-gmake-mode
+			      makefile-bsdmake-mode
+			      makefile-automake-mode
+			      makefile-imake-mode
+			      makefile-makepp-mode
+			      makefile-cmake-mode
+			      makefile-bsdmake-mode
+			      cmake-mode
+			      cmake-ts-mode
+			      feature-mode))
+	      (whitespace-cleanup))))
 
 
 ;;
@@ -368,37 +365,38 @@
 ;; tree-sitter
 (setq treesit-language-source-alist
       `((bash "https://github.com/tree-sitter/tree-sitter-bash")
-        (c "https://github.com/tree-sitter/tree-sitter-c")
-        (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-        (java "https://github.com/tree-sitter/tree-sitter-java")
-        (cuda "https://github.com/theHamsta/tree-sitter-cuda")
-        (commonlisp "https://github.com/tree-sitter-grammars/tree-sitter-commonlisp")
-        (python "https://github.com/tree-sitter/tree-sitter-python")
-        (go "https://github.com/tree-sitter/tree-sitter-go")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-        (starlark "https://github.com/amaanq/tree-sitter-starlark")
-        (lua "https://github.com/tree-sitter-grammars/tree-sitter-lua")
-        (json "https://github.com/tree-sitter/tree-sitter-json")
-        (cmake "https://github.com/uyha/tree-sitter-cmake")
-        (make "https://github.com/alemuller/tree-sitter-make")
-        (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-        (toml "https://github.com/ikatyang/tree-sitter-toml")
-        (latex "https://github.com/latex-lsp/tree-sitter-latex")
-        (rust "https://github.com/tree-sitter/tree-sitter-rust")
-        (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-        (make "https://github.com/alemuller/tree-sitter-make")
-        (jq "https://github.com/flurie/tree-sitter-jq")
-        (julia "https://github.com/tree-sitter/tree-sitter-julia")
-        (rst "https://github.com/stsewd/tree-sitter-rst")
-        (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-        (nix "https://github.com/nix-community/tree-sitter-nix")
-        (clojure "https://github.com/sogaiu/tree-sitter-clojure")
-        (proto "https://github.com/mitchellh/tree-sitter-proto")
-        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
-        (verilog "https://github.com/tree-sitter/tree-sitter-verilog")
-        ))
+	(c "https://github.com/tree-sitter/tree-sitter-c")
+	(cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+	(java "https://github.com/tree-sitter/tree-sitter-java")
+	(cuda "https://github.com/theHamsta/tree-sitter-cuda")
+	(commonlisp "https://github.com/tree-sitter-grammars/tree-sitter-commonlisp")
+	(python "https://github.com/tree-sitter/tree-sitter-python")
+	(go "https://github.com/tree-sitter/tree-sitter-go")
+	(gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+	(yaml "https://github.com/ikatyang/tree-sitter-yaml")
+	(starlark "https://github.com/amaanq/tree-sitter-starlark")
+	(lua "https://github.com/tree-sitter-grammars/tree-sitter-lua")
+	(json "https://github.com/tree-sitter/tree-sitter-json")
+	(cmake "https://github.com/uyha/tree-sitter-cmake")
+	(make "https://github.com/alemuller/tree-sitter-make")
+	(javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+	(toml "https://github.com/ikatyang/tree-sitter-toml")
+	(latex "https://github.com/latex-lsp/tree-sitter-latex")
+	(rust "https://github.com/tree-sitter/tree-sitter-rust")
+	(ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+	(make "https://github.com/alemuller/tree-sitter-make")
+	(jq "https://github.com/flurie/tree-sitter-jq")
+	(julia "https://github.com/tree-sitter/tree-sitter-julia")
+	(rst "https://github.com/stsewd/tree-sitter-rst")
+	(markdown "https://github.com/ikatyang/tree-sitter-markdown")
+	(nix "https://github.com/nix-community/tree-sitter-nix")
+	(clojure "https://github.com/sogaiu/tree-sitter-clojure")
+	(proto "https://github.com/mitchellh/tree-sitter-proto")
+	(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+	(verilog "https://github.com/tree-sitter/tree-sitter-verilog")
+	))
 
 
 ;; Remap common major modes to tree-sitter versions
@@ -436,17 +434,17 @@
 this once."
   (interactive)
   (mapc #'treesit-install-language-grammar
-        (mapcar #'car treesit-language-source-alist))
+	(mapcar #'car treesit-language-source-alist))
   (zelcon/install-tree-sitter-swift))
 
 (use-package tree-sitter :ensure t)
 (use-package tree-sitter-langs
   :ensure t
   :hook ((rust-ts-mode . tree-sitter-hl-mode)
-          (yaml-ts-mode . tree-sitter-hl-mode)
-          (python-ts-mode . tree-sitter-hl-mode)
-          (java-ts-mode . tree-sitter-hl-mode)
-          (json-ts-mode . tree-sitter-hl-mode))
+	  (yaml-ts-mode . tree-sitter-hl-mode)
+	  (python-ts-mode . tree-sitter-hl-mode)
+	  (java-ts-mode . tree-sitter-hl-mode)
+	  (json-ts-mode . tree-sitter-hl-mode))
   :config
   (tree-sitter-require 'rust)
   (add-to-list 'tree-sitter-major-mode-language-alist '(rust-ts-mode . rust))
@@ -471,11 +469,11 @@ this once."
 (use-package paredit
   :ensure t
   :hook '((emacs-lisp-mode . paredit-mode)
-          (common-lisp-mode . paredit-mode)
-          (clojure-mode . paredit-mode)
-          (scheme-mode . paredit-mode)
-          (racket-mode . paredit-mode)
-          (lisp-mode . paredit-mode)))
+	  (common-lisp-mode . paredit-mode)
+	  (clojure-mode . paredit-mode)
+	  (scheme-mode . paredit-mode)
+	  (racket-mode . paredit-mode)
+	  (lisp-mode . paredit-mode)))
 
 ;; Language Server Protocol (LSP)
 
@@ -510,12 +508,12 @@ this once."
 
 (defun zelcon/clear-eglot-server-program (mode-name)
   (setq eglot-server-programs
-        (assoc-delete-all mode-name
-                          eglot-server-programs
-                          (lambda (alist-key our-key)
-                            (if (listp alist-key)
-                                (member our-key alist-key)
-                              (equal our-key alist-key))))))
+	(assoc-delete-all mode-name
+			  eglot-server-programs
+			  (lambda (alist-key our-key)
+			    (if (listp alist-key)
+				(member our-key alist-key)
+			      (equal our-key alist-key))))))
 
 ;; Rust
 ;; Define a setup function that runs in the mode hook.
@@ -524,16 +522,16 @@ this once."
   ;; Configuration taken from rust-analyzer’s manual:
   ;; https://rust-analyzer.github.io/manual.html#configuration
   (setq-local eglot-workspace-configuration
-              ;; Setting the workspace configuration for every
-              ;; rust-mode buffer, you can also set it with dir-local
-              ;; variables, should you want different configuration
-              ;; per project/directory.
-              '(:rust-analyzer
-                (:check (:command "clippy")
-                 :procMacro (:attributes (:enable t) :enable t)
-                 :cargo (:features "all")
-                 :diagnostics (:disabled ["unresolved-proc-macro"
-                                          "unresolved-macro-call"])))))
+	      ;; Setting the workspace configuration for every
+	      ;; rust-mode buffer, you can also set it with dir-local
+	      ;; variables, should you want different configuration
+	      ;; per project/directory.
+	      '(:rust-analyzer
+		(:check (:command "clippy")
+		 :procMacro (:attributes (:enable t) :enable t)
+		 :cargo (:features "all")
+		 :diagnostics (:disabled ["unresolved-proc-macro"
+					  "unresolved-macro-call"])))))
 
 ;; Run our setup function in ‘rust-mode-hook’.
 (add-hook 'rust-ts-mode-hook #'setup-rust)
@@ -552,7 +550,7 @@ this once."
 
 ;; Use our custom ‘eglot-rust-analyzer’ for ‘rust-mode’.
 (add-to-list 'eglot-server-programs
-             '(rust-ts-mode . (eglot-rust-analyzer "rust-analyzer")))
+	     '(rust-ts-mode . (eglot-rust-analyzer "rust-analyzer")))
 
 ;; LLDB
 (use-package realgud :ensure t)
@@ -570,7 +568,7 @@ this once."
 (use-package nix-ts-mode :ensure t :mode "\\.nix\\'"
   :config
   (add-to-list 'eglot-server-programs
-               '(nix-ts-mode (eglot-alternatives '("nixd" "rnix-lsp")))))
+	       '(nix-ts-mode (eglot-alternatives '("nixd" "rnix-lsp")))))
 
 ;; Terraform
 (use-package terraform-mode :ensure t
@@ -579,8 +577,8 @@ this once."
 ;; SQL
 (use-package sql-cassandra :ensure t)
 (add-hook 'sql-mode-hook
-          (lambda ()
-            (setopt tab-width 4)))
+	  (lambda ()
+	    (setopt tab-width 4)))
 
 ;; YAML
 (defun zelcon/set-yaml-tab-width ()
@@ -591,16 +589,16 @@ this once."
 (setopt yaml-indent-offset 2)
 (use-package yaml-pro :ensure t
   :hook ((yaml-mode . yaml-pro-ts-mode)
-         (yaml-ts-mode . yaml-pro-ts-mode)
-         (yaml-pro-ts-mode . eglot-ensure))
+	 (yaml-ts-mode . yaml-pro-ts-mode)
+	 (yaml-pro-ts-mode . eglot-ensure))
   :config
   (setq-default tab-width 2))
 
 
 ;; Ruby
 (add-to-list 'eglot-server-programs
-             '((ruby-mode ruby-ts-mode) .
-               ("ruby-lsp")))
+	     '((ruby-mode ruby-ts-mode) .
+	       ("ruby-lsp")))
 
 ;; Clojure
 (use-package clojure-ts-mode :ensure t)
@@ -633,10 +631,10 @@ this once."
   :ensure t)
 
 (setopt xref-backend-functions
-        '(eglot-xref-backend
-          ggtags-xref-backend
-          etags--xref-backend
-          t))
+	'(eglot-xref-backend
+	  ggtags-xref-backend
+	  etags--xref-backend
+	  t))
 
 ;;;
 ;;; Completion
@@ -652,7 +650,7 @@ this once."
   (evil-define-key 'insert company-active-map (kbd "ESC") 'company-abort)
   (evil-define-key 'insert company-mode-map (kbd "C-c /") 'company-files)
   :hook ((prog-mode . company-mode)
-         (yaml-ts-mode . company-mode))
+	 (yaml-ts-mode . company-mode))
   :custom
   (company-idle-delay 0.3))
 (use-package company-box
@@ -694,17 +692,17 @@ this once."
   (define-key copilot-mode-map (kbd "<f8>") 'copilot-complete)
   ;; https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
   (dolist (item '(("python-ts" . "python")
-                  ("rust-ts" . "rust")
-                  ("java-ts" . "java")
-                  ("c++-ts" . "cpp")
-                  ("c-ts" . "c")
-                  ("go-ts" . "go")
-                  ("javascript-ts" . "javascript")
-                  ("typescript-ts" . "typescript")
-                  ("ruby-ts" . "ruby")
-                  ("swift-ts" . "swift")
-                  ("yaml-ts" . "yaml")
-                  ("julia-ts" . "julia")))
+		  ("rust-ts" . "rust")
+		  ("java-ts" . "java")
+		  ("c++-ts" . "cpp")
+		  ("c-ts" . "c")
+		  ("go-ts" . "go")
+		  ("javascript-ts" . "javascript")
+		  ("typescript-ts" . "typescript")
+		  ("ruby-ts" . "ruby")
+		  ("swift-ts" . "swift")
+		  ("yaml-ts" . "yaml")
+		  ("julia-ts" . "julia")))
     (add-to-list 'copilot-major-mode-alist item))
   )
 
@@ -715,16 +713,16 @@ this once."
   :init
   (require 'llm-ollama)
   (setopt ellama-provider
-          (make-llm-ollama
-           :chat-model "deepseek-coder-v2:16b-lite-instruct-q4_0"
-           :embedding-model "deepseek-coder-v2:16b-lite-instruct-q4_0"))
+	  (make-llm-ollama
+	   :chat-model "deepseek-coder-v2:16b-lite-instruct-q4_0"
+	   :embedding-model "deepseek-coder-v2:16b-lite-instruct-q4_0"))
   (setopt ellama-providers
-          '(("deepseek" . (make-llm-ollama :chat-model "deepseek-coder-v2:16b-lite-instruct-q4_0"
-                                           :embedding-model "deepseek-coder-v2:16b-lite-instruct-q4_0"))
-            ("codeqwen" . (make-llm-ollama :chat-model "codeqwen:7b-chat"
-                                           :embedding-model "codeqwen:7b-chat"))
-            ("codegemma" . (make-llm-ollama :chat-model "codegemma:7b-instruct"
-                                            :embedding-model "codegemma:7b-instruct"))))
+	  '(("deepseek" . (make-llm-ollama :chat-model "deepseek-coder-v2:16b-lite-instruct-q4_0"
+					   :embedding-model "deepseek-coder-v2:16b-lite-instruct-q4_0"))
+	    ("codeqwen" . (make-llm-ollama :chat-model "codeqwen:7b-chat"
+					   :embedding-model "codeqwen:7b-chat"))
+	    ("codegemma" . (make-llm-ollama :chat-model "codegemma:7b-instruct"
+					    :embedding-model "codegemma:7b-instruct"))))
   (setopt ellama-language "English")
   :custom
   (ellama-auto-scroll t)
@@ -745,13 +743,13 @@ this once."
 (fido-vertical-mode 1)
 (setq completion-styles '(flex partial-completion substring initials basic))
 (setopt completions-format 'one-column
-        completions-header-format nil
-        completions-max-height 10
-        completion-auto-select nil
-        fido-vertical-mode-show-count t)
+	completions-header-format nil
+	completions-max-height 10
+	completion-auto-select nil
+	fido-vertical-mode-show-count t)
 ;; Interactively Do Things -- fast buffer switch
 (setq ido-ignore-buffers '("^ " "*Completions*" "*Shell Command Output*"
-               "*Messages*" "Async Shell Command"))
+	       "*Messages*" "Async Shell Command"))
 
 
 
@@ -764,8 +762,8 @@ this once."
   (interactive)
   (if (use-region-p)
       (let ((search-term (buffer-substring-no-properties (region-beginning) (region-end))))
-        (deactivate-mark)
-        (isearch-forward search-term))
+	(deactivate-mark)
+	(isearch-forward search-term))
     (isearch-forward-thing-at-point)))
 (evil-define-key '(normal) 'global (kbd "SPC s") 'zelcon/isearch-region-or-thing-at-point)
 
@@ -824,7 +822,7 @@ this once."
 (setopt
  whitespace-style
  '(face trailing tabs spaces empty indentation space-after-tab
-        space-before-tab space-mark tab-mark))
+	space-before-tab space-mark tab-mark))
 (add-hook 'c++-ts-mode-hook 'whitespace-mode)
 (add-hook 'yaml-ts-mode-hook 'whitespace-mode)
 (add-hook 'python-ts-mode-hook 'whitespace-mode)
@@ -838,19 +836,19 @@ this once."
 (add-hook 'makefile-bsdmake-mode-hook 'whitespace-mode)
 (add-hook 'makefile-gmake-mode-hook 'whitespace-mode)
 (add-hook 'sql-mode-hook (lambda ()
-                           (whitespace-mode 1)))
+			   (whitespace-mode 1)))
 
 ;; frame size
 (defun zelcon/set-frame-size-according-to-resolution ()
   (interactive)
   (when window-system
     (if (> (x-display-pixel-width) 1500)
-        (progn (set-frame-size (selected-frame) 140 180)
-               (add-to-list 'default-frame-alist '(height . 180))
-               (add-to-list 'default-frame-alist '(width . 140)))
+	(progn (set-frame-size (selected-frame) 140 180)
+	       (add-to-list 'default-frame-alist '(height . 180))
+	       (add-to-list 'default-frame-alist '(width . 140)))
       (progn (set-frame-size (selected-frame) 80 65)
-             (add-to-list 'default-frame-alist '(height . 80))
-             (add-to-list 'default-frame-alist '(width . 65))))))
+	     (add-to-list 'default-frame-alist '(height . 80))
+	     (add-to-list 'default-frame-alist '(width . 65))))))
 (add-hook 'after-init-hook 'zelcon/set-frame-size-according-to-resolution)
 
 ;; line numbers
@@ -871,32 +869,32 @@ this once."
     (setopt indent-bars-prefer-character t)
     (custom-set-faces '(whitespace-space ((t (:slant normal))))))
   :hook ((python-ts-mode . indent-bars-mode)
-         (yaml-ts-mode . indent-bars-mode)
-         (js-json-mode . indent-bars-mode)
-         (tsx-ts-mode . indent-bars-mode)
-         (json-ts-mode . indent-bars-mode)
-         (nxml-mode . indent-bars-mode)
-         (java-ts-mode . indent-bars-mode)
-         (rust-ts-mode . indent-bars-mode))
+	 (yaml-ts-mode . indent-bars-mode)
+	 (js-json-mode . indent-bars-mode)
+	 (tsx-ts-mode . indent-bars-mode)
+	 (json-ts-mode . indent-bars-mode)
+	 (nxml-mode . indent-bars-mode)
+	 (java-ts-mode . indent-bars-mode)
+	 (rust-ts-mode . indent-bars-mode))
   :custom
   (indent-bars-starting-column 0)
   (indent-bars-treesit-support (treesit-available-p))
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
   (indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
-                                      list list_comprehension
-                                      dictionary dictionary_comprehension
-                                      parenthesized_expression subscript)
-                              (c argument_list parameter_list init_declarator))))
+				      list list_comprehension
+				      dictionary dictionary_comprehension
+				      parenthesized_expression subscript)
+			      (c argument_list parameter_list init_declarator))))
 
 ;; truncate lines
 (setq-default truncate-lines t)
 
 ;; scroll horizontally one column at a time
 (setopt hscroll-step 1
-        scroll-step 1
-        scroll-conservatively 10000
-        scroll-margin 1
-        scroll-preserve-screen-position 1)
+	scroll-step 1
+	scroll-conservatively 10000
+	scroll-margin 1
+	scroll-preserve-screen-position 1)
 
 ;; display time and date
 (add-hook 'after-init-hook 'display-time-mode)
