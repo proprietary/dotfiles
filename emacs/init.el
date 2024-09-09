@@ -189,7 +189,7 @@
 ;; ---
 ;;
 
-(use-package magit :ensure t)
+(use-package magit :ensure t :defer t)
 
 ;
 ;; Navigation
