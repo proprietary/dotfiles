@@ -554,8 +554,8 @@ this once."
 	     '(rust-ts-mode . (eglot-rust-analyzer "rust-analyzer")))
 
 ;; LLDB
-(use-package realgud :ensure t)
-(use-package realgud-lldb :ensure t)
+(use-package realgud :ensure t :defer t)
+(use-package realgud-lldb :ensure t :defer t)
 
 ;; CMake
 (use-package cmake-mode :ensure t)
@@ -921,6 +921,19 @@ this once."
   :ensure t
   :custom
   (highlight-symbol-idle-delay 1.5))
+
+;; Transparent background in terminal emulators
+(defun on-after-init ()
+  (unless (display-graphic-p (selected-frame))
+    (set-face-background 'default "unspecified-bg" (selected-frame))))
+(add-hook 'window-setup-hook #'on-after-init)
+;; [[https://stackoverflow.com/questions/19054228/emacs-disable-theme-background-color-in-terminal/33298750#33298750][Emacs: disable theme background color in terminal - Stack Overflow]]
+(defun on-frame-open (&optional frame)
+  "If the FRAME created in terminal don't load background color."
+  (unless (display-graphic-p frame)
+    (set-face-background 'default "unspecified-bg" frame)))
+(add-hook 'after-make-frame-functions #'on-frame-open)
+
 
 (setq package-install-upgrade-built-in t)
 
