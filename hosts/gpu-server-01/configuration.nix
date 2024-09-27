@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports =
@@ -67,7 +67,7 @@
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.zds.isNormalUser = true;
-  users.users.zds.extraGroups = [ "wheel" ];
+  users.users.zds.extraGroups = [ "wheel" "libvirtd" ];
 
   # get zsh completions for system packages (e.g., systemd)
   environment.pathsToLink = [ "/share/zsh" ];
@@ -173,6 +173,13 @@
     xsel
     vim
     neovim
+
+    spice
+    spice-gtk
+    spice-protocol
+    virt-viewer
+    virtio-win
+    win-spice
   ];
 
   fonts.packages = with pkgs; [
@@ -203,6 +210,12 @@
   # Or disable the firewall altogether.
   networking.firewall.enable = false;
 
+  # Wake On Lan
+  networking.interfaces."enp*s*".wakeOnLan = {
+	  enable = true;
+	  policy = ["magic" "broadcast"];
+  };
+
   # WireGuard
   systemd.network = {
     networks."ethernet" = {
@@ -210,13 +223,26 @@
       networkConfig = {
         DHCP = "yes";
         IPForward = "yes";
-        IPMasquerade = "both";
-      };
+        IPMasquerade = "both"; };
     };
   };
 
   systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
 
+  programs.virt-manager.enable = true;
+  virtualisation = {
+    libvirtd = {
+      enable = true;
+      qemu = {
+        package = pkgs.qemu_kvm;
+        swtpm.enable = true;
+        ovmf.enable = true;
+        ovmf.packages = [ pkgs.OVMFFull.fd ];
+      };
+    };
+    spiceUSBRedirection.enable = true;
+  };
+  systemd.services.libvirtd.enable = true;
 
   #
   # NVIDIA RTX 4090

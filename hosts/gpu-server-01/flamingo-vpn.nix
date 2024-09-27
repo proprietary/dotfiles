@@ -6,6 +6,7 @@
         netdevConfig = {
           Kind = "wireguard";
           Name = "wg1";
+          MTUBytes = "1420";
         };
         wireguardConfig = {
           PrivateKeyFile = config.sops.secrets."flamingo/wg/prv".path;
