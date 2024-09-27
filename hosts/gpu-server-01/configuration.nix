@@ -104,37 +104,37 @@
 
     docker
     kubectl
-    k3s
     skaffold
+    kubernetes-helm
+    kubernetes
 
     gcc
     gdb
-    llvmPackages_17.libcxxabi
-    llvmPackages_17.openmp
-    llvmPackages_17.lldb-manpages
-    llvmPackages_17.libunwind
-    llvmPackages_17.compiler-rt
-    llvmPackages_17.libclc
-    llvmPackages_17.libcxx
-    llvmPackages_17.clang-unwrapped
-    llvmPackages_17.bintools-unwrapped
-    llvmPackages_17.clang-manpages
-    llvmPackages_17.stdenv
+    libgcc
+    libgccjit
+    clang_18
+    lldb_18
+    llvm_18
+    libcxx
+    libunwind
     bazel
     cmake
     pkg-config
     gnumake
     ninja
     autoconf
+    bear
+    gnum4
+    rr
 
     cudaPackages.cudatoolkit
     cudaPackages.cuda_cudart
     #cudaPackages.tensorrt
     cudaPackages.cudnn
     linuxPackages.nvidia_x11
+    nvidia-docker
 
-    nodejs_21
-    corepack_21
+    nodejs_22
     nodePackages.pyright
     jdt-language-server
     yaml-language-server
