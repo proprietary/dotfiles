@@ -23,9 +23,10 @@
     enableSshSupport = true;
     defaultCacheTtl = 604800;
     defaultCacheTtlSsh = 604800;
-    pinentryFlavor = "curses";
     extraConfig =
     ''
+      use-agent
+      batch
       allow-emacs-pinentry
       allow-loopback-pinentry
      '';
@@ -68,7 +69,7 @@
       share = false;
       size = 10000000;
     };
-    enableAutosuggestions = true;
+    autosuggestion.enable = true;
     enableCompletion = true;
     defaultKeymap = "emacs";
     initExtra = ''
@@ -76,7 +77,7 @@
       autoload -z edit-command-line
       zle -N edit-command-line
       bindkey "^X^E" edit-command-line
-      
+
       # navigate word boundaries like bash
       autoload -U select-word-style
       select-word-style bash
@@ -110,4 +111,3 @@
     '';
   };
 }
-
