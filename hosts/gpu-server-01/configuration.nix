@@ -105,7 +105,7 @@ in
   environment.systemPackages = with pkgs; [
     home-manager
 
-    emacs29
+    emacs
     jansson
     wget
     tree-sitter
@@ -197,6 +197,20 @@ in
     xsel
     vim
     neovim
+    mtr # A network diagnostic tool
+    iperf3
+    dnsutils  # `dig` + `nslookup`
+    ldns # replacement of `dig`, it provide the command `drill`
+    aria2 # A lightweight multi-protocol & multi-source command-line download utility
+    socat # replacement of openbsd-netcat
+    nmap # A utility for network discovery and security auditing
+    ipcalc  # it is a calculator for the IPv4/v6 addresses
+    file
+    which
+    tree
+    gnused
+    gnutar
+    gawk
 
     spice
     spice-gtk
@@ -205,7 +219,19 @@ in
     virtio-win
     win-spice
 
+    # system call monitoring
+    strace
+    ltrace
+    lsof
+
+    # system tools
     wakelan
+    ethtool
+    nmap
+    sysstat
+    lm_sensors
+    pciutils # lspci
+    usbutils # lsusb
   ];
 
   fonts.packages = with pkgs; [
@@ -248,9 +274,9 @@ in
     networks."ethernet" = {
       matchConfig.Name = "enp*s*";
       networkConfig = {
-        DHCP = "yes";
-        IPForward = "yes";
-        IPMasquerade = "both"; };
+	DHCP = "yes";
+	IPForward = "yes";
+	IPMasquerade = "both"; };
     };
   };
 
@@ -261,10 +287,10 @@ in
     libvirtd = {
       enable = true;
       qemu = {
-        package = pkgs.qemu_kvm;
-        swtpm.enable = true;
-        ovmf.enable = true;
-        ovmf.packages = [ pkgs.OVMFFull.fd ];
+	package = pkgs.qemu_kvm;
+	swtpm.enable = true;
+	ovmf.enable = true;
+	ovmf.packages = [ pkgs.OVMFFull.fd ];
       };
     };
     spiceUSBRedirection.enable = true;
@@ -298,9 +324,9 @@ in
 
     # Use the NVidia open source kernel module (not to be confused with the
     # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of 
-    # supported GPUs is at: 
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
+    # Support is limited to the Turing and later architectures. Full list of
+    # supported GPUs is at:
+    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
     # Only available from driver 515.43.04+
     # Currently alpha-quality/buggy, so false is currently the recommended setting.
     open = false;
@@ -320,6 +346,12 @@ in
 	    persistencedSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
     };
   };
+
+  services.ollama = {
+    enable = true;
+    acceleration = "cuda";
+  };
+
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
