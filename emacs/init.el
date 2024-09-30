@@ -350,6 +350,7 @@
 			      feature-mode))
 	      (whitespace-cleanup))))
 
+(normal-erase-is-backspace-mode -1)
 
 ;;
 ;; Org Mode
@@ -457,6 +458,12 @@ this once."
   (add-to-list 'tree-sitter-major-mode-language-alist '(python-ts-mode . python))
   (tree-sitter-require 'go)
   (add-to-list 'tree-sitter-major-mode-language-alist '(go-ts-mode . go))
+  (tree-sitter-require 'typescript)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(typescript-ts-mode . typescript))
+  (tree-sitter-require 'javascript)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(javascript-ts-mode . javascript))
+  (tree-sitter-require 'swift)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(swift-ts-mode . swift))
   (tree-sitter-require 'json)
   (add-to-list 'tree-sitter-major-mode-language-alist '(json-ts-mode . json)))
 
@@ -663,6 +670,7 @@ this once."
 (use-package s :ensure t)
 (use-package dash :ensure t)
 (use-package editorconfig :ensure t)
+(use-package jsonrpc :ensure t)
 (use-package copilot
   :ensure nil
   :requires (s dash editorconfig)
@@ -864,7 +872,7 @@ this once."
   :ensure nil
   :init
   (unless (package-installed-p 'indent-bars)
-    (package-vc-install "https://github.com/jdtsmith/indent-bars.git"))
+    (package-vc-install '(indent-bars . (:url "https://github.com/jdtsmith/indent-bars.git")) "indent-bars"))
   :config
   (when (eq system-type 'darwin)
     (setopt indent-bars-prefer-character t)
