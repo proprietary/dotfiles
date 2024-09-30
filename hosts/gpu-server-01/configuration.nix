@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, unstable, ... }:
 
 let
   isUnstable = config.boot.zfs.package == pkgs.zfsUnstable;
@@ -100,6 +100,12 @@ in
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.nvidia.acceptLicense = true;
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      ollama = unstable.ollama;
+    })
+  ];
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -157,6 +163,7 @@ in
     cudatoolkit
     nvidia-docker
     vulkan-tools
+    ollama
 
     nodejs_22
     nodePackages.pyright
@@ -193,7 +200,6 @@ in
     aspellDicts.en
     mosh
     zstd
-    ollama
     xsel
     vim
     neovim

@@ -12,49 +12,55 @@
     };
   };
 
-  outputs = { self, nixpkgs, sops-nix, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, nixpkgs-unstable, sops-nix, home-manager, ... }@inputs: {
     # Used with `nixos-rebuild --flake .#<hostname>`
     # nixosConfigurations."<hostname>".config.system.build.toplevel must be a derivation
-    nixosConfigurations.gpu-server-01 = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.gpu-server-01 = nixpkgs.lib.nixosSystem rec {
       system = "x86_64-linux";
+      specialArgs = {
+	unstable = import nixpkgs-unstable {
+	  inherit system;
+	  config.allowUnfree = true;
+	};
+      };
       modules = [
-        ./hosts/gpu-server-01/configuration.nix
-        sops-nix.nixosModules.sops
+	./hosts/gpu-server-01/configuration.nix
+	sops-nix.nixosModules.sops
       ];
     };
 
     nixosConfigurations.thinkpad-t420 = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
-        ./hosts/thinkpad-t420/configuration.nix
-        home-manager.nixosModules.home-manager
-        {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.zds = import ./home-manager/home.nix;
-        }
+	./hosts/thinkpad-t420/configuration.nix
+	home-manager.nixosModules.home-manager
+	{
+	    home-manager.useGlobalPkgs = true;
+	    home-manager.useUserPackages = true;
+	    home-manager.users.zds = import ./home-manager/home.nix;
+	}
       ];
     };
 
     homeConfigurations = {
       # Use with `home-manager switch --flake .`
       "zds@gpu-server-01" = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {
-          system = "x86_64-linux";
-          config.allowUnfree = true;
-        };
-        modules = [
-          ./home-manager/home.nix
-        ];
+	pkgs = import nixpkgs {
+	  system = "x86_64-linux";
+	  config.allowUnfree = true;
+	};
+	modules = [
+	  ./home-manager/home.nix
+	];
       };
       "zds@thinkpad-t420" = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs {
-          system = "x86_64-linux";
-          config.allowUnfree = true;
-        };
-        modules = [
-          ./home-manager/home.nix
-        ];
+	pkgs = import nixpkgs {
+	  system = "x86_64-linux";
+	  config.allowUnfree = true;
+	};
+	modules = [
+	  ./home-manager/home.nix
+	];
      };
     };
   };
