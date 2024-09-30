@@ -4,6 +4,23 @@
 
 { config, pkgs, lib, ... }:
 
+let
+  isUnstable = config.boot.zfs.package == pkgs.zfsUnstable;
+  zfsCompatibleKernelPackages = lib.filterAttrs (
+    name: kernelPackages:
+    (builtins.match "linux_[0-9]+_[0-9]+" name) != null
+    && (builtins.tryEval kernelPackages).success
+    && (
+      (!isUnstable && !kernelPackages.zfs.meta.broken)
+      || (isUnstable && !kernelPackages.zfs_unstable.meta.broken)
+    )
+  ) pkgs.linuxKernel.packages;
+  latestKernelPackage = lib.last (
+    lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (
+      builtins.attrValues zfsCompatibleKernelPackages
+    )
+  );
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -18,6 +35,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "gpu-server-01"; # Define your hostname.
+  networking.hostId = "409af881";
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -51,6 +69,12 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  # ZFS
+  boot.kernelPackages = latestKernelPackage;
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.forceImportRoot = false;
+  services.nfs.server.enable = true;
+
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
@@ -74,6 +98,7 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.nvidia.acceptLicense = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -91,6 +116,8 @@
     gitFull
     git-crypt
     openssl
+    nmap
+    zfs
 
     jdk21
     python312Full
@@ -127,12 +154,9 @@
     gnum4
     rr
 
-    cudaPackages.cudatoolkit
-    cudaPackages.cuda_cudart
-    #cudaPackages.tensorrt
-    cudaPackages.cudnn
-    linuxPackages.nvidia_x11
+    cudatoolkit
     nvidia-docker
+    vulkan-tools
 
     nodejs_22
     nodePackages.pyright
@@ -180,6 +204,8 @@
     virt-viewer
     virtio-win
     win-spice
+
+    wakelan
   ];
 
   fonts.packages = with pkgs; [
@@ -192,6 +218,7 @@
 
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -280,10 +307,18 @@
 
     # Enable the Nvidia settings menu,
 	  # accessible via `nvidia-settings`.
-    nvidiaSettings = true;
+    nvidiaSettings = false;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+	    #version = "555.58.02";
+	    version = "560.31.02";
+	    sha256_64bit = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
+	    sha256_aarch64 = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
+	    settingsSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
+	    openSha256 = lib.fakeSha256;
+	    persistencedSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
+    };
   };
 
   # This value determines the NixOS release from which the default

@@ -27,6 +27,12 @@
     [ { device = "/dev/disk/by-uuid/a8045760-d1fe-48a3-84bb-28ac6253a307"; }
     ];
 
+  fileSystems."/pool0/storage" = {
+    device = "pool0/storage";
+    fsType = "zfs";
+    options = ["zfsutil"];
+  };
+
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
   # still possible to use this option, but it's recommended to use it in conjunction
