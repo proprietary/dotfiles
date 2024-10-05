@@ -52,6 +52,15 @@ in
 	      PersistentKeepalive = 25;
 	    };
 	  }
+	  {
+	    wireguardPeerConfig = {
+	      Endpoint = builtins.readFile ../../secrets/eval-time-secrets/net_zelcon/raspi/endpoint;
+	      PublicKey = builtins.readFile ../../secrets/eval-time-secrets/net_zelcon/raspi/pubkey;
+	      PresharedKeyFile = config.sops.secrets."net_zelcon/raspi/psk".path;
+	      AllowedIPs = ["172.21.21.4/32" "fd88:3f9f:1aa1:babe::4/128"];
+	      PersistentKeepalive = 25;
+	    };
+	  }
 	];
       };
     };

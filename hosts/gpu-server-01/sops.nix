@@ -57,5 +57,9 @@
       group = config.users.users.systemd-network.name;
       mode = "0640";
     };
+    secrets."net_zelcon/raspi/psk" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
   };
 }
