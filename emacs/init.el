@@ -77,17 +77,16 @@
 		 (lambda ()
 		   (shell-command-to-string "xsel -o -b")))))
        ;; tmux
-	((and (getenv "TMUX") (executable-find "tmux"))
-	  (setq interprogram-cut-function
-		(lambda (text &optional push)
-		  (let* ((process-connection-type nil)
-			 (proc (start-process "tmux" "*Messages*" "tmux" "load-buffer" "-")))
-		    (process-send-string proc text)
-		    (process-send-eof proc))))
-	  (setq interprogram-paste-function
-		(lambda ()
-		  (shell-command-to-string "tmux paste-buffer")))))))
-
+       ((and (getenv "TMUX") (executable-find "tmux"))
+	(setq interprogram-cut-function
+	      (lambda (text &optional push)
+		(let* ((process-connection-type nil)
+		       (proc (start-process "tmux" "*Messages*" "tmux" "load-buffer" "-b" "emacs" "-")))
+		  (process-send-string proc text)
+		  (process-send-eof proc))))
+	(setq interprogram-paste-function
+	      (lambda ()
+		(shell-command-to-string "tmux save-buffer -b emacs -")))))))
   (darwin
    (progn
      (defun zelcon/copy-from-osx ()
