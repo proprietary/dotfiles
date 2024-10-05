@@ -5,7 +5,7 @@
     defaultSopsFile = ../../secrets/secrets.yaml;
     age = {
       sshKeyPaths = [
-        "/etc/ssh/ssh_host_ed25519_key"
+	"/etc/ssh/ssh_host_ed25519_key"
       ];
     };
     secrets."net_zelcon/wg/psk" = {
@@ -42,6 +42,18 @@
       mode = "0640";
     };
     secrets."flamingo/wg/raspi/psk" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
+    secrets."net_zelcon/superstorage/psk" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
+    secrets."net_zelcon/mbp2023/psk" = {
+      group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
+    secrets."net_zelcon/iphone15/psk" = {
       group = config.users.users.systemd-network.name;
       mode = "0640";
     };

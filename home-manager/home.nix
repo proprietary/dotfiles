@@ -10,6 +10,8 @@
   home.packages = with pkgs; [
     starship
     pinentry
+    htop
+    iftop
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;
