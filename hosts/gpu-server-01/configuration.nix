@@ -111,6 +111,8 @@ in
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     home-manager
+    nix-index
+    nixfmt-rfc-style
 
     emacs
     jansson
@@ -126,6 +128,7 @@ in
     openssl
     nmap
     zfs
+    google-authenticator
 
     jdk21
     python312Full
@@ -158,7 +161,6 @@ in
     sqlite
     nfs-utils
     ripgrep
-    nix-index
     coreutils-full
     patchelf
     aspell
@@ -270,7 +272,9 @@ in
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
+    openFirewall = true;
     sftpFlags = [
+      # Log sftp level file access (read/write/etc.) that would not be easily logged otherwise.
       "-f AUTHPRIV"
       "-l INFO"
     ];
@@ -287,9 +291,10 @@ in
     ];
     settings = {
       X11Forwarding = true;
-      PermitRootLogin = "no";
 
-      # Use modern crypto
+      # Hardening
+      Protocol = "2";
+      PermitRootLogin = "no";
       # https://infosec.mozilla.org/guidelines/openssh#modern-openssh-67
       KexAlgorithms = [
         "curve25519-sha256@libssh.org,ecdh-sha2-nistp521"
@@ -316,17 +321,31 @@ in
 
       # LogLevel VERBOSE logs user's key fingerprint on login. Needed to have a clear audit track of which key was using to log in.
       LogLevel = "VERBOSE";
-    };
-    extraConfig = ''
-      TrustedUserCAKeys /run/secrets/net_zelcon/ssh_CA_pub
-      Protocol 2
-      AuthenticationMethods publickey
 
-      # Supported HostKey algos by order of preference
-      HostKey /etc/ssh/ssh_host_ed25519_key
-      HostKey /etc/ssh/ssh_host_rsa_key
-    '';
+      # Google Authenticator
+      UsePAM = true;
+      AuthenticationMethods = "publickey,keyboard-interactive";
+      PermitEmptyPasswords = "no";
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = true;
+
+      # Certificates
+      TrustedUserCAKeys = "/run/secrets/net_zelcon/ssh_CA_pub";
+    };
   };
+  security.pam.services.sshd.text = ''
+    account required pam_unix.so # unix (order 10900)
+
+    # Google Authenticator
+    auth required ${pkgs.google-authenticator}/lib/security/pam_google_authenticator.so nullok no_increment_hotp # google_authenticator (order 12500)
+    # Allow users without a ~/.google_authenticator
+    auth sufficient pam_permit.so
+
+    session required pam_env.so conffile=/etc/pam/environment readenv=0 # env (order 10100)
+    session required pam_unix.so # unix (order 10200)
+    session required pam_loginuid.so # loginuid (order 10300)
+    session optional ${pkgs.systemd}/lib/security/pam_systemd.so # systemd (order 12000)
+  '';
 
   programs.mosh = {
     enable = true;
