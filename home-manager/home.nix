@@ -37,12 +37,9 @@
     enableZshIntegration = true;
   };
 
-  services.ssh-agent = {
-    enable = true;
-  };
-
   services.gpg-agent = {
     enable = true;
+    enableSshSupport = true;
     defaultCacheTtl = 604800;
     defaultCacheTtlSsh = 604800;
     enableZshIntegration = true;
