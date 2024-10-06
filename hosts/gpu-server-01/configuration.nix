@@ -120,6 +120,7 @@ in
     curl
     wireguard-tools
     gnupg
+    pinentry
     gitFull
     git-crypt
     openssl

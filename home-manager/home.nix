@@ -8,12 +8,12 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
-    pinentry
     htop
     iftop
     grepcidr
     jq
     yq-go
+    gnupg
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;
@@ -46,10 +46,9 @@
     defaultCacheTtl = 604800;
     defaultCacheTtlSsh = 604800;
     enableZshIntegration = true;
+    pinentryPackage = pkgs.pinentry-all;
     extraConfig =
     ''
-      use-agent
-      batch
       allow-emacs-pinentry
       allow-loopback-pinentry
      '';
