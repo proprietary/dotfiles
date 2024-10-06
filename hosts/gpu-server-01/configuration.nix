@@ -326,8 +326,6 @@ in
       UsePAM = true;
       AuthenticationMethods = "publickey,keyboard-interactive";
       PermitEmptyPasswords = "no";
-      PasswordAuthentication = false;
-      KbdInteractiveAuthentication = true;
 
       # Certificates
       TrustedUserCAKeys = "/run/secrets/net_zelcon/ssh_CA_pub";
