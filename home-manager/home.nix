@@ -8,23 +8,44 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
-    starship
     pinentry
     htop
     iftop
+    grepcidr
+    jq
+    yq-go
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;
   home.file.".gdbinit".source = include/.gdbinit;
   home.file.".tmux.conf".source = include/.tmux.conf;
   home.file.".tmux".source = include/.tmux;
-  home.file.".config/starship.toml".source = include/starship.toml;
+
+  programs.starship = {
+    enable = true;
+    enableZshIntegration = true;
+    settings = {
+      time.disabled = false;
+      time.time_format = "%a %e-%b-%Y %I:%M:%S%p";
+      aws.disabled = true;
+      gcloud.disabled = true;
+    };
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  services.ssh-agent = {
+    enable = true;
+  };
 
   services.gpg-agent = {
     enable = true;
-    enableSshSupport = true;
     defaultCacheTtl = 604800;
     defaultCacheTtlSsh = 604800;
+    enableZshIntegration = true;
     extraConfig =
     ''
       use-agent
@@ -86,6 +107,8 @@
 
       setopt autocd # so I may omit "cd" to change dirs
 
+      typeset -U path cdpath fpath manpath
+
       export EDITOR=emacs
       export VISUAL=emacs
       export PAGER=less
@@ -106,8 +129,6 @@
       precmd() { vcs_info }
       setopt prompt_subst
       zstyle ':vcs_info:git*' formats "%{$fg[grey]%}%s %{$reset_color%}%r/%S%{$fg[grey]%} %{$fg[blue]%}%b%{$reset_color%}%m%u%c%{$reset_color%} "
-
-      eval "$(starship init zsh)"
 
       eval "$(direnv hook zsh)"
     '';

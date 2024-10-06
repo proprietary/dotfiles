@@ -103,6 +103,7 @@ in
   nixpkgs.overlays = [
     (final: prev: {
       ollama = unstable.ollama;
+      emacs = unstable.emacs30;
     })
   ];
 
@@ -134,13 +135,6 @@ in
     go
     rustup
     sbcl
-
-    docker
-    kubectl
-    skaffold
-    kubernetes-helm
-    kubernetes
-
     gcc
     gdb
     libgcc
@@ -159,12 +153,24 @@ in
     bear
     gnum4
     rr
-
-    cudatoolkit
-    nvidia-docker
-    vulkan-tools
-    ollama
-
+    valgrind
+    sqlite
+    nfs-utils
+    ripgrep
+    nix-index
+    coreutils-full
+    patchelf
+    aspell
+    aspellDicts.en
+    vim
+    neovim
+    boost
+    python311Packages.boost
+    python311Packages.numpy
+    folly
+    ffmpeg
+    opencv
+    lua
     nodejs_22
     nodePackages.pyright
     jdt-language-server
@@ -178,31 +184,26 @@ in
     nodePackages.vscode-json-languageserver
     nodePackages.bash-language-server
 
-    boost
-    python311Packages.boost
-    python311Packages.numpy
-    folly
-    ffmpeg
-    opencv
+    # GPU
+    cudatoolkit
+    nvidia-docker
+    vulkan-tools
+    ollama
+
+    # Containers
+    docker
+    kubectl
+    skaffold
+    kubernetes-helm
+    kubernetes
 
     grafana
     prometheus
-    valgrind
-    fzf
-    sqlite
+
     sshfs
-    nfs-utils
-    ripgrep
-    nix-index
-    coreutils-full
-    patchelf
-    aspell
-    aspellDicts.en
-    mosh
-    zstd
     xsel
-    vim
-    neovim
+
+    # Networking
     mtr # A network diagnostic tool
     iperf3
     dnsutils  # `dig` + `nslookup`
@@ -214,10 +215,18 @@ in
     file
     which
     tree
+
+    # Archives
     gnused
     gnutar
     gawk
+    zip
+    xz
+    unzip
+    p7zip
+    zstd
 
+    # VMs
     spice
     spice-gtk
     spice-protocol
@@ -258,21 +267,92 @@ in
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
-  services.openssh.extraConfig = ''
-    TrustedUserCAKeys /run/secrets/net_zelcon/ssh_CA_pub
-  '';
+  services.openssh = {
+    enable = true;
+    sftpFlags = [
+      "-f AUTHPRIV"
+      "-l INFO"
+    ];
+    hostKeys = [
+      {
+        path = "/etc/ssh/ssh_host_ed25519_key";
+        type = "ed25519";
+      }
+      {
+        bits = 4096;
+        path = "/etc/ssh/ssh_host_rsa_key";
+        type = "rsa";
+      }
+    ];
+    settings = {
+      X11Forwarding = true;
+      PermitRootLogin = "no";
 
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  networking.firewall.enable = false;
+      # Use modern crypto
+      # https://infosec.mozilla.org/guidelines/openssh#modern-openssh-67
+      KexAlgorithms = [
+        "curve25519-sha256@libssh.org,ecdh-sha2-nistp521"
+        "ecdh-sha2-nistp384"
+        "ecdh-sha2-nistp256"
+        "diffie-hellman-group-exchange-sha256"
+      ];
+      Ciphers = [
+        "chacha20-poly1305@openssh.com"
+        "aes256-gcm@openssh.com"
+        "aes128-gcm@openssh.com"
+        "aes256-ctr"
+        "aes192-ctr"
+        "aes128-ctr"
+      ];
+      Macs = [
+        "hmac-sha2-512-etm@openssh.com"
+        "hmac-sha2-256-etm@openssh.com"
+        "umac-128-etm@openssh.com"
+        "hmac-sha2-512"
+        "hmac-sha2-256"
+        "umac-128@openssh.com"
+      ];
+
+      # LogLevel VERBOSE logs user's key fingerprint on login. Needed to have a clear audit track of which key was using to log in.
+      LogLevel = "VERBOSE";
+    };
+    extraConfig = ''
+      TrustedUserCAKeys /run/secrets/net_zelcon/ssh_CA_pub
+      Protocol 2
+      AuthenticationMethods publickey
+
+      # Supported HostKey algos by order of preference
+      HostKey /etc/ssh/ssh_host_ed25519_key
+      HostKey /etc/ssh/ssh_host_rsa_key
+    '';
+  };
+
+  programs.mosh = {
+    enable = true;
+    openFirewall = true;
+  };
+
+  # Firewall
+  networking.nftables.enable = true;
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [
+      22
+    ];
+    allowedUDPPorts = [
+      63618 # wg0 / zelcon.net
+      63636 # wg1 / flamingo
+    ];
+    trustedInterfaces = [
+      "wg0"
+      "wg1"
+    ];
+  };
 
   # Wake On Lan
   networking.interfaces."enp*s*".wakeOnLan = {
-	  enable = true;
-	  policy = ["magic" "broadcast"];
+      enable = true;
+      policy = ["magic" "broadcast"];
   };
 
   # WireGuard
@@ -280,23 +360,24 @@ in
     networks."ethernet" = {
       matchConfig.Name = "enp*s*";
       networkConfig = {
-	DHCP = "yes";
-	IPForward = "yes";
-	IPMasquerade = "both"; };
+    DHCP = "yes";
+    IPForward = "yes";
+    IPMasquerade = "both"; };
     };
   };
 
-  systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
+  #systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
+
 
   programs.virt-manager.enable = true;
   virtualisation = {
     libvirtd = {
       enable = true;
       qemu = {
-	package = pkgs.qemu_kvm;
-	swtpm.enable = true;
-	ovmf.enable = true;
-	ovmf.packages = [ pkgs.OVMFFull.fd ];
+    package = pkgs.qemu_kvm;
+    swtpm.enable = true;
+    ovmf.enable = true;
+    ovmf.packages = [ pkgs.OVMFFull.fd ];
       };
     };
     spiceUSBRedirection.enable = true;
@@ -338,18 +419,18 @@ in
     open = false;
 
     # Enable the Nvidia settings menu,
-	  # accessible via `nvidia-settings`.
+      # accessible via `nvidia-settings`.
     nvidiaSettings = false;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-	    #version = "555.58.02";
-	    version = "560.31.02";
-	    sha256_64bit = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
-	    sha256_aarch64 = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
-	    settingsSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
-	    openSha256 = lib.fakeSha256;
-	    persistencedSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
+        #version = "555.58.02";
+        version = "560.31.02";
+        sha256_64bit = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
+        sha256_aarch64 = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
+        settingsSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
+        openSha256 = lib.fakeSha256;
+        persistencedSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
     };
   };
 

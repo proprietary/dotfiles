@@ -196,10 +196,10 @@
 ;;
 
 ;; 4 width spaces as indentation
-;; (setopt standard-indent 4
-;;         tab-width 4
-;;         indent-tabs-mode nil
-;;         c-basic-indent 4)
+(setopt standard-indent 4
+	tab-width 4
+	indent-tabs-mode nil
+	c-basic-indent 4)
 
 ;; Customize word boundaries to treat '_' as part of words
 (modify-syntax-entry ?_ "w")
@@ -356,12 +356,22 @@
 ;; --------
 ;;
 
-(require 'org)
+(unless (package-installed-p 'org)
+  (package-vc-install '(org . (:url "https://git.savannah.gnu.org/git/emacs/org-mode.git"))))
 
-;;
-;; Language Support
-;; ----------------
-;;
+;; Defer loading org mode for better startup performance
+(with-eval-after-load 'package
+  (defvar org-modules '(org-bbdb org-bibtex org-bookmarks org-crypt org-docview org-gnus org-habit org-info org-irc org-mew org-mouse org-noter org-pandoc org-present org-protocol org-rmail org-tempo org-timer))
+  (dolist (module org-modules)
+    (unless (package-installed-p module)
+      (package-vc-install `(,module . (:url "https://git.savannah.gnu.org/git/emacs/org-mode.git")))))
+  (defun load-org-module ()
+    (require 'org))
+  (with-eval-after-load 'org
+    (dolist (module org-modules)
+      (unless (or (package-installed-p module) (member module package-loaded-list))
+	(require module))))
+  (add-hook 'emacs-startup-hook 'load-org-module))
 
 ;; tree-sitter
 (setq treesit-language-source-alist
@@ -617,10 +627,6 @@ this once."
 	     '((ruby-mode ruby-ts-mode) .
 	       ("ruby-lsp")))
 
-;; Clojure
-(use-package clojure-ts-mode :ensure t)
-(use-package cider :ensure t)
-
 ;; Verilog
 (use-package verilog-ts-mode :ensure t)
 
@@ -726,7 +732,8 @@ this once."
 
 (use-package spinner :ensure t)
 
-(use-package ellama :ensure t
+(use-package ellama
+  :ensure t
   :requires spinner
   :init
   (require 'llm-ollama)
