@@ -350,6 +350,21 @@ in
     openFirewall = true;
   };
 
+  # DNS
+  services.bind = {
+    enable = true;
+    extraOptions = ''
+      recursion yes;
+      dnssec-validation auto;
+      listen-on { any; };
+      listen-on-v6 { any; };
+      listen-on tls ephemeral { any; };
+      listen-on-v6 tls ephemeral { any; };
+      allow-query-cache { any; };
+      allow-recursion { any; };
+    '';
+  };
+
   # Firewall
   networking.nftables.enable = true;
   networking.firewall = {
