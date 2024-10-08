@@ -22,12 +22,12 @@ let
   );
 in
 {
-  imports =
-    [ # Include the results of the hardware scan.
+  imports = [
       ./hardware-configuration.nix
       ./sops.nix
       ./zelcon.net-vpn.nix
       ./flamingo-vpn.nix
+      ./bind.nix
     ];
 
   # Bootloader.
@@ -348,21 +348,6 @@ in
   programs.mosh = {
     enable = true;
     openFirewall = true;
-  };
-
-  # DNS
-  services.bind = {
-    enable = true;
-    extraOptions = ''
-      recursion yes;
-      dnssec-validation auto;
-      listen-on { any; };
-      listen-on-v6 { any; };
-      listen-on tls ephemeral { any; };
-      listen-on-v6 tls ephemeral { any; };
-      allow-query-cache { any; };
-      allow-recursion { any; };
-    '';
   };
 
   # Firewall

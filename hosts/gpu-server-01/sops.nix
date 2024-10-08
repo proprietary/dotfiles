@@ -5,7 +5,7 @@
     defaultSopsFile = ../../secrets/secrets.yaml;
     age = {
       sshKeyPaths = [
-	"/etc/ssh/ssh_host_ed25519_key"
+    "/etc/ssh/ssh_host_ed25519_key"
       ];
     };
     secrets."net_zelcon/wg/psk" = {
@@ -59,6 +59,10 @@
     };
     secrets."net_zelcon/raspi/psk" = {
       group = config.users.users.systemd-network.name;
+      mode = "0640";
+    };
+    secrets."dns-zones/zelcon" = {
+      group = config.users.users.named.name;
       mode = "0640";
     };
   };
