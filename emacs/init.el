@@ -183,6 +183,10 @@
   (global-hungry-delete-mode)
   (setopt hungry-delete-join-reluctantly t))
 
+(use-package browse-kill-ring
+  :ensure t
+  :bind (("C-c y" . browse-kill-ring)))
+
 ;;
 ;; Git
 ;; ---
@@ -242,9 +246,18 @@
 ;; multiple-cursors
 (use-package evil-mc
   :ensure t
+  :bind (:map evil-mc-key-map
+              ("M-n" . nil)
+              ("M-p" . nil)
+              ("C-n" . nil)
+              ("C-t" . nil)
+              ("C-p" . nil))
   :config
   (global-evil-mc-mode)
-  (global-set-key (kbd "s-<down-mouse-1>") 'evil-mc-toggle-cursor-on-click))
+  (global-set-key (kbd "s-<down-mouse-1>") 'evil-mc-toggle-cursor-on-click)
+  (evil-define-key 'normal evil-mc-key-map (kbd "g r ]") 'evil-mc-make-and-goto-next-match)
+  (evil-define-key 'normal evil-mc-key-map (kbd "g r [") 'evil-mc-make-and-goto-prev-match)
+  (evil-define-key 'normal evil-mc-key-map (kbd "g r \\") 'evil-mc-skip-and-goto-next-match))
 
 ;; emulates the legendary surround.vim
 ;; You can surround in visual-state with `S<textobject>` or `gS<textobject>`. Or in normal-state with `ys<textobject>` or `yS<textobject>`.
