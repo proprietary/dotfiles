@@ -11,7 +11,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "macmini"; # Define your hostname.
-  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -52,6 +51,8 @@
     packages = with pkgs; [];
   };
 
+  security.sudo.wheelNeedsPassword = false;
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -61,12 +62,60 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     tmux
-    neovim
+    emacs
     wget
     curl
-    git
+    gitFull
+    git-crypt
+    gcc
+    gnumake
+    libgccjit
+    pkg-config
+    autoconf
+    gnum4
+    gdb
+    llvm_18
+    ruby_3_3
+    sbcl
+    python313
+    go
+    lua
+    rustup
+    gnused
+    gnutar
+    gawk
+    zip
+    xz
+    unzip
+    p7zip
+    zstd
+    wakelan
+    ethtool
+    nmap
+    sysstat
+    lm_sensors
+    pciutils # lspci
+    usbutils # lsusb
+    mtr # A network diagnostic tool
+    iperf3
+    dnsutils  # `dig` + `nslookup`
+    ldns # replacement of `dig`, it provide the command `drill`
+    aria2 # A lightweight multi-protocol & multi-source command-line download utility
+    socat # replacement of openbsd-netcat
+    nmap # A utility for network discovery and security auditing
+    ipcalc  # it is a calculator for the IPv4/v6 addresses
+    file
+    which
+    strace
+    lsof
+    ltrace
+    ffmpeg-full
+    nfs-utils
+    btrfs-progs
+    docker
+    k3s
   ];
-  environment.variables.editor = "neovim";
+  environment.variables.editor = "emacs";
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
