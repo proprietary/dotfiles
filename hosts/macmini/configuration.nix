@@ -51,6 +51,9 @@
     packages = with pkgs; [];
   };
 
+  programs.zsh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
+
   security.sudo.wheelNeedsPassword = false;
 
   # Allow unfree packages
@@ -61,6 +64,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    home-manager
     tmux
     emacs
     wget
