@@ -910,7 +910,7 @@ this once."
   :ensure nil
   :init
   (unless (package-installed-p 'indent-bars)
-    (package-vc-install '(indent-bars . (:url "https://github.com/jdtsmith/indent-bars.git")) "indent-bars"))
+    (package-vc-install "https://github.com/jdtsmith/indent-bars.git"))
   :config
   (when (eq system-type 'darwin)
     (setopt indent-bars-prefer-character t)

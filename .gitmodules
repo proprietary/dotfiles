@@ -1,9 +1,12 @@
 [submodule ".tmux/plugins/tpm"]
 	path = home-manager/include/.tmux/plugins/tpm
 	url = https://github.com/tmux-plugins/tpm.git
+	branch = master
 [submodule "emacs/third_party/emacs-bazel-mode"]
 	path = emacs/third_party/emacs-bazel-mode
 	url = https://github.com/bazelbuild/emacs-bazel-mode.git
+	branch = master
 [submodule "emacs/third_party/tree-sitter-swift"]
 	path = emacs/third_party/tree-sitter-swift
 	url = https://github.com/alex-pinkus/tree-sitter-swift.git
+	branch = main
