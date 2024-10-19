@@ -118,6 +118,8 @@
     btrfs-progs
     docker
     k3s
+    nodejs_22
+    tree-sitter
   ];
   environment.variables.editor = "emacs";
 
