@@ -4,6 +4,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./sops.nix
     ];
 
   # Bootloader.
@@ -120,6 +121,10 @@
     k3s
     nodejs_22
     tree-sitter
+    gnupg
+    age
+    sops
+    wireguard-tools
   ];
   environment.variables.editor = "emacs";
 
@@ -134,13 +139,32 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    openFirewall = true;
+    settings = {
+      TrustedUserCAKeys = "/run/secrets/net_zelcon/ssh_CA_pub";
+    };
+  };
+
+  programs.mosh = {
+    enable = true;
+    openFirewall = true;
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall = {
+    enable = true;
+  };
+
+  # # Wake On Lan
+  # networking.interfaces."enp*s*".wakeOnLan = {
+  #     enable = true;
+  #     policy = ["magic" "broadcast"];
+  # };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

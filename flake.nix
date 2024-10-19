@@ -4,8 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
-    home-manager.url = "github:nix-community/home-manager?ref=release-24.05";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager?ref=release-24.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -52,6 +54,7 @@
       system = "x86_64-linux";
       modules = [
         ./hosts/macmini/configuration.nix
+        sops-nix.nixosModules.sops
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;

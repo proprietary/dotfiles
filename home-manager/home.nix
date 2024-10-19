@@ -13,7 +13,6 @@
     grepcidr
     jq
     yq-go
-    gnupg
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;
