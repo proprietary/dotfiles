@@ -47,5 +47,18 @@
         }
       ];
     };
+
+    nixosConfigurations.macmini = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./hosts/macmini/configuration.nix
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.zds = import ./home-manager/home.nix;
+        }
+      ];
+    };
   };
 }

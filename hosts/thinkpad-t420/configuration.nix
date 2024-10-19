@@ -56,7 +56,6 @@
     xkbVariant = "";
   };
 
-  # Enable CUPS to print documents.
   services.printing.enable = true;
 
   # Enable sound with pipewire.
@@ -147,7 +146,7 @@
     fira-code
     noto-fonts-color-emoji
   ];
-    
+
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
