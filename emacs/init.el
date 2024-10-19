@@ -451,7 +451,7 @@
 (defun zelcon/install-tree-sitter-swift ()
   (interactive)
   (let ((parser-path (concat user-emacs-directory (file-name-as-directory "third_party") (file-name-as-directory "tree-sitter-swift"))))
-    (async-shell-command (format "cd %s && npm run build && make && cp libtree-sitter-swift.* $HOME/.emacs.d/tree-sitter" parser-path) nil nil)))
+    (async-shell-command (format "cd %s && npm run build && make && cp libtree-sitter-swift.* $HOME/.emacs.d/tree-sitter && git clean -fxd" parser-path) nil nil)))
 
 (defun zelcon/install-tree-sitter-langs ()
   "Install all tree-sitter languages. Typically you only need to run
