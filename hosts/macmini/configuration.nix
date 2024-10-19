@@ -64,6 +64,7 @@
     neovim
     wget
     curl
+    git
   ];
   environment.variables.editor = "neovim";
 
