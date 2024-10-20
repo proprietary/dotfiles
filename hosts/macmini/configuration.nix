@@ -5,6 +5,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./sops.nix
+      ./zelcon.net-vpn.nix
     ];
 
   # Bootloader.
@@ -12,21 +13,16 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "macmini"; # Define your hostname.
+  networking.hostId = "193c4c8e";
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
-  networking.networkmanager.enable = true;
-
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
     LC_IDENTIFICATION = "en_US.UTF-8";
     LC_MEASUREMENT = "en_US.UTF-8";
@@ -114,6 +110,7 @@
     strace
     lsof
     ltrace
+    dmidecode
     ffmpeg-full
     nfs-utils
     btrfs-progs
@@ -160,11 +157,27 @@
     enable = true;
   };
 
-  # # Wake On Lan
-  # networking.interfaces."enp*s*".wakeOnLan = {
-  #     enable = true;
-  #     policy = ["magic" "broadcast"];
-  # };
+  networking.interfaces."enp*s*".wakeOnLan = {
+      enable = true;
+      policy = ["magic" "broadcast"];
+  };
+
+   # Enable networking
+  networking = {
+    networkmanager.enable = false;
+    useNetworkd = true;
+  };
+  systemd.network = {
+    enable = true;
+    networks."ethernet" = {
+      matchConfig.Name = "enp*s*";
+      networkConfig = {
+        DHCP = "yes";
+        IPMasquerade = "both";
+        IPv6PrivacyExtensions = "yes";
+      };
+    };
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
