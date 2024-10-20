@@ -139,15 +139,20 @@ in
     go
     rustup
     sbcl
-    gcc
+    glibc
+    gcc_multi
     gdb
     libgcc
     libgccjit
-    clang_18
-    lldb_18
-    llvm_18
-    libcxx
-    libunwind
+    unstable.llvmPackages_19.stdenv
+    unstable.llvmPackages_19.clang-unwrapped
+    unstable.llvmPackages_19.libcxx
+    unstable.llvmPackages_19.bintools
+    unstable.llvmPackages_19.openmp
+    unstable.llvmPackages_19.libunwind
+    unstable.llvmPackages_19.llvm-manpages
+    unstable.llvmPackages_19.lldb-manpages
+    unstable.llvmPackages_19.clang-manpages
     bazel
     cmake
     pkg-config
@@ -188,7 +193,18 @@ in
     nodePackages.bash-language-server
 
     # GPU
-    cudatoolkit
+    cudaPackages.cudatoolkit
+    #cudaPackages.tensorrt
+    cudaPackages.cudnn
+    cudaPackages.cuda_gdb
+    cudaPackages.libnpp
+    cudaPackages.cutensor
+    cudaPackages.nvidia_fs
+    cudaPackages.libcurand
+    cudaPackages.libcublas
+    cudaPackages.libcufile
+    cudaPackages.cuda_nvcc
+    cudaPackages.cuda_nvtx
     nvidia-docker
     vulkan-tools
     ollama
