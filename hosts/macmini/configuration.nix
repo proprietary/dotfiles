@@ -6,6 +6,7 @@
       ./hardware-configuration.nix
       ./sops.nix
       ./zelcon.net-vpn.nix
+      ./intel-mac-power-on.nix
     ];
 
   # Bootloader.
@@ -23,6 +24,7 @@
   time.timeZone = "America/Los_Angeles";
 
   # Select internationalisation properties.
+  i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
     LC_IDENTIFICATION = "en_US.UTF-8";
     LC_MEASUREMENT = "en_US.UTF-8";
@@ -61,6 +63,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    coreutils
     home-manager
     tmux
     emacs
