@@ -2,11 +2,12 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
       ./hardware-configuration.nix
       ./sops.nix
       ./zelcon.net-vpn.nix
       ./intel-mac-power-on.nix
+      ./apple-compat.nix
     ];
 
   # Bootloader.
