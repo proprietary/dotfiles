@@ -32,19 +32,20 @@ in
 
       # Unlock the iGPU
       system.activationScripts.appleSetOsLoader = ''
-        if [[ -e /boot/efi/efi/boot/bootx64_original.efi ]]; then
+        if [[ -e /boot/EFI/BOOT/BOOTX64.EFI.ORIG ]]; then
           true # It's already installed, no action required
-        elif [[ -e /boot/efi/efi/boot/bootx64.efi ]]; then
+        elif [[ -e /boot/EFI/BOOT/BOOTX64.EFI ]]; then
           # Copy the new bootloader to a temporary location
-          cp ${apple-set-os-loader}/bootx64.efi /boot/efi/efi/boot/bootx64_temp.efi
+          cp ${apple-set-os-loader}/bootx64.efi /boot/EFI/BOOT/BOOTX64_TEMP.EFI
 
           # Rename the original bootloader
-          mv /boot/efi/efi/boot/bootx64.efi /boot/efi/efi/boot/bootx64.efi.orig
+          mv /boot/EFI/BOOT/BOOTX64.EFI /boot/EFI/BOOT/BOOTX64.EFI.ORIG
 
           # Move the new bootloader to the final destination
-          mv /boot/efi/efi/boot/bootx64_temp.efi /boot/efi/efi/boot/bootx64.efi
+          mv /boot/EFI/BOOT/BOOTX64_TEMP.EFI /boot/EFI/BOOT/BOOTX64.EFI
         else
-          echo "Error: /boot/efi/efi/boot/bootx64.efi is missing" >&2
+          echo "Error: /boot/EFI/BOOT/BOOTX64.EFI is missing" >&2
+          exit 1
         fi
       '';
 
