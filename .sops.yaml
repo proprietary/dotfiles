@@ -2,6 +2,7 @@ keys:
   - &mbp_ssh age1xch7q5ksdd9tmszkwjxq55605h39hvh0u2zv6qxdsj0zc4hepf2s9xh902
   - &gpu_server_01 age1heagtpe467r8gv28d6hl3mtpnl9zu8cjuurt5xpf96jxp2d4s9rsek7get
   - &macmini age1e7m8hf3mlyk2e7u6xll538hlnh9qeutfuj6vqq86s7av0x34vepqwkvtuc
+  - &superstorage age1fnvc798fnga8n2ttghk5ykx3krklgky8dep7leqahkamn4hjtq7s6nw5mg
 creation_rules:
   - path_regex: ^secrets/[^/]+\.(yaml$|json|env|ini)$
     key_groups:
@@ -9,3 +10,4 @@ creation_rules:
         - *macmini
         - *mbp_ssh
         - *gpu_server_01
+        - *superstorage

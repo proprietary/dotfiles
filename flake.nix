@@ -63,5 +63,25 @@
         }
       ];
     };
+
+    nixosConfigurations.superstorage = nixpkgs.lib.nixosSystem rec {
+      system = "x86_64-linux";
+      specialArgs = {
+        unstable = import nixpkgs-unstable {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      };
+      modules = [
+        ./hosts/superstorage/configuration.nix
+        sops-nix.nixosModules.sops
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.zds = import ./home-manager/home.nix;
+        }
+      ];
+    };
   };
 }

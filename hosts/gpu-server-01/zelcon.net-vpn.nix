@@ -24,7 +24,7 @@
           {
             wireguardPeerConfig = {
               PublicKey = builtins.readFile ../../secrets/eval-time-secrets/net_zelcon/superstorage/pubkey;
-              PresharedKeyFile = config.sops.secrets."net_zelcon/superstorage/psk".path;
+              PresharedKeyFile = config.sops.secrets."net_zelcon/gpu-server-01/psk".path;
               Endpoint = builtins.readFile ../../secrets/eval-time-secrets/net_zelcon/superstorage/endpoint-internal;
               AllowedIPs = ["172.21.21.1/32" "fd88:3f9f:1aa1:babe::1/128"];
               PersistentKeepalive = 25;

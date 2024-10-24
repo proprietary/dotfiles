@@ -608,9 +608,10 @@ this once."
 
 ;; Nix
 (use-package nix-ts-mode :ensure t :mode "\\.nix\\'"
+  :hook ((nix-ts-mode . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs
-         '(nix-ts-mode (eglot-alternatives '("nixd" "rnix-lsp")))))
+         '(nix-ts-mode . ("nil"))))
 
 ;; Terraform
 (use-package terraform-mode :ensure t
