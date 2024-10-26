@@ -110,6 +110,7 @@ in
     nmap
     zfs
     btrfs-progs
+    ffmpeg
     google-authenticator
     sops
     wget
@@ -137,7 +138,7 @@ in
     # Compilers etc.
     jdk22
     python312Full
-    ruby
+    ruby_3_3
     julia
     R
     postgresql
@@ -186,6 +187,9 @@ in
     asmfmt
     global
     universal-ctags
+    openssl_3_3
+    pkg-config
+    libiconv
 
     # LSPs
     jdt-language-server
