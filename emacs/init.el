@@ -673,6 +673,13 @@ this once."
   (require 'org)
   )
 
+;; Go
+(defun zelcon/go-mode-hook ()
+  (setq-local tab-width 4)
+  (setq-local indent-tabs-mode t)
+  (setq-local go-ts-mode-indent-offset 4))
+(add-hook 'go-ts-mode-hook #'zelcon/go-mode-hook)
+
 (use-package ggtags
   :ensure t)
 
