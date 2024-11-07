@@ -27,6 +27,7 @@ in
       ./sops.nix
       ./smart-home.nix
       ./zelcon.net-vpn.nix
+      ./clickhouse.nix
     ];
 
   # Bootloader.
@@ -262,7 +263,6 @@ in
     lm_sensors
     pciutils # lspci
     usbutils # lsusb
-
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

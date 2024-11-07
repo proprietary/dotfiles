@@ -74,6 +74,7 @@
       };
       modules = [
         ./hosts/superstorage/configuration.nix
+        ./modules/clickhouse.nix
         sops-nix.nixosModules.sops
         home-manager.nixosModules.home-manager
         {
