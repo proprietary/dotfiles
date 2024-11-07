@@ -546,7 +546,9 @@ this once."
 (evil-define-key 'normal eglot-mode-map (kbd "SPC a") 'eglot-code-actions)
 
 (evil-define-key 'normal eglot-mode-map (kbd "SPC <down>") 'flymake-goto-next-error)
+(evil-define-key 'normal eglot-mode-map (kbd "<f9>") 'flymake-goto-next-error)
 (evil-define-key 'normal eglot-mode-map (kbd "SPC <up>") 'flymake-goto-prev-error)
+(evil-define-key 'normal eglot-mode-map (kbd "<f8>") 'flymake-goto-prev-error)
 
 (defun zelcon/clear-eglot-server-program (mode-name)
   (setq eglot-server-programs
