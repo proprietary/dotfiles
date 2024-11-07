@@ -1,4 +1,10 @@
-{ nixpkgs, pkgs, config, file, ... }:
+{
+  nixpkgs,
+  pkgs,
+  config,
+  file,
+  ...
+}:
 {
   home.username = "zds";
   home.homeDirectory = "/home/zds";
@@ -43,11 +49,10 @@
     defaultCacheTtlSsh = 604800;
     enableZshIntegration = true;
     pinentryPackage = pkgs.pinentry-all;
-    extraConfig =
-    ''
+    extraConfig = ''
       allow-emacs-pinentry
       allow-loopback-pinentry
-     '';
+    '';
   };
 
   programs.vim = {

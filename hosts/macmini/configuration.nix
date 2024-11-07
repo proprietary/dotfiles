@@ -1,14 +1,13 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-      ./sops.nix
-      ./zelcon.net-vpn.nix
-      ./intel-mac-power-on.nix
-      ./apple-compat.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+    ./sops.nix
+    ./zelcon.net-vpn.nix
+    ./intel-mac-power-on.nix
+    ./apple-compat.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -47,8 +46,11 @@
   users.users.zds = {
     isNormalUser = true;
     description = "zds";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
+    packages = with pkgs; [ ];
   };
 
   programs.zsh.enable = true;
@@ -59,7 +61,10 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -103,12 +108,12 @@
     usbutils # lsusb
     mtr # A network diagnostic tool
     iperf3
-    dnsutils  # `dig` + `nslookup`
+    dnsutils # `dig` + `nslookup`
     ldns # replacement of `dig`, it provide the command `drill`
     aria2 # A lightweight multi-protocol & multi-source command-line download utility
     socat # replacement of openbsd-netcat
     nmap # A utility for network discovery and security auditing
-    ipcalc  # it is a calculator for the IPv4/v6 addresses
+    ipcalc # it is a calculator for the IPv4/v6 addresses
     file
     which
     strace
@@ -162,11 +167,14 @@
   };
 
   networking.interfaces."enp*s*".wakeOnLan = {
-      enable = true;
-      policy = ["magic" "broadcast"];
+    enable = true;
+    policy = [
+      "magic"
+      "broadcast"
+    ];
   };
 
-   # Enable networking
+  # Enable networking
   networking = {
     networkmanager.enable = false;
     useNetworkd = true;

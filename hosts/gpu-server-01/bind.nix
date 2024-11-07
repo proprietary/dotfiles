@@ -1,18 +1,23 @@
 {
-  config, lib, pkgs, ...
-}: let
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
   root-hints = pkgs.fetchurl {
     url = "http://www.internic.net/domain/named.root";
     hash = "sha256-I8RXSid7HOE6q7IVcA6qQTOO/7QZQ2/mh7oHVLA/U6g=";
   };
-in {
+in
+{
   # DNS
   services.bind = {
     enable = true;
     listenOn = [ "any" ];
     listenOnIpv6 = [ "any" ];
     cacheNetworks = [ "any" ];
-    forwarders = lib.mkForce [];
+    forwarders = lib.mkForce [ ];
     extraOptions = ''
       recursion yes;
       dnssec-validation auto;
@@ -44,5 +49,8 @@ in {
       };
     };
   };
-  networking.nameservers = [ "127.0.0.1" "::1" ];
+  networking.nameservers = [
+    "127.0.0.1"
+    "::1"
+  ];
 }

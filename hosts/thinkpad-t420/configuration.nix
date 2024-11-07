@@ -5,10 +5,7 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-    ];
+  imports = [ ./hardware-configuration.nix ];
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
@@ -79,7 +76,10 @@
   services.xserver.libinput.enable = true;
 
   # Enable flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # Use zsh
   programs.zsh.enable = true;
@@ -89,7 +89,10 @@
   users.users.zds = {
     isNormalUser = true;
     description = "zds";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
   };
 
   # Do not prompt "wheel" group members for a sudo password
@@ -146,7 +149,6 @@
     fira-code
     noto-fonts-color-emoji
   ];
-
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

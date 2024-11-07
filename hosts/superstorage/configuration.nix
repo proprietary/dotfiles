@@ -2,7 +2,13 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, unstable, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  unstable,
+  ...
+}:
 let
   isUnstable = config.boot.zfs.package == pkgs.zfsUnstable;
   zfsCompatibleKernelPackages = lib.filterAttrs (
@@ -21,14 +27,14 @@ let
   );
 in
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./sops.nix
-      ./smart-home.nix
-      ./zelcon.net-vpn.nix
-      ./clickhouse.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ./sops.nix
+    ./smart-home.nix
+    ./zelcon.net-vpn.nix
+    ./clickhouse.nix
+  ];
 
   # Bootloader.
   boot.loader.grub.enable = true;
@@ -77,8 +83,11 @@ in
   users.users.zds = {
     isNormalUser = true;
     description = "zds";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
+    packages = with pkgs; [ ];
   };
   security.sudo.wheelNeedsPassword = false;
   users.defaultUserShell = pkgs.zsh;
@@ -90,7 +99,10 @@ in
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -360,15 +372,17 @@ in
         DHCP = "yes";
         IPForward = "yes";
         IPMasquerade = "both";
-    IPv6PrivacyExtensions = "kernel";
+        IPv6PrivacyExtensions = "kernel";
       };
     };
   };
   networking.interfaces."enp*s*".wakeOnLan = {
-      enable = true;
-      policy = ["magic" "broadcast"];
+    enable = true;
+    policy = [
+      "magic"
+      "broadcast"
+    ];
   };
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

@@ -2,7 +2,13 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, unstable, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  unstable,
+  ...
+}:
 
 let
   isUnstable = config.boot.zfs.package == pkgs.zfsUnstable;
@@ -23,12 +29,12 @@ let
 in
 {
   imports = [
-      ./hardware-configuration.nix
-      ./sops.nix
-      ./zelcon.net-vpn.nix
-      ./flamingo-vpn.nix
-      ./bind.nix
-    ];
+    ./hardware-configuration.nix
+    ./sops.nix
+    ./zelcon.net-vpn.nix
+    ./flamingo-vpn.nix
+    ./bind.nix
+  ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -91,7 +97,10 @@ in
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.zds.isNormalUser = true;
-  users.users.zds.extraGroups = [ "wheel" "libvirtd" ];
+  users.users.zds.extraGroups = [
+    "wheel"
+    "libvirtd"
+  ];
 
   # get zsh completions for system packages (e.g., systemd)
   environment.pathsToLink = [ "/share/zsh" ];
@@ -225,12 +234,12 @@ in
     # Networking
     mtr # A network diagnostic tool
     iperf3
-    dnsutils  # `dig` + `nslookup`
+    dnsutils # `dig` + `nslookup`
     ldns # replacement of `dig`, it provide the command `drill`
     aria2 # A lightweight multi-protocol & multi-source command-line download utility
     socat # replacement of openbsd-netcat
     nmap # A utility for network discovery and security auditing
-    ipcalc  # it is a calculator for the IPv4/v6 addresses
+    ipcalc # it is a calculator for the IPv4/v6 addresses
     file
     which
     tree
@@ -276,9 +285,10 @@ in
     go-font
   ];
 
-
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -369,9 +379,7 @@ in
   # Firewall
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [
-      22
-    ];
+    allowedTCPPorts = [ 22 ];
     allowedUDPPorts = [
       63618 # wg0 / zelcon.net
       63636 # wg1 / flamingo
@@ -384,8 +392,11 @@ in
 
   # Wake On Lan
   networking.interfaces."enp*s*".wakeOnLan = {
-      enable = true;
-      policy = ["magic" "broadcast"];
+    enable = true;
+    policy = [
+      "magic"
+      "broadcast"
+    ];
   };
 
   # WireGuard
@@ -393,24 +404,24 @@ in
     networks."ethernet" = {
       matchConfig.Name = "enp*s*";
       networkConfig = {
-    DHCP = "yes";
-    IPForward = "yes";
-    IPMasquerade = "both"; };
+        DHCP = "yes";
+        IPForward = "yes";
+        IPMasquerade = "both";
+      };
     };
   };
 
   #systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
-
 
   programs.virt-manager.enable = true;
   virtualisation = {
     libvirtd = {
       enable = true;
       qemu = {
-    package = pkgs.qemu_kvm;
-    swtpm.enable = true;
-    ovmf.enable = true;
-    ovmf.packages = [ pkgs.OVMFFull.fd ];
+        package = pkgs.qemu_kvm;
+        swtpm.enable = true;
+        ovmf.enable = true;
+        ovmf.packages = [ pkgs.OVMFFull.fd ];
       };
     };
     spiceUSBRedirection.enable = true;
@@ -429,7 +440,7 @@ in
   };
 
   # Load nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = ["nvidia"];
+  services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
 
@@ -452,18 +463,18 @@ in
     open = false;
 
     # Enable the Nvidia settings menu,
-      # accessible via `nvidia-settings`.
+    # accessible via `nvidia-settings`.
     nvidiaSettings = false;
 
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-        #version = "555.58.02";
-        version = "560.31.02";
-        sha256_64bit = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
-        sha256_aarch64 = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
-        settingsSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
-        openSha256 = lib.fakeSha256;
-        persistencedSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
+      #version = "555.58.02";
+      version = "560.31.02";
+      sha256_64bit = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
+      sha256_aarch64 = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
+      settingsSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
+      openSha256 = lib.fakeSha256;
+      persistencedSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
     };
   };
 
@@ -472,7 +483,6 @@ in
     acceleration = "cuda";
     listenAddress = "0.0.0.0:11434";
   };
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

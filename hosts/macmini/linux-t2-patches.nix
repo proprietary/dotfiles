@@ -1,4 +1,12 @@
-{ config, lib, pkgs, buildLinux, fetchzip, runCommand, ... } @ args:
+{
+  config,
+  lib,
+  pkgs,
+  buildLinux,
+  fetchzip,
+  runCommand,
+  ...
+}@args:
 let
   kernelVersion = "6.11";
   kernelMajorVersion = with lib; (elemAt (take 1 (splitVersion kernelVersion)) 0);
@@ -14,12 +22,14 @@ let
     hash = "sha256-QIbHTLWI5CaStQmuoJ1k7odQUDRLsWNGY10ek0eKo8M=";
   };
 in
-  buildLinux (args // {
+buildLinux (
+  args
+  // {
     version = kernelVersion;
 
     modDirVersion = with lib; "${concatStringsSep "." (take 3 (splitVersion "${kernelVersion}.0"))}";
 
-    src = runCommand "patched-source" {} ''
+    src = runCommand "patched-source" { } ''
       cp -r ${kernel} $out
       chmod -R u+w $out
       cd $out
@@ -47,6 +57,8 @@ in
       STAGING = yes;
     };
 
-    kernelPatches = [];
+    kernelPatches = [ ];
 
-  } // (args.argsOverride or {}))
+  }
+  // (args.argsOverride or { })
+)

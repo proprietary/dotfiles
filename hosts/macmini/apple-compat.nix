@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... } @ args:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}@args:
 let
   apple-set-os-loader = pkgs.stdenv.mkDerivation {
     name = "apple-set-os";
@@ -9,9 +14,7 @@ let
       rev = "r33.9856dc4";
       sha256 = "sha256-hvwqfoF989PfDRrwU0BMi69nFjPeOmSaD6vR6jIRK2Y";
     };
-    buildInputs = [
-      pkgs.gnu-efi
-    ];
+    buildInputs = [ pkgs.gnu-efi ];
     buildPhase = ''
       substituteInPlace Makefile --replace "/usr" '$(GNU_EFI)'
       export GNU_EFI=${pkgs.gnu-efi}
