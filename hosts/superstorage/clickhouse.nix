@@ -9,7 +9,7 @@
         <path>/superstorage/clickhouse/</path>
       </clickhouse>
     '';
-    "clickhouse-server/config.d/02-enable-sql-user-mode.xml".text = ''
+    "clickhouse-server/users.d/02-enable-sql-user-mode.xml".text = ''
       <clickhouse>
         <users>
           <default>
