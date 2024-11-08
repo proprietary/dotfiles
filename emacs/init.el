@@ -364,6 +364,8 @@
 
 (normal-erase-is-backspace-mode -1)
 
+(setopt epg-pinentry-mode 'loopback)
+
 ;;
 ;; Org Mode
 ;; --------
