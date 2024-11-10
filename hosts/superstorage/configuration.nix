@@ -151,7 +151,6 @@ in
     # Compilers etc.
     jdk22
     python312Full
-    ruby_3_3
     julia
     R
     postgresql
@@ -211,7 +210,6 @@ in
     pyright
     cmake-language-server
     yaml-language-server
-    ruby-lsp
     phpactor
     sourcekit-lsp
     terraform-ls
@@ -251,6 +249,16 @@ in
     tree-sitter-grammars.tree-sitter-html
     tree-sitter-grammars.tree-sitter-elisp
     tree-sitter-grammars.tree-sitter-php
+
+    # Ruby
+    ruby_3_3
+    rubyPackages_3_3.ruby-lsp
+    rubyPackages_3_3.stringio
+    rubyPackages_3_3.rbs
+    rubyPackages_3_3.sorbet-runtime
+    rubyPackages_3_3.prism
+    rubyPackages_3_3.ffi
+    rubyPackages_3_3.psych
 
     # Archives
     gnused
