@@ -43,8 +43,8 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
-    defaultCacheTtl = 0;
-    defaultCacheTtlSsh = 0;
+    defaultCacheTtl = 86400;
+    defaultCacheTtlSsh = 86400;
     enableZshIntegration = true;
     pinentryPackage = pkgs.pinentry-emacs;
     extraConfig = ''
