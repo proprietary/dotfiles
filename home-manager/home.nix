@@ -45,10 +45,10 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
-    defaultCacheTtl = 604800;
-    defaultCacheTtlSsh = 604800;
+    defaultCacheTtl = 0;
+    defaultCacheTtlSsh = 0;
     enableZshIntegration = true;
-    pinentryPackage = pkgs.pinentry-all;
+    pinentryPackage = pkgs.pinentry-emacs;
     extraConfig = ''
       allow-emacs-pinentry
       allow-loopback-pinentry
@@ -89,12 +89,18 @@
       path = "${config.xdg.dataHome}/zsh/history";
       extended = true;
       expireDuplicatesFirst = true;
-      share = false;
+      share = true;
+      save = 10000000;
       size = 10000000;
+      #append = true;
+      #historySubstringSearch.enable = true;
+      ignoreSpace = true;
+      ignorePatterns = [ "rm *" "pkill *" "kill *" "dd *" "gpg *" "sshpass *"];
     };
     autosuggestion.enable = true;
     enableCompletion = true;
     defaultKeymap = "emacs";
+    autocd = true;
     initExtra = ''
       # edit command line
       autoload -z edit-command-line
@@ -104,8 +110,6 @@
       # navigate word boundaries like bash
       autoload -U select-word-style
       select-word-style bash
-
-      setopt autocd # so I may omit "cd" to change dirs
 
       typeset -U path cdpath fpath manpath
 
