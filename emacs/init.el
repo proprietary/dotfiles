@@ -364,7 +364,12 @@
 
 (normal-erase-is-backspace-mode -1)
 
+;;;;;;;;;
+;; PGP ;;
+;;;;;;;;;
+
 (setopt epg-pinentry-mode 'loopback)
+(use-package pinentry :ensure t)
 
 ;;
 ;; Org Mode
