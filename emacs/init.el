@@ -369,7 +369,7 @@
 ;;;;;;;;;
 
 (setopt epg-pinentry-mode 'loopback)
-(use-package pinentry :ensure t)
+(use-package pinentry :ensure t :config (pinentry-start))
 
 ;;
 ;; Org Mode
