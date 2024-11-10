@@ -1,8 +1,6 @@
 {
-  nixpkgs,
   pkgs,
   config,
-  file,
   ...
 }:
 {
@@ -95,7 +93,14 @@
       #append = true;
       #historySubstringSearch.enable = true;
       ignoreSpace = true;
-      ignorePatterns = [ "rm *" "pkill *" "kill *" "dd *" "gpg *" "sshpass *"];
+      ignorePatterns = [
+        "rm *"
+        "pkill *"
+        "kill *"
+        "dd *"
+        "gpg *"
+        "sshpass *"
+      ];
     };
     autosuggestion.enable = true;
     enableCompletion = true;
