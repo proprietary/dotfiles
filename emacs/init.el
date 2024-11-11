@@ -566,6 +566,13 @@ this once."
         (member our-key alist-key)
             (equal our-key alist-key))))))
 
+(use-package eglot-booster
+  :init
+  (unless (package-installed-p 'eglot-booster)
+    (package-vc-install "https://github.com/jdtsmith/eglot-booster.git"))
+  :after eglot
+  :config	(eglot-booster-mode))
+
 ;; Rust
 ;; Define a setup function that runs in the mode hook.
 (defun setup-rust ()
@@ -573,16 +580,16 @@ this once."
   ;; Configuration taken from rust-analyzer’s manual:
   ;; https://rust-analyzer.github.io/manual.html#configuration
   (setq-local eglot-workspace-configuration
-        ;; Setting the workspace configuration for every
-        ;; rust-mode buffer, you can also set it with dir-local
-        ;; variables, should you want different configuration
-        ;; per project/directory.
-        '(:rust-analyzer
-    (:check (:command "clippy")
-     :procMacro (:attributes (:enable t) :enable t)
-     :cargo (:features "all")
-     :diagnostics (:disabled ["unresolved-proc-macro"
-            "unresolved-macro-call"])))))
+              ;; Setting the workspace configuration for every
+              ;; rust-mode buffer, you can also set it with dir-local
+              ;; variables, should you want different configuration
+              ;; per project/directory.
+              '(:rust-analyzer
+                (:check (:command "clippy")
+                        :procMacro (:attributes (:enable t) :enable t)
+                        :cargo (:features "all")
+                        :diagnostics (:disabled ["unresolved-proc-macro"
+                                                 "unresolved-macro-call"])))))
 
 ;; Run our setup function in ‘rust-mode-hook’.
 (add-hook 'rust-ts-mode-hook #'setup-rust)
