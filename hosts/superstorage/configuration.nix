@@ -40,6 +40,7 @@ in
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/sdb";
   boot.loader.grub.useOSProber = true;
+  boot.loader.grub.memtest86.enable = true; # Make memtest86+ available from the GRUB boot menu
 
   networking.hostName = "superstorage"; # Define your hostname.
   networking.hostId = "6c37c393";
@@ -124,6 +125,7 @@ in
     zfs
     btrfs-progs
     ffmpeg
+    mplayer
     google-authenticator
     sops
     wget

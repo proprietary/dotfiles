@@ -17,6 +17,7 @@
     grepcidr
     jq
     yq-go
+    emacs-lsp-booster
   ];
 
   home.file.".lldbinit".source = include/.lldbinit;

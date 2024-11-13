@@ -739,6 +739,9 @@ this once."
   :init
   (unless (package-installed-p 'copilot.el)
     (package-vc-install "https://github.com/copilot-emacs/copilot.el.git"))
+  (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
+  (add-to-list 'warning-suppress-log-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
+
   :hook
   ((python-ts-mode . copilot-mode)
    (rust-ts-mode . copilot-mode)
@@ -754,12 +757,10 @@ this once."
   :custom
   (copilot-indent-offset-warning-disable t)
   :config
-  (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
-  (add-to-list 'warning-suppress-log-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
   (define-key copilot-completion-map (kbd "C-n") 'copilot-next-completion)
   (define-key copilot-completion-map (kbd "C-p") 'copilot-previous-completion)
   (define-key copilot-mode-map (kbd "C-'") 'copilot-accept-completion)
-  (define-key copilot-mode-map (kbd "<f8>") 'copilot-complete)
+  (define-key copilot-mode-map (kbd "<f8>") 'copilot-accept-completion-by-line)
   ;; https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
   (dolist (item '(("python-ts" . "python")
       ("rust-ts" . "rust")
