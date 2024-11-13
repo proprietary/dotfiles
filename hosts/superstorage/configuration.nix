@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 {
   config,
   pkgs,
@@ -48,6 +44,9 @@ in
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  # Enable magic SysRq key
+  boot.kernel.sysctl."kernel.sysrq" = 1;
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
@@ -362,10 +361,6 @@ in
     openFirewall = true;
   };
 
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
   networking.firewall = {
     enable = true;
   };
