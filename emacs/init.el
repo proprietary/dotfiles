@@ -883,7 +883,7 @@ this once."
 (use-package solarized-theme
   :ensure t
   :config
-  (load-theme 'solarized-gruvbox-dark t))
+  (load-theme 'solarized-dark t))
 
 (set-frame-font "Operator Mono 12" nil t)
 
