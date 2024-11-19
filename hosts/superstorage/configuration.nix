@@ -5,23 +5,6 @@
   unstable,
   ...
 }:
-let
-  isUnstable = config.boot.zfs.package == pkgs.zfsUnstable;
-  zfsCompatibleKernelPackages = lib.filterAttrs (
-    name: kernelPackages:
-    (builtins.match "linux_[0-9]+_[0-9]+" name) != null
-    && (builtins.tryEval kernelPackages).success
-    && (
-      (!isUnstable && !kernelPackages.zfs.meta.broken)
-      || (isUnstable && !kernelPackages.zfs_unstable.meta.broken)
-    )
-  ) pkgs.linuxKernel.packages;
-  latestKernelPackage = lib.last (
-    lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (
-      builtins.attrValues zfsCompatibleKernelPackages
-    )
-  );
-in
 {
   imports = [
     # Include the results of the hardware scan.
@@ -73,11 +56,27 @@ in
   };
 
   # ZFS
-  boot.kernelPackages = latestKernelPackage;
+  boot.zfs.package = pkgs.zfs_unstable;
+  boot.kernelPackages =
+    let
+      zfsCompatibleKernelPackages = lib.filterAttrs (
+        name: kernelPackages:
+        (builtins.match "linux_[0-9]+_[0-9]+" name) != null
+        && (builtins.tryEval kernelPackages).success
+        && (!kernelPackages.${config.boot.zfs.package.kernelModuleAttribute}.meta.broken)
+      ) pkgs.linuxKernel.packages;
+    in
+    lib.last (
+      lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (
+        builtins.attrValues zfsCompatibleKernelPackages
+      )
+    );
   boot.supportedFilesystems = [ "zfs" ];
   boot.zfs.forceImportRoot = false;
   services.nfs.server.enable = true;
   boot.zfs.extraPools = [ "superstorage" ];
+  services.zfs.autoScrub.enable = true;
+  boot.kernelParams = [ "nohibernate" ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.zds = {
@@ -109,7 +108,7 @@ in
     home-manager
     nix-index
     nixfmt-rfc-style
-    emacs
+    emacs30
     jansson
     wget
     tree-sitter
@@ -121,7 +120,7 @@ in
     git-crypt
     openssl
     nmap
-    zfs
+    zfs_unstable
     btrfs-progs
     ffmpeg
     mplayer
@@ -150,7 +149,7 @@ in
     boost
 
     # Compilers etc.
-    jdk22
+    jdk
     python312Full
     julia
     R
@@ -284,6 +283,11 @@ in
     lm_sensors
     pciutils # lspci
     usbutils # lsusb
+
+    # diagnostics
+    memtester
+    hdparm
+    smartmontools
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -375,7 +379,8 @@ in
       matchConfig.Name = "en*";
       networkConfig = {
         DHCP = "yes";
-        IPForward = "yes";
+        IPv4Forwarding = "yes";
+        IPv6Forwarding = "yes";
         IPMasquerade = "both";
         IPv6PrivacyExtensions = "kernel";
       };
@@ -387,6 +392,11 @@ in
       "magic"
       "broadcast"
     ];
+  };
+
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [ zlib ];
   };
 
   # This value determines the NixOS release from which the default

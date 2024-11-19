@@ -23,7 +23,7 @@
   home.file.".lldbinit".source = include/.lldbinit;
   home.file.".gdbinit".source = include/.gdbinit;
   home.file.".tmux.conf".source = include/.tmux.conf;
-  home.file.".tmux".source = include/.tmux;
+  #home.file.".tmux".source = include/.tmux;
 
   programs.starship = {
     enable = true;

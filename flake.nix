@@ -5,12 +5,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager?ref=release-24.05";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/home-manager?ref=master";
     };
     sops-nix = {
       url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -75,7 +73,7 @@
         ];
       };
 
-      nixosConfigurations.superstorage = nixpkgs.lib.nixosSystem rec {
+      nixosConfigurations.superstorage = nixpkgs-unstable.lib.nixosSystem rec {
         system = "x86_64-linux";
         specialArgs = {
           unstable = import nixpkgs-unstable {
