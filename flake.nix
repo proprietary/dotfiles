@@ -39,6 +39,9 @@
 
           home-manager.nixosModules.home-manager
           {
+            home-manager.extraSpecialArgs = {
+              inherit nixpkgs-unstable;
+            };
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.zds = import ./home-manager/home.nix;
