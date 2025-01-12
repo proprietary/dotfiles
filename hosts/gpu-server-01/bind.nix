@@ -28,7 +28,6 @@ in
       listen-on-v6 tls ephemeral {
         any;
       };
-      allow-query-cache { any; };
 
       max-cache-size 1G;
     '';

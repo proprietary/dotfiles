@@ -10,23 +10,6 @@
   ...
 }:
 
-let
-  isUnstable = config.boot.zfs.package == pkgs.zfsUnstable;
-  zfsCompatibleKernelPackages = lib.filterAttrs (
-    name: kernelPackages:
-    (builtins.match "linux_[0-9]+_[0-9]+" name) != null
-    && (builtins.tryEval kernelPackages).success
-    && (
-      (!isUnstable && !kernelPackages.zfs.meta.broken)
-      || (isUnstable && !kernelPackages.zfs_unstable.meta.broken)
-    )
-  ) pkgs.linuxKernel.packages;
-  latestKernelPackage = lib.last (
-    lib.sort (a: b: (lib.versionOlder a.kernel.version b.kernel.version)) (
-      builtins.attrValues zfsCompatibleKernelPackages
-    )
-  );
-in
 {
   imports = [
     ./hardware-configuration.nix
@@ -53,9 +36,8 @@ in
   networking.useNetworkd = true;
   systemd.network.enable = true;
 
-  # Enable IP forwarding
-  boot.kernel.sysctl."net.ipv4.ip_forward" = "1";
-  boot.kernel.sysctl."net.ipv6.conf.all.forwarding" = "1";
+  # Enable magic SysRq key
+  boot.kernel.sysctl."kernel.sysrq" = 1;
 
   # Set your time zone.
   time.timeZone = "America/Los_Angeles";
@@ -75,8 +57,21 @@ in
     LC_TIME = "en_US.UTF-8";
   };
 
+  # Pin the kernel version
+  boot.kernelPackages = pkgs.linuxPackagesFor (
+    pkgs.linux_6_12.override {
+      argsOverride = rec {
+        src = pkgs.fetchurl {
+          url = "mirror://kernel/linux/kernel/v6.x/linux-${version}.tar.xz";
+          sha256 = "h74DYN8JMbNA0rrDUWGlSAcPvDqMNSxJ4h6WZmwmrrQ=";
+        };
+        version = "6.12.9";
+        modDirVersion = "6.12.9";
+      };
+    }
+  );
+
   # ZFS
-  boot.kernelPackages = latestKernelPackage;
   boot.supportedFilesystems = [ "zfs" ];
   boot.zfs.forceImportRoot = false;
   services.nfs.server.enable = true;
@@ -109,13 +104,6 @@ in
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.nvidia.acceptLicense = true;
 
-  nixpkgs.overlays = [
-    (final: prev: {
-      ollama = unstable.ollama;
-      emacs = unstable.emacs30;
-    })
-  ];
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -123,7 +111,7 @@ in
     nix-index
     nixfmt-rfc-style
 
-    emacs
+    emacs30
     jansson
     wget
     tree-sitter
@@ -134,13 +122,15 @@ in
     pinentry
     gitFull
     git-crypt
+    git-lfs
     openssl
     nmap
-    zfs
+    zfs_unstable
     google-authenticator
 
-    jdk21
+    jdk23
     python312Full
+    uv
     ruby
     julia
     R
@@ -153,15 +143,15 @@ in
     gdb
     libgcc
     libgccjit
-    unstable.llvmPackages_19.stdenv
-    unstable.llvmPackages_19.clang-unwrapped
-    unstable.llvmPackages_19.libcxx
-    unstable.llvmPackages_19.bintools
-    unstable.llvmPackages_19.openmp
-    unstable.llvmPackages_19.libunwind
-    unstable.llvmPackages_19.llvm-manpages
-    unstable.llvmPackages_19.lldb-manpages
-    unstable.llvmPackages_19.clang-manpages
+    llvmPackages.stdenv
+    llvmPackages.clang-unwrapped
+    llvmPackages.libcxx
+    llvmPackages.bintools
+    llvmPackages.openmp
+    llvmPackages.libunwind
+    llvmPackages.llvm-manpages
+    llvmPackages.lldb-manpages
+    llvmPackages.clang-manpages
     bazel
     cmake
     pkg-config
@@ -182,14 +172,12 @@ in
     vim
     neovim
     boost
-    python311Packages.boost
-    python311Packages.numpy
     folly
     ffmpeg
     opencv
     lua
-    nodejs_22
-    nodePackages.pyright
+    nodejs_23
+    pyright
     jdt-language-server
     yaml-language-server
     nixd
@@ -275,14 +263,6 @@ in
     lm_sensors
     pciutils # lspci
     usbutils # lsusb
-  ];
-
-  fonts.packages = with pkgs; [
-    font-awesome_5
-    nerdfonts
-    fira-code
-    whatsapp-emoji-font
-    go-font
   ];
 
   nix.settings.experimental-features = [
@@ -405,7 +385,8 @@ in
       matchConfig.Name = "enp*s*";
       networkConfig = {
         DHCP = "yes";
-        IPForward = "yes";
+        IPv6Forwarding = "yes";
+        IPv4Forwarding = "yes";
         IPMasquerade = "both";
       };
     };
@@ -433,10 +414,8 @@ in
   #
 
   # Enable OpenGL
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
   };
 
   # Load nvidia driver for Xorg and Wayland
@@ -465,23 +444,13 @@ in
     # Enable the Nvidia settings menu,
     # accessible via `nvidia-settings`.
     nvidiaSettings = false;
-
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-      #version = "555.58.02";
-      version = "560.31.02";
-      sha256_64bit = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
-      sha256_aarch64 = "sha256-0cwgejoFsefl2M6jdWZC+CKc58CqOXDjSi4saVPNKY0=";
-      settingsSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
-      openSha256 = lib.fakeSha256;
-      persistencedSha256 = "sha256-A3SzGAW4vR2uxT1Cv+Pn+Sbm9lLF5a/DGzlnPhxVvmE=";
-    };
   };
 
   services.ollama = {
     enable = true;
     acceleration = "cuda";
-    listenAddress = "0.0.0.0:11434";
+    host = "[::]";
+    port = 11434;
   };
 
   # This value determines the NixOS release from which the default

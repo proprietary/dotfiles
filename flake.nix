@@ -25,7 +25,7 @@
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
       # Used with `nixos-rebuild --flake .#<hostname>`
       # nixosConfigurations."<hostname>".config.system.build.toplevel must be a derivation
-      nixosConfigurations.gpu-server-01 = nixpkgs.lib.nixosSystem rec {
+      nixosConfigurations.gpu-server-01 = nixpkgs-unstable.lib.nixosSystem rec {
         system = "x86_64-linux";
         specialArgs = {
           unstable = import nixpkgs-unstable {
@@ -39,9 +39,6 @@
 
           home-manager.nixosModules.home-manager
           {
-            home-manager.extraSpecialArgs = {
-              inherit nixpkgs-unstable;
-            };
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.zds = import ./home-manager/home.nix;
