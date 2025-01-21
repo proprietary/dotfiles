@@ -108,7 +108,7 @@
     home-manager
     nix-index
     nixfmt-rfc-style
-    emacs30
+    emacs30-gtk3
     jansson
     wget
     tree-sitter
@@ -202,6 +202,10 @@
     openssl_3_3
     pkg-config
     libiconv
+    xclip
+    xsel
+    vscode
+    brave
 
     # LSPs
     jdt-language-server
