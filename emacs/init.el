@@ -364,6 +364,10 @@
 
 (normal-erase-is-backspace-mode -1)
 
+;; Auto-approve .dir-locals.el
+;; Warning: This may be inscecure
+(setopt enable-local-variables :all)
+
 ;;;;;;;;;
 ;; PGP ;;
 ;;;;;;;;;
@@ -427,6 +431,7 @@
   (proto "https://github.com/mitchellh/tree-sitter-proto")
   (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
   (verilog "https://github.com/tree-sitter/tree-sitter-verilog")
+  (php "https://github.com/tree-sitter/tree-sitter-php")
   ))
 
 
@@ -436,6 +441,7 @@
 (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
 (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
 (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
+(add-to-list 'major-mode-remap-alist '(php-mode . php-ts-mode))
 
 
 ;; Associate file extensions
@@ -483,7 +489,8 @@ this once."
    (typescript-ts-mode . tree-sitter-hl-mode)
    (go-ts-mode . tree-sitter-hl-mode)
    (hcl-mode . tree-sitter-hl-mode)
-   (json-ts-mode . tree-sitter-hl-mode))
+   (json-ts-mode . tree-sitter-hl-mode)
+   (php-ts-mode . tree-sitter-hl-mode))
   :config
   (tree-sitter-require 'cpp)
   (add-to-list 'tree-sitter-major-mode-language-alist '(c++-ts-mode . cpp))
@@ -507,7 +514,9 @@ this once."
   (add-to-list 'tree-sitter-major-mode-language-alist '(swift-ts-mode . swift))
   (tree-sitter-require 'hcl)
   (tree-sitter-require 'json)
-  (add-to-list 'tree-sitter-major-mode-language-alist '(json-ts-mode . json)))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(json-ts-mode . json))
+  (tree-sitter-require 'php)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(php-ts-mode . php)))
 
 ;; Swift
 (use-package swift-ts-mode :ensure t)
@@ -571,7 +580,10 @@ this once."
   (unless (package-installed-p 'eglot-booster)
     (package-vc-install "https://github.com/jdtsmith/eglot-booster.git"))
   :after eglot
-  :config	(eglot-booster-mode))
+  :config (eglot-booster-mode))
+
+;; lsp generates a lot of garbage
+(setopt gc-cons-threshold 100000000)
 
 ;; Rust
 ;; Define a setup function that runs in the mode hook.
@@ -636,6 +648,10 @@ this once."
 ;; Ansible
 (use-package ansible
   :ensure t
+  :init
+  ;; Add ansible file patterns to auto-mode-alist
+  (add-to-list 'auto-mode-alist '("\\.ansible.yml\\'" . ansible-mode))
+  (add-to-list 'auto-mode-alist '("\\.ansible.yaml\\'" . ansible-mode))
   :config
   (add-to-list 'eglot-server-programs `((ansible-mode) . '("ansible-language-server" "--stdio")))
   :hook
@@ -695,6 +711,11 @@ this once."
   (setq-local indent-tabs-mode t)
   (setq-local go-ts-mode-indent-offset 4))
 (add-hook 'go-ts-mode-hook #'zelcon/go-mode-hook)
+
+;; PHP
+(add-to-list 'eglot-server-programs
+       '((php-mode php-ts-mode) .
+         ("phpactor" "language-server")))
 
 (use-package ggtags
   :ensure t)
