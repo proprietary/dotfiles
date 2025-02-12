@@ -909,5 +909,7 @@ this once."
 
 (load "camelize.el")
 
+(require 'zelcon--util)
+
 ;; load custom file
 (load custom-file t)
