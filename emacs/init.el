@@ -782,7 +782,7 @@ this once."
   :config
   (load-theme 'solarized-dark t))
 
-(set-frame-font "Operator Mono 12" nil t)
+(set-frame-font "Operator Mono 17" nil t)
 
 ;; always highlight current line
 (global-hl-line-mode)
@@ -910,6 +910,7 @@ this once."
 (load "camelize.el")
 
 (require 'zelcon--util)
+(require 'zelcon--ctx-dump)
 
 ;; load custom file
 (load custom-file t)
