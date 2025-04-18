@@ -197,7 +197,6 @@
     asmfmt
     global
     universal-ctags
-    openssl_3_3
     pkg-config
     libiconv
     xclip
@@ -405,7 +404,9 @@
 
   # Remoting
   services.xserver.enable = true;
-  systemd.services.nxserver.enable = true;
+  services.xrdp.enable = true;
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
