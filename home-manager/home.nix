@@ -80,6 +80,34 @@
     userName = "Zelly Snyder";
     signing.key = "D3B05DF8786B7D2C";
     signing.signByDefault = true;
+    lfs = {
+      enable = true;
+    };
+    extraConfig = {
+      core = {
+        excludesFile = let global_gitignore = pkgs.writeText "${config.home.homeDirectory}/.gitignore" ''
+        .DS_Store
+        .envrc
+        .envrc.local
+        .env
+        Thumbs.db
+        desktop.ini
+        node_modules/
+        .vscode/
+        .idea/
+        .cache/
+        .ccls-cache/
+        .clangd/
+        .mypy_cache/
+        .pytest_cache/
+        .tox/
+        .venv/
+        .vscode
+        '';
+        in
+        "${config.home.homeDirectory}/.gitignore";
+      };
+    };
   };
 
   programs.zsh = {
