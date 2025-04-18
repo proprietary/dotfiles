@@ -108,7 +108,7 @@
     home-manager
     nix-index
     nixfmt-rfc-style
-    emacs30-gtk3
+    emacs-gtk
     jansson
     wget
     tree-sitter
@@ -150,7 +150,7 @@
     ollama
 
     # Compilers etc.
-    jdk
+    jdk23
     python313Full
     python313Packages.debugpy
     julia
@@ -203,6 +203,7 @@
     xsel
     vscode
     brave
+    ghostty
 
     # LSPs
     jdt-language-server
@@ -403,10 +404,17 @@
   services.ollama.enable = true;
 
   # Remoting
-  services.xserver.enable = true;
   services.xrdp.enable = true;
+
+  # GUI
+  services.xserver.enable = true;
   services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
+  services.desktopManager.plasma6 = {
+    enable = true;
+  };
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
