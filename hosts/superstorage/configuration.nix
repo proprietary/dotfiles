@@ -147,10 +147,12 @@
     libxml2
     folly
     boost
+    ollama
 
     # Compilers etc.
     jdk
-    python312Full
+    python313Full
+    python313Packages.debugpy
     julia
     R
     postgresql
@@ -162,15 +164,11 @@
     gdb
     libgcc
     libgccjit
-    unstable.llvmPackages_19.stdenv
-    unstable.llvmPackages_19.clang-unwrapped
-    unstable.llvmPackages_19.libcxx
-    unstable.llvmPackages_19.bintools
-    unstable.llvmPackages_19.openmp
-    unstable.llvmPackages_19.libunwind
-    unstable.llvmPackages_19.llvm-manpages
-    unstable.llvmPackages_19.lldb-manpages
-    unstable.llvmPackages_19.clang-manpages
+    lldb
+    llvm-manpages
+    include-what-you-use
+    clang-tools
+    cppcheck
     bazelisk
     cmake
     pkg-config
@@ -402,6 +400,12 @@
     enable = true;
     libraries = with pkgs; [ zlib ];
   };
+
+  services.ollama.enable = true;
+
+  # Remoting
+  services.xserver.enable = true;
+  systemd.services.nxserver.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

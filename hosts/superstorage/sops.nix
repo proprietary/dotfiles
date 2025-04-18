@@ -11,6 +11,8 @@ let
     "net_zelcon/gpu-server-01/prv"
     "net_zelcon/gpu-server-01/psk"
     "net_zelcon/macmini/psk"
+    "net_zelcon/x220/prv"
+    "net_zelcon/x220/psk"
   ];
   makeNetworkdSecret = path: {
     "${path}" = {

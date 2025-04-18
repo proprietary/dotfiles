@@ -71,6 +71,15 @@ in
           ];
           PersistentKeepalive = 1;
         }
+        {
+          PublicKey = builtins.readFile ../../secrets/eval-time-secrets/net_zelcon/x220/pubkey;
+          PresharedKeyFile = config.sops.secrets."net_zelcon/x220/psk".path;
+          AllowedIPs = [
+            "172.21.21.9/32"
+            "fd88:3f9f:1aa1:babe::9/128"
+          ];
+          PersistentKeepalive = 1;
+        }
       ];
     };
     networks."90-zelcon" = {
