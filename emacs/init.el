@@ -460,6 +460,7 @@
 (add-to-list 'auto-mode-alist '("\\.envrc" . sh-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-ts-mode))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode))
 
 (defun zelcon/install-tree-sitter-swift ()
   (interactive)
@@ -782,7 +783,7 @@ this once."
   :config
   (load-theme 'solarized-dark t))
 
-(set-frame-font "Operator Mono 17" nil t)
+;(set-frame-font "Operator Mono 17" nil t)
 
 ;; always highlight current line
 (global-hl-line-mode)
