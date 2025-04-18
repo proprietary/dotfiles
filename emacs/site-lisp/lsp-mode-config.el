@@ -16,13 +16,15 @@
 
 (use-package dap-mode :ensure t
   :config
-  (dap-ui-mode)
-  (dap-ui-controls-mode 1)
-  (use-package dap-lldb :ensure t)
-  (use-package dap-gdb-lldb :ensure t)
-  (use-package dap-java :ensure t)
-  (use-package dap-python)
-  (use-package dap-dlv-go :ensure t))
-
+  (dap-ui-mode 1)
+  (dap-ui-controls-mode 1))
+(use-package lsp-java :ensure t
+  :config
+  (require 'dap-java))
+(require 'dap-lldb)
+(require 'dap-gdb-lldb)
+(require 'dap-python)
+(setq dap-python-debugger 'debugpy)
+(require 'dap-dlv-go)
 
 (provide 'lsp-mode-config)
