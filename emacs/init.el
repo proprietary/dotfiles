@@ -625,56 +625,10 @@ this once."
     :when (not (null window-system))
     :hook (company-mode . company-box-mode))
 
-;; Github Copilot
 (use-package s :ensure t)
 (use-package dash :ensure t)
 (use-package editorconfig :ensure t)
 (use-package jsonrpc :ensure t)
-(use-package copilot
-  :ensure nil
-  :requires (s dash editorconfig)
-  :after (evil company)
-  :init
-  (unless (package-installed-p 'copilot.el)
-    (package-vc-install "https://github.com/copilot-emacs/copilot.el.git"))
-  (add-to-list 'warning-suppress-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
-  (add-to-list 'warning-suppress-log-types '(copilot copilot-no-mode-indent copilot-exceeds-max-char copilot--infer-indentation-offset))
-
-  :hook
-  ((python-ts-mode . copilot-mode)
-   (rust-ts-mode . copilot-mode)
-   (java-ts-mode . copilot-mode)
-   (c++-ts-mode . copilot-mode)
-   (c-ts-mode . copilot-mode)
-   (go-ts-mode . copilot-mode)
-   (javascript-ts-mode . copilot-mode)
-   (tsx-ts-mode . copilot-mode)
-   (typescript-ts-mode . copilot-mode)
-   (ruby-ts-mode . copilot-mode)
-   (swift-ts-mode . copilot-mode))
-  :custom
-  (copilot-indent-offset-warning-disable t)
-  :config
-  (define-key copilot-completion-map (kbd "C-n") 'copilot-next-completion)
-  (define-key copilot-completion-map (kbd "C-p") 'copilot-previous-completion)
-  (define-key copilot-mode-map (kbd "C-'") 'copilot-accept-completion)
-  (define-key copilot-mode-map (kbd "<f8>") 'copilot-accept-completion-by-line)
-  ;; https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers
-  (dolist (item '(("python-ts" . "python")
-      ("rust-ts" . "rust")
-      ("java-ts" . "java")
-      ("c++-ts" . "cpp")
-      ("c-ts" . "c")
-      ("go-ts" . "go")
-      ("javascript-ts" . "javascript")
-      ("typescript-ts" . "typescript")
-      ("ruby-ts" . "ruby")
-      ("swift-ts" . "swift")
-      ("yaml-ts" . "yaml")
-      ("julia-ts" . "julia")))
-    (add-to-list 'copilot-major-mode-alist item))
-  )
-
 (use-package spinner :ensure t)
 
 (use-package ellama
@@ -682,18 +636,20 @@ this once."
   :requires spinner
   :init
   (require 'llm-ollama)
-  (setopt ellama-provider
-    (make-llm-ollama
-     :chat-model "deepseek-coder-v2:16b-lite-instruct-q4_0"
-     :embedding-model "deepseek-coder-v2:16b-lite-instruct-q4_0"))
-  (setopt ellama-providers
-    '(("deepseek" . (make-llm-ollama :chat-model "deepseek-coder-v2:16b-lite-instruct-q4_0"
-             :embedding-model "deepseek-coder-v2:16b-lite-instruct-q4_0"))
-      ("codeqwen" . (make-llm-ollama :chat-model "codeqwen:7b-chat"
-             :embedding-model "codeqwen:7b-chat"))
-      ("codegemma" . (make-llm-ollama :chat-model "codegemma:7b-instruct"
-              :embedding-model "codegemma:7b-instruct"))))
-  (setopt ellama-language "English")
+  (flet ((mkmodel (model)
+                  (make-llm-ollama :host "172.21.21.6" :port 11434 :chat-model model :embedding-model model)))
+    (setopt ellama-provider
+            (mkmodel "qwen2.5-coder:32b-instruct-q6_K"))
+    (setopt ellama-providers
+            `(("small" . ,(mkmodel "qwen2.5-coder:0.5b-instruct"))
+              ("medium" . ,(mkmodel "qwen2.5-coder:14b-instruct"))
+              ("large" . ,(mkmodel "qwen2.5-coder:32b-instruct-q6_K"))
+              ("qwq" . ,(mkmodel "qwq:32b-q4_K_M"))
+              ("gemma3" . ,(mkmodel "gemma3:27b-it-q8_0")))))
+  (setopt ellama-language "English"
+          ellama-chat-display-action-function #'display-buffer-full-frame
+          ellama-instant-display-action-function #'display-buffer-at-bottom
+          ellama-naming-scheme 'ellama-generate-name-by-llm)
   :custom
   (ellama-auto-scroll t)
   :config
@@ -784,6 +740,7 @@ this once."
   (load-theme 'solarized-dark t))
 
 ;(set-frame-font "Operator Mono 17" nil t)
+(set-frame-font "JetBrains Mono Nerd Font 11" nil t)
 
 ;; always highlight current line
 (global-hl-line-mode)
