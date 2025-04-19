@@ -403,9 +403,6 @@
 
   services.ollama.enable = true;
 
-  # Remoting
-  services.xrdp.enable = true;
-
   # GUI
   services.xserver.enable = true;
   services.displayManager.sddm.enable = true;
@@ -415,6 +412,12 @@
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
   ];
+
+  # Remoting
+  services.xrdp = {
+    enable = true;
+    defaultWindowManager = "startplasma-x11";
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
