@@ -9,6 +9,7 @@
          (rust-ts-mode . lsp)
          (java-ts-mode . lsp)
          (python-ts-mode . lsp)
+         (nix-ts-mode . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
