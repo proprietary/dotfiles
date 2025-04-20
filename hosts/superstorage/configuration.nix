@@ -13,6 +13,7 @@
     ./smart-home.nix
     ./zelcon.net-vpn.nix
     ./clickhouse.nix
+    ./virtualization.nix
   ];
 
   # Bootloader.
