@@ -322,7 +322,7 @@
  delete-by-moving-to-trash t
 
  ;; prevent dired buffer clutter
- dired-kill-when-opening-new-dired-buffer t
+ ;dired-kill-when-opening-new-dired-buffer t
  )
 
 ;; allow use of dired-find-alternate-file
