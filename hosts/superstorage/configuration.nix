@@ -419,6 +419,10 @@
     enable = true;
     defaultWindowManager = "startplasma-x11";
   };
+  security.pam.services.xrdp-sesman = {
+    kwallet.enable = true;
+    kwallet.package = pkgs.kdePackages.kwallet-pam;
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
