@@ -48,45 +48,45 @@
 
 (cl-case system-type
   (gnu/linux
-   (progn
-     (cond
-      ;; Wayland
-      ((and (string-equal (getenv "WAYLAND_DISPLAY") "wayland")
-      (executable-find "wl-copy")
-      (executable-find "wl-paste"))
-       (progn
-   (setq interprogram-cut-function
-         (lambda (text &optional push)
-     (let* ((process-connection-type nil)
-      (proc (start-process "wl-copy" "*Messages*" "wl-copy")))
-       (process-send-string proc text)
-       (process-send-eof proc))))
-   (setq interprogram-paste-function
-         (lambda (text &optional push)
-     (shell-command-to-string "wl-paste -n")))))
-      ;; X11
-       ((and (not (null window-system)) (executable-find "xsel"))
-   (progn
-     (setq interprogram-cut-function
-     (lambda (text &optional push)
-       (let* ((process-connection-type nil)
-        (proc (start-process "xsel" "*Messages*" "xsel" "-i" "-b")))
-         (process-send-string proc text)
-         (process-send-eof proc))))
-     (setq interprogram-paste-function
-     (lambda ()
-       (shell-command-to-string "xsel -o -b")))))
-       ;; tmux
-       ((and (getenv "TMUX") (executable-find "tmux"))
-  (setq interprogram-cut-function
-        (lambda (text &optional push)
-    (let* ((process-connection-type nil)
-           (proc (start-process "tmux" "*Messages*" "tmux" "load-buffer" "-b" "emacs" "-")))
-      (process-send-string proc text)
-      (process-send-eof proc))))
-  (setq interprogram-paste-function
-        (lambda ()
-    (shell-command-to-string "tmux save-buffer -b emacs -")))))))
+   (cond
+    ;; Wayland
+    ((and (string-equal (getenv "WAYLAND_DISPLAY") "wayland")
+          (executable-find "wl-copy")
+          (executable-find "wl-paste"))
+     (progn
+       (setq interprogram-cut-function
+             (lambda (text &optional push)
+               (let* ((process-connection-type nil)
+                      (proc (start-process "wl-copy" "*Messages*" "wl-copy")))
+                 (process-send-string proc text)
+                 (process-send-eof proc))))
+       (setq interprogram-paste-function
+             (lambda (text &optional push)
+               (shell-command-to-string "wl-paste -n")))))
+    ;; X11
+    ((and (not (null window-system)) (executable-find "xsel"))
+     (progn
+       (setq interprogram-cut-function
+             (lambda (text &optional push)
+               (let* ((process-connection-type nil)
+                      (proc (start-process "xsel" "*Messages*" "xsel" "-i" "-b")))
+                 (process-send-string proc text)
+                 (process-send-eof proc))))
+       (setq interprogram-paste-function
+             (lambda ()
+               (shell-command-to-string "xsel -o -b")))))
+     ;; tmux
+     ((and (getenv "TMUX") (executable-find "tmux"))
+      (progn
+        (setq interprogram-cut-function
+              (lambda (text &optional push)
+                (let* ((process-connection-type nil)
+                       (proc (start-process "tmux" "*Messages*" "tmux" "load-buffer" "-b" "emacs" "-")))
+                  (process-send-string proc text)
+                  (process-send-eof proc))))
+        (setq interprogram-paste-function
+              (lambda ()
+                (shell-command-to-string "tmux save-buffer -b emacs -")))))))
   (darwin
    (progn
      (defun zelcon/copy-from-osx ()
@@ -133,6 +133,15 @@
 ;; Direnv
 ;; ------
 (use-package direnv :ensure t)
+
+;; Projectile
+;; ----------
+;;
+(use-package projectile :ensure t
+  :config
+  (global-unset-key (kbd "C-x p"))
+  (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
+  (projectile-mode +1))
 
 ;;
 ;; evil-mode
@@ -186,6 +195,8 @@
 (use-package browse-kill-ring
   :ensure t
   :bind (("C-c y" . browse-kill-ring)))
+;; Prevent whitespace from showing up in the kill ring
+(setq kill-transform-function (lambda (s) (not (string-blank-p s))))
 
 ;;
 ;; Git
