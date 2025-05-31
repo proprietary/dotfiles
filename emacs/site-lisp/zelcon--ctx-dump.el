@@ -9,8 +9,9 @@
     (dolist (buffer (buffer-list))
       (with-current-buffer buffer
         (when (derived-mode-p 'dired-mode)
-          (let ((marked-files (dired-get-marked-files)))
-            (setq all-marked-files (append all-marked-files marked-files))))))
+          (when-let ((marked-files (dired-get-marked-files)))
+            (setq all-marked-files (append all-marked-files marked-files))
+            (dired-unmark-all-files ?\r)))))
     all-marked-files))
 
 (defun zelcon/ctx-dump ()
@@ -23,7 +24,7 @@
             (when (file-regular-p file)
               (let ((filename (file-relative-name file default-directory))
                     (file-contents (zelcon/file-contents file)))
-                (insert (format "### File: %s\n%s\n\n" filename file-contents)))))
+                (insert (format "### File: %s\n```%s\n%s\n```\n" filename (file-name-extension filename) file-contents)))))
           (switch-to-buffer new-buffer))
       (progn
         (message "No files marked")

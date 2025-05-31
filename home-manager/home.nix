@@ -47,7 +47,7 @@
     defaultCacheTtl = 86400;
     defaultCacheTtlSsh = 86400;
     enableZshIntegration = true;
-    pinentryPackage = pkgs.pinentry-emacs;
+    pinentry.package = pkgs.pinentry-emacs;
     extraConfig = ''
       allow-emacs-pinentry
       allow-loopback-pinentry
@@ -117,8 +117,8 @@
       extended = true;
       expireDuplicatesFirst = true;
       share = true;
-      save = 10000000;
-      size = 10000000;
+      save = 10737418240;
+      size = 10737418240;
       #append = true;
       #historySubstringSearch.enable = true;
       ignoreSpace = true;
@@ -135,7 +135,7 @@
     enableCompletion = true;
     defaultKeymap = "emacs";
     autocd = true;
-    initExtra = ''
+    initContent = ''
       # edit command line
       autoload -z edit-command-line
       zle -N edit-command-line

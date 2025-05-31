@@ -143,46 +143,6 @@
   (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
   (projectile-mode +1))
 
-;;
-;; evil-mode
-;; ---------
-;;
-(use-package goto-chg :ensure t) ;; evil-mode dependency
-(require 'evil)
-(evil-mode 1)
-
-(setq evil-want-C-i-jump t)
-
-;; set some modes to use emacs mode by default
-(evil-set-initial-state 'help-mode 'emacs)
-(evil-set-initial-state 'package-menu-mode 'emacs)
-(evil-set-initial-state 'magit-mode 'emacs)
-(evil-set-initial-state 'bs-mode 'emacs)
-(evil-set-initial-state 'ibuffer-mode 'emacs)
-(evil-set-initial-state 'dired-mode 'emacs)
-(evil-set-initial-state 'rg-mode 'emacs)
-(evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
-(add-hook 'xref-backend-functions #'(lambda (&rest _) (evil-emacs-state)))
-(evil-set-initial-state 'compilation-mode 'emacs)
-(evil-set-initial-state 'shell-mode 'emacs)
-(evil-set-initial-state 'term-mode 'emacs)
-(evil-set-initial-state 'vterm-mode 'emacs)
-(evil-set-initial-state 'debugger-mode 'emacs)
-(evil-set-initial-state 'special-mode 'emacs)
-(evil-set-initial-state 'treemacs-mode 'emacs)
-(evil-set-initial-state 'org-mode 'emacs)
-(add-hook 'special-mode-hook 'evil-emacs-state)
-(evil-set-initial-state 'messages-buffer-mode 'emacs)
-(with-current-buffer (get-buffer "*Messages*")
-  (evil-emacs-state))
-(evil-set-initial-state 'Buffer-menu-mode 'emacs)
-
-(evil-define-key 'normal 'global (kbd "SPC i") 'imenu)
-(evil-define-key 'normal 'global (kbd "SPC o") 'other-window)
-
-;; Allows you to click buttons without initiating a selection
-(define-key evil-motion-state-map [down-mouse-1] nil)
-
 
 ;; hitting backspace at an indentation column with whitespace
 ;; preceding the cursor also deletes backward up to the last
@@ -196,7 +156,7 @@
   :ensure t
   :bind (("C-c y" . browse-kill-ring)))
 ;; Prevent whitespace from showing up in the kill ring
-(setq kill-transform-function (lambda (s) (not (string-blank-p s))))
+(setq kill-transform-function (lambda (s) (unless (string-blank-p s) s)))
 
 ;;
 ;; Git
@@ -228,26 +188,26 @@
 
 ;; move region
 (require 'move-region)
-(evil-define-key 'visual 'global (kbd "M-S-<down>") 'zelcon/move-region-down)
-(evil-define-key 'visual 'global (kbd "M-S-<up>") 'zelcon/move-region-up)
+(global-set-key (kbd "M-S-<down>") 'zelcon/move-region-down)
+(global-set-key (kbd "M-S-<up>") 'zelcon/move-region-up)
 
 ;; move lines
 (require 'move-lines)
-(evil-define-key 'normal 'global (kbd "M-S-<up>") 'zelcon/move-line-up)
-(evil-define-key 'normal 'global (kbd "M-S-<down>") 'zelcon/move-line-down)
+(global-set-key (kbd "M-S-<up>") 'zelcon/move-line-up)
+(global-set-key (kbd "M-S-<down>") 'zelcon/move-line-down)
 
 ;; which-key
 (use-package which-key :ensure t
   :config
   (add-hook 'after-init-hook 'which-key-mode))
 
-;; ace-jump-mode
-(use-package ace-jump-mode
-  :ensure t
-  :after evil
-  :config
-  (define-key evil-motion-state-map "g/" 'evil-ace-jump-word-mode)
-  (define-key evil-motion-state-map "g." 'evil-ace-jump-char-mode))
+;; ;; ace-jump-mode
+;; (use-package ace-jump-mode
+;;   :ensure t
+;;   :after evil
+;;   :config
+;;   (define-key evil-motion-state-map "g/" 'evil-ace-jump-word-mode)
+;;   (define-key evil-motion-state-map "g." 'evil-ace-jump-char-mode))
 
 ;; expand-region which uses tree-sitter
 (require 'expreg)
@@ -255,30 +215,20 @@
 (define-key global-map (kbd "C-:") 'expreg-contract)
 
 ;; multiple-cursors
-(use-package evil-mc
-  :ensure t
-  :bind (:map evil-mc-key-map
-              ("M-n" . nil)
-              ("M-p" . nil)
-              ("C-n" . nil)
-              ("C-t" . nil)
-              ("C-p" . nil))
-  :config
-  (global-evil-mc-mode)
-  (global-set-key (kbd "s-<down-mouse-1>") 'evil-mc-toggle-cursor-on-click)
-  (evil-define-key 'normal evil-mc-key-map (kbd "g r ]") 'evil-mc-make-and-goto-next-match)
-  (evil-define-key 'normal evil-mc-key-map (kbd "g r [") 'evil-mc-make-and-goto-prev-match)
-  (evil-define-key 'normal evil-mc-key-map (kbd "g r \\") 'evil-mc-skip-and-goto-next-match))
-
-;; emulates the legendary surround.vim
-;; You can surround in visual-state with `S<textobject>` or `gS<textobject>`. Or in normal-state with `ys<textobject>` or `yS<textobject>`.
-;; You can change a surrounding with `cs<old-textobject><new-textobject>`.
-;; You can delete a surrounding with `ds<textobject>`.
-(use-package evil-surround
-  :ensure t
-  :config
-  (global-evil-surround-mode 1))
-
+;; (use-package evil-mc
+;;   :ensure t
+;;   :bind (:map evil-mc-key-map
+;;               ("M-n" . nil)
+;;               ("M-p" . nil)
+;;               ("C-n" . nil)
+;;               ("C-t" . nil)
+;;               ("C-p" . nil))
+;;   :config
+;;   (global-evil-mc-mode)
+;;   (global-set-key (kbd "s-<down-mouse-1>") 'evil-mc-toggle-cursor-on-click)
+;;   (evil-define-key 'normal evil-mc-key-map (kbd "g r ]") 'evil-mc-make-and-goto-next-match)
+;;   (evil-define-key 'normal evil-mc-key-map (kbd "g r [") 'evil-mc-make-and-goto-prev-match)
+;;   (evil-define-key 'normal evil-mc-key-map (kbd "g r \\") 'evil-mc-skip-and-goto-next-match))
 ;;
 ;; Fixing Annoying Defaults
 ;; ------------------------
@@ -331,6 +281,9 @@
 
  ;; send deleted files to system Trash instead of physically deleting them
  delete-by-moving-to-trash t
+
+ ;; yes, emacs, I'm not running a Pentium IV
+ large-file-warning-threshold (ash 1 30)
 
  ;; prevent dired buffer clutter
  ;dired-kill-when-opening-new-dired-buffer t
@@ -625,8 +578,6 @@ this once."
   ;; disable inline previews
   (delq 'company-preview-if-just-one-frontend company-frontends)
   ;; escape from company completions
-  (evil-define-key 'insert company-active-map (kbd "ESC") 'company-abort)
-  (evil-define-key 'insert company-mode-map (kbd "C-c /") 'company-files)
   :hook ((prog-mode . company-mode)
    (yaml-ts-mode . company-mode))
   :custom
@@ -647,7 +598,7 @@ this once."
   :requires spinner
   :init
   (require 'llm-ollama)
-  (flet ((mkmodel (model)
+  (cl-flet ((mkmodel (model)
                   (make-llm-ollama :host "172.21.21.6" :port 11434 :chat-model model :embedding-model model)))
     (setopt ellama-provider
             (mkmodel "qwen2.5-coder:32b-instruct-q6_K"))
@@ -702,7 +653,6 @@ this once."
   (deactivate-mark)
   (isearch-forward search-term))
     (isearch-forward-thing-at-point)))
-(evil-define-key '(normal) 'global (kbd "SPC s") 'zelcon/isearch-region-or-thing-at-point)
 
 ;;
 ;; Code formatting
@@ -730,14 +680,11 @@ this once."
   (insert
    (string-trim-right
     (shell-command-to-string command))))
-(evil-define-key 'normal 'global (kbd "SPC !") 'zelcon/insert-shell-command-output)
-(evil-define-key 'insert 'global (kbd "C-c !") 'zelcon/insert-shell-command-output)
+(global-set-key (kbd "C-c !") 'zelcon/insert-shell-command-output)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Random keybindings ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
-
-(evil-define-key 'normal 'global (kbd "SPC q") 'bury-buffer)
 
 ;;
 ;; Appearance

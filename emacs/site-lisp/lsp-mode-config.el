@@ -6,6 +6,7 @@
   :init
   (setq lsp-keymap-prefix "C-c l")
   :hook ((c++-ts-mode . lsp)
+         (c-ts-mode . lsp)
          (rust-ts-mode . lsp)
          (java-ts-mode . lsp)
          (python-ts-mode . lsp)
@@ -21,6 +22,10 @@
   (dap-ui-controls-mode 1))
 (use-package lsp-java :ensure t
   :config
+  (defun lsp-java--ls-command ()
+    '("jdtls"
+      "-configuration" "../config-linux"
+      "-data" "../java-workspace"))
   (require 'dap-java))
 (require 'dap-lldb)
 (require 'dap-gdb-lldb)

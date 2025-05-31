@@ -128,6 +128,7 @@
     google-authenticator
     sops
     wget
+    kdePackages.sddm
     neovim
     curl
     iproute2
@@ -203,6 +204,7 @@
     xclip
     xsel
     vscode
+    jetbrains.idea-community-bin
     brave
     ghostty
 
@@ -407,9 +409,7 @@
   # GUI
   services.xserver.enable = true;
   services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6 = {
-    enable = true;
-  };
+  services.desktopManager.plasma6.enable = true;
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
   ];
@@ -417,12 +417,20 @@
   # Remoting
   services.xrdp = {
     enable = true;
-    defaultWindowManager = "startplasma-x11";
+    openFirewall = true;
   };
-  security.pam.services.xrdp-sesman = {
-    kwallet.enable = true;
-    kwallet.package = pkgs.kdePackages.kwallet-pam;
+  services.rustdesk-server = {
+    enable = true;
+    openFirewall = true;
+    signal = {
+      enable = true;
+      relayHosts = ["172.21.21.1"];
+    };
+    relay = {
+      enable = true;
+    };
   };
+  systemd.services.rustdesk-signal.environment.ALWAYS_USE_RELAY = "Y";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
