@@ -128,7 +128,6 @@
     google-authenticator
     sops
     wget
-    kdePackages.sddm
     neovim
     curl
     iproute2
@@ -207,6 +206,7 @@
     jetbrains.idea-community-bin
     brave
     ghostty
+    turbovnc
 
     # LSPs
     jdt-language-server
@@ -406,10 +406,21 @@
 
   services.ollama.enable = true;
 
-  # GUI
+  #######
+  # GUI #
+  #######
+
+  # Software rendering for headless server
+  hardware.graphics.enable = true;
+
   services.xserver.enable = true;
-  services.displayManager.sddm.enable = true;
+
+  # services.xserver.desktopManager.gnome.enable = true;
+  # services.displayManager.gdm.enable = true;
+
   services.desktopManager.plasma6.enable = true;
+  services.displayManager.sddm.enable = true;
+
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
   ];
@@ -418,13 +429,18 @@
   services.xrdp = {
     enable = true;
     openFirewall = true;
+    defaultWindowManager = "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11";
   };
   services.rustdesk-server = {
     enable = true;
     openFirewall = true;
     signal = {
       enable = true;
-      relayHosts = ["172.21.21.1"];
+      relayHosts = ["172.21.21.1:21117"];
+      extraArgs = [
+        "--mask" "172.21.21.0/24"
+        "-M" "33554432"
+      ];
     };
     relay = {
       enable = true;
