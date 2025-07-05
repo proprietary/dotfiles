@@ -149,6 +149,8 @@
     folly
     boost
     ollama
+    binutils
+    p7zip
 
     # Compilers etc.
     jdk23
@@ -419,6 +421,7 @@
   # services.displayManager.gdm.enable = true;
 
   services.desktopManager.plasma6.enable = true;
+  services.displayManager.defaultSession = "plasmax11";
   services.displayManager.sddm.enable = true;
 
   fonts.packages = with pkgs; [
@@ -431,22 +434,27 @@
     openFirewall = true;
     defaultWindowManager = "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11";
   };
-  services.rustdesk-server = {
-    enable = true;
-    openFirewall = true;
-    signal = {
-      enable = true;
-      relayHosts = ["172.21.21.1:21117"];
-      extraArgs = [
-        "--mask" "172.21.21.0/24"
-        "-M" "33554432"
-      ];
-    };
-    relay = {
-      enable = true;
-    };
+  users.users.xrdp = {
+    isSystemUser = true;
+    group = "xrdp";
+    extraGroups = [ "video" "input" ];
   };
-  systemd.services.rustdesk-signal.environment.ALWAYS_USE_RELAY = "Y";
+  # services.rustdesk-server = {
+  #   enable = true;
+  #   openFirewall = true;
+  #   signal = {
+  #     enable = true;
+  #     relayHosts = ["172.21.21.1:21117"];
+  #     extraArgs = [
+  #       "--mask" "172.21.21.0/24"
+  #       "-M" "33554432"
+  #     ];
+  #   };
+  #   relay = {
+  #     enable = true;
+  #   };
+  # };
+  # systemd.services.rustdesk-signal.environment.ALWAYS_USE_RELAY = "Y";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
