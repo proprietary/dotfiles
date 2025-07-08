@@ -35,6 +35,14 @@ in
       "net_zelcon/ssh_CA_pub" = {
         mode = "0640";
       };
+      "net_zelcon/cloudflare" = {
+        mode = "0640";
+        group = config.security.acme.certs."superstorage.internal.zelcon.net".group;
+      };
+      "net_zelcon/client_cert.pem" = {
+        mode = "0640";
+        group = config.users.users.nginx.group;
+      };
     } // networkdSecrets;
   };
 }

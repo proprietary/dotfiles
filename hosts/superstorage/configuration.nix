@@ -14,6 +14,7 @@
     ./zelcon.net-vpn.nix
     ./clickhouse.nix
     ./virtualization.nix
+    ./webshit.nix
   ];
 
   # Bootloader.
@@ -431,7 +432,7 @@
   # Remoting
   services.xrdp = {
     enable = true;
-    openFirewall = true;
+    openFirewall = false;
     defaultWindowManager = "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11";
   };
   users.users.xrdp = {
