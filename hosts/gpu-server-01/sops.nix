@@ -63,7 +63,7 @@
     };
     secrets."net_zelcon/x220/psk" = {
       group = config.users.users.systemd-network.name;
-      group = "0640";
+      mode = "0640";
     };
     secrets."dns-zones/zelcon" = {
       group = config.users.users.named.name;

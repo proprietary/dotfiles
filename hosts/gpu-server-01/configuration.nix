@@ -143,15 +143,8 @@
     gdb
     libgcc
     libgccjit
-    llvmPackages.stdenv
-    llvmPackages.clang-unwrapped
-    llvmPackages.libcxx
-    llvmPackages.bintools
-    llvmPackages.openmp
-    llvmPackages.libunwind
-    llvmPackages.llvm-manpages
-    llvmPackages.lldb-manpages
-    llvmPackages.clang-manpages
+    clang
+    lldb
     bazel
     cmake
     pkg-config
@@ -188,6 +181,53 @@
     lua-language-server
     nodePackages.vscode-json-languageserver
     nodePackages.bash-language-server
+
+     # LSPs
+    jdt-language-server
+    gopls
+    nil
+    pyright
+    cmake-language-server
+    yaml-language-server
+    phpactor
+    sourcekit-lsp
+    terraform-ls
+    javascript-typescript-langserver
+    dockerfile-language-server-nodejs
+    ansible-language-server
+    # tree-sitter grammars
+    tree-sitter-grammars.tree-sitter-cpp
+    tree-sitter-grammars.tree-sitter-c
+    tree-sitter-grammars.tree-sitter-rust
+    tree-sitter-grammars.tree-sitter-cuda
+    tree-sitter-grammars.tree-sitter-yaml
+    tree-sitter-grammars.tree-sitter-cmake
+    tree-sitter-grammars.tree-sitter-proto
+    tree-sitter-grammars.tree-sitter-bash
+    tree-sitter-grammars.tree-sitter-go
+    tree-sitter-grammars.tree-sitter-gomod
+    tree-sitter-grammars.tree-sitter-commonlisp
+    tree-sitter-grammars.tree-sitter-dockerfile
+    tree-sitter-grammars.tree-sitter-hcl
+    tree-sitter-grammars.tree-sitter-toml
+    tree-sitter-grammars.tree-sitter-sql
+    tree-sitter-grammars.tree-sitter-ruby
+    tree-sitter-grammars.tree-sitter-r
+    tree-sitter-grammars.tree-sitter-python
+    tree-sitter-grammars.tree-sitter-perl
+    tree-sitter-grammars.tree-sitter-nix
+    tree-sitter-grammars.tree-sitter-make
+    tree-sitter-grammars.tree-sitter-lua
+    tree-sitter-grammars.tree-sitter-latex
+    tree-sitter-grammars.tree-sitter-llvm
+    tree-sitter-grammars.tree-sitter-json
+    tree-sitter-grammars.tree-sitter-typescript
+    tree-sitter-grammars.tree-sitter-tsx
+    tree-sitter-grammars.tree-sitter-javascript
+    tree-sitter-grammars.tree-sitter-jsdoc
+    tree-sitter-grammars.tree-sitter-html
+    tree-sitter-grammars.tree-sitter-elisp
+    tree-sitter-grammars.tree-sitter-php
 
     # GPU
     cudaPackages.cudatoolkit
@@ -408,6 +448,15 @@
     spiceUSBRedirection.enable = true;
   };
   systemd.services.libvirtd.enable = true;
+
+  # Graphics
+
+  services.xserver.enable = true;
+  services.xserver.displayManager.sddm.enable = true;
+  services.xserver.desktopManager.plasma6.enable = true;
+
+  services.xrdp.enable = true;
+  services.xrdp.defaultWindowManager = "${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11";
 
   #
   # NVIDIA RTX 4090
