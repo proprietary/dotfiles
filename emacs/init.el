@@ -697,8 +697,17 @@ this once."
   :config
   (load-theme 'solarized-dark t))
 
-;(set-frame-font "Operator Mono 17" nil t)
-(set-frame-font "JetBrains Mono Nerd Font 11" nil t)
+;; Set font in GUI mode
+(let* ((font-preferences '("JetBrains Mono Nerd Font" "Operator Mono"))
+       (font-sizes '(11 17))
+       (font-found nil))
+  (while (and font-preferences (not font-found))
+    (let ((current-font (pop font-preferences))
+          (current-size (pop font-sizes)))
+      (when (find-font (font-spec :family current-font))
+        (set-frame-font (format "%s %d" current-font current-size) nil t)
+        (setq font-found t)
+        (message "Font set to %s" current-font)))))
 
 ;; always highlight current line
 (global-hl-line-mode)
