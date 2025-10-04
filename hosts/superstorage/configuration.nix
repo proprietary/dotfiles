@@ -155,8 +155,6 @@
 
     # Compilers etc.
     jdk23
-    python313Full
-    python313Packages.debugpy
     julia
     R
     postgresql
@@ -222,8 +220,7 @@
     sourcekit-lsp
     terraform-ls
     javascript-typescript-langserver
-    dockerfile-language-server-nodejs
-    ansible-language-server
+    dockerfile-language-server
     # tree-sitter grammars
     tree-sitter-grammars.tree-sitter-cpp
     tree-sitter-grammars.tree-sitter-c
@@ -259,14 +256,10 @@
     tree-sitter-grammars.tree-sitter-php
 
     # Ruby
-    ruby_3_3
-    rubyPackages_3_3.ruby-lsp
-    rubyPackages_3_3.stringio
-    rubyPackages_3_3.rbs
-    rubyPackages_3_3.sorbet-runtime
-    rubyPackages_3_3.prism
-    rubyPackages_3_3.ffi
-    rubyPackages_3_3.psych
+    ruby
+
+    # Python
+    python3
 
     # Archives
     gnused
@@ -440,22 +433,8 @@
     group = "xrdp";
     extraGroups = [ "video" "input" ];
   };
-  # services.rustdesk-server = {
-  #   enable = true;
-  #   openFirewall = true;
-  #   signal = {
-  #     enable = true;
-  #     relayHosts = ["172.21.21.1:21117"];
-  #     extraArgs = [
-  #       "--mask" "172.21.21.0/24"
-  #       "-M" "33554432"
-  #     ];
-  #   };
-  #   relay = {
-  #     enable = true;
-  #   };
-  # };
-  # systemd.services.rustdesk-signal.environment.ALWAYS_USE_RELAY = "Y";
+
+  nix.settings.download-buffer-size = 524288000;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
