@@ -396,6 +396,7 @@
   (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
   (verilog "https://github.com/tree-sitter/tree-sitter-verilog")
   (php "https://github.com/tree-sitter/tree-sitter-php")
+  (kotlin "https://github.com/fwcd/tree-sitter-kotlin")
   ))
 
 
@@ -481,7 +482,9 @@ this once."
   (tree-sitter-require 'json)
   (add-to-list 'tree-sitter-major-mode-language-alist '(json-ts-mode . json))
   (tree-sitter-require 'php)
-  (add-to-list 'tree-sitter-major-mode-language-alist '(php-ts-mode . php)))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(php-ts-mode . php))
+  (tree-sitter-require 'kotlin)
+  (add-to-list 'tree-sitter-major-mode-language-alist '(kotlin-ts-mode . kotlin)))
 
 ;; Swift
 (use-package swift-ts-mode :ensure t)
