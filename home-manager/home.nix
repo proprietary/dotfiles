@@ -76,14 +76,14 @@
 
   programs.git = {
     enable = true;
-    userEmail = "zelcon@zelcon.net";
-    userName = "Zelly Snyder";
     signing.key = "D3B05DF8786B7D2C";
     signing.signByDefault = true;
     lfs = {
       enable = true;
     };
-    extraConfig = {
+    settings = {
+      user.email = "zelcon@zelcon.net";
+      user.name = "Zelly Snyder";
       core = {
         excludesFile = let global_gitignore = pkgs.writeText "${config.home.homeDirectory}/.gitignore" ''
         .DS_Store

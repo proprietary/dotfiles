@@ -154,7 +154,7 @@
     p7zip
 
     # Compilers etc.
-    jdk23
+    jdk25
     julia
     R
     postgresql
@@ -189,8 +189,7 @@
     patchelf
     aspell
     aspellDicts.en
-    swift
-    nodejs_22
+    # swift # compilation error
     shellcheck
     maven
     lua
@@ -204,7 +203,7 @@
     xclip
     xsel
     vscode
-    jetbrains.idea-community-bin
+    jetbrains.idea
     brave
     ghostty
     turbovnc
@@ -217,7 +216,7 @@
     cmake-language-server
     yaml-language-server
     phpactor
-    sourcekit-lsp
+    # sourcekit-lsp # compiler error
     terraform-ls
     javascript-typescript-langserver
     dockerfile-language-server
